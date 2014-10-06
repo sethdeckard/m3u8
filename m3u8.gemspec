@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = M3u8::VERSION
   spec.authors       = ["Seth Deckard"]
   spec.email         = ["seth@deckard.me"]
-  spec.summary       = %q{Generates m3u8 playlists for HTTP Live Streaming.}
-  spec.description   = %q{Generates m3u8 playlists for HTTP Live Streaming.}
+  spec.summary       = %q{Generate m3u8 playlists for HTTP Live Streaming (HLS).}
+  spec.description   = %q{Generate m3u8 playlists for HTTP Live Streaming (HLS).}
   spec.homepage      = ""
   spec.license       = "MIT"
 
