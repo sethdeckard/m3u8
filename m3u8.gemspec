@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["seth@deckard.me"]
   spec.summary       = %q{Generate m3u8 playlists for HTTP Live Streaming (HLS).}
   spec.description   = %q{Generate m3u8 playlists for HTTP Live Streaming (HLS).}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/sethdeckard/m3u8"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
