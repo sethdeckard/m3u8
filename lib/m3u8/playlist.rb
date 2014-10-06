@@ -128,15 +128,18 @@ module M3u8
     end
 
     def video_codec profile, level
-      unless profile.nil? and level.nil?
-        return 'avc1.66.30' if profile.downcase == 'baseline' and level == 3.0
-        return 'avc1.42001f' if profile.downcase == 'baseline' and level == 3.1
-        return 'avc1.77.30' if profile.downcase == 'main' and level == 3.0
-        return 'avc1.4d001f' if profile.downcase == 'main' and level == 3.1
-        return 'avc1.4d0028' if profile.downcase == 'main' and level == 4.0
-        return 'avc1.64001f' if profile.downcase == 'high' and level == 3.1
-        return 'avc1.640028' if profile.downcase == 'high' and (level == 4.0 or level == 4.1)
+      if profile.nil? or level.nil?
+        return
       end
+
+      profile = profile.downcase
+      return 'avc1.66.30' if profile == 'baseline' and level == 3.0
+      return 'avc1.42001f' if profile == 'baseline' and level == 3.1
+      return 'avc1.77.30' if profile == 'main' and level == 3.0
+      return 'avc1.4d001f' if profile == 'main' and level == 3.1
+      return 'avc1.4d0028' if profile == 'main' and level == 4.0
+      return 'avc1.64001f' if profile == 'high' and level == 3.1
+      return 'avc1.640028' if profile == 'high' and (level == 4.0 or level == 4.1)
     end
 
     def resolution width, height
