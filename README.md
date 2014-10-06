@@ -46,6 +46,14 @@ Or install it yourself as:
 	options = { :version => 1, :cache => false, :target => 12, :sequence => 1}
     playlist = M3u8::Playlist.new options
     
+    #You can pass an IO object to the write method
+    require 'tempfile'
+    f = Tempfile.new 'test'
+    playlist.write f
+   
+  	#You can also access the playlist as a string
+  	playlist.to_s
+    
     #values for :audio (Codec name)
     #aac-lc, he-aac, mp3
     
