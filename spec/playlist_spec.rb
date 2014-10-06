@@ -124,5 +124,19 @@ describe M3u8::Playlist do
       "1080-7mbps00001.ts\n"
 
     expect(playlist.to_s).to eq output
+
+    options = { :version => 1, :cache => false, :target => 12, :sequence => 1}
+    playlist = M3u8::Playlist.new options
+    playlist.add_segment 11.344644, "1080-7mbps00000.ts"
+
+    output = "#EXTM3U\n" +
+      "#EXT-X-VERSION:1\n" +
+      "#EXT-X-MEDIA-SEQUENCE:1\n" +
+      "#EXT-X-ALLOW-CACHE:NO\n" +
+      "#EXT-X-TARGETDURATION:12\n" +
+      "#EXTINF:11.344644,\n" +
+      "1080-7mbps00000.ts\n"
+
+    expect(playlist.to_s).to eq output
   end
 end

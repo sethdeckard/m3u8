@@ -1,8 +1,15 @@
 module M3u8
   class Playlist
-    attr_accessor :io, :header
+    attr_accessor :io, :header, :options
 
-    def initialize
+    def initialize options={}
+      self.options = {
+        :version => 3,
+        :sequence => 0,
+        :cache => true,
+        :target => 10
+        }.merge options
+
       self.io = StringIO.open
       io.puts "#EXTM3U"
     end
@@ -64,10 +71,14 @@ module M3u8
     private
 
     def write_header
-      io.puts "#EXT-X-VERSION:3"
-      io.puts "#EXT-X-MEDIA-SEQUENCE:0"
-      io.puts "#EXT-X-ALLOW-CACHE:YES"
-      io.puts "#EXT-X-TARGETDURATION:10"
+      io.puts "#EXT-X-VERSION:#{options[:version]}"
+      io.puts "#EXT-X-MEDIA-SEQUENCE:#{options[:sequence]}"
+      io.puts "#EXT-X-ALLOW-CACHE:#{cache_string}"
+      io.puts "#EXT-X-TARGETDURATION:#{options[:target]}"
+    end
+
+    def cache_string
+      options[:cache] ? "YES" : "NO"
     end
 
     def audio_codec audio
@@ -95,8 +106,6 @@ module M3u8
         "RESOLUTION=#{width}x#{height},"
       end
     end
-
-
 
   end
 end
