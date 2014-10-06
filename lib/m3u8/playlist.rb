@@ -10,8 +10,14 @@ module M3u8
         :target => 10
         }.merge options
 
+      @@master = false
       self.io = StringIO.open
       io.puts "#EXTM3U"
+    end
+
+    def self.codecs options={}
+      playlist = Playlist.new
+      playlist.codecs options
     end
 
     def add_playlist program_id, playlist, bitrate, options={}
@@ -22,7 +28,9 @@ module M3u8
         :level => nil,
         :audio => nil
       }.merge options
-      
+
+      @@master = true
+
       resolution = resolution options[:width], options[:height]
       codecs = codecs({:audio => options[:audio], :profile => options[:profile], :level => options[:level]})
       io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}CODECS=""#{codecs}"",BANDWIDTH=#{bitrate}"
@@ -37,11 +45,6 @@ module M3u8
 
       io.puts "#EXTINF:#{duration},"
       io.puts segment
-    end
-
-    def self.codecs options={}
-      playlist = Playlist.new
-      playlist.codecs options
     end
 
     def codecs options={}
@@ -67,6 +70,10 @@ module M3u8
 
     def write output
       output.puts to_s
+    end
+
+    def master?
+      @@master
     end
 
     def to_s

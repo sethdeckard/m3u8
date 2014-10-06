@@ -151,4 +151,13 @@ describe M3u8::Playlist do
 
     expect(test_io.string).to eq output
   end
+
+  it 'should report if it is a master playlist' do
+    playlist = M3u8::Playlist.new
+    expect(playlist.master?).to be false
+
+    playlist.add_playlist '1', 'playlist_url', 6400, { :audio => 'mp3' }
+    expect(playlist.master?).to be true
+  end
+
 end
