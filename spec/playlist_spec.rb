@@ -2,7 +2,6 @@ require 'spec_helper'
 
 describe M3u8::Playlist do
   it 'should generate codecs string' do
-
     codecs = M3u8::Playlist.codecs
     expect(codecs).to be_nil
 
