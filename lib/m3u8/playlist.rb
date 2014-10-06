@@ -22,6 +22,7 @@ module M3u8
         :level => nil,
         :audio => nil
       }.merge options
+      
       resolution = resolution options[:width], options[:height]
       codecs = codecs({:audio => options[:audio], :profile => options[:profile], :level => options[:level]})
       io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}CODECS=""#{codecs}"",BANDWIDTH=#{bitrate}"
@@ -62,6 +63,10 @@ module M3u8
           return "#{video_codec},#{audio_codec}"
         end
       end
+    end
+
+    def write output
+      output.puts to_s
     end
 
     def to_s

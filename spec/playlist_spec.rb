@@ -138,4 +138,17 @@ describe M3u8::Playlist do
 
     expect(playlist.to_s).to eq output
   end
+
+  it 'should write playlist to io' do
+    test_io = StringIO.new
+    playlist = M3u8::Playlist.new
+    playlist.add_playlist '1', 'playlist_url', 6400, { :audio => 'mp3' }
+    playlist.write test_io
+
+    output = "#EXTM3U\n" +
+      "#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=""mp4a.40.34"",BANDWIDTH=6400\n" +
+      "playlist_url\n"
+
+    expect(test_io.string).to eq output
+  end
 end
