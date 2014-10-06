@@ -62,7 +62,7 @@ Or install it yourself as:
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
-* Can write playling to StringIO/File or to_s.
+* Can write playlist to StringIO/File or to_s.
 
 ## Contributing
 
