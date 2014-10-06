@@ -30,18 +30,19 @@ module M3u8
         :audio => nil
       }.merge options
 
-      validate true
+      validate_playlist_type true
       @@master = true
       @@empty = false
 
       resolution = resolution options[:width], options[:height]
       codecs = codecs({:audio => options[:audio], :profile => options[:profile], :level => options[:level]})
+      raise MissingCodecError.new("An audio or video codec should be provided.") if codecs.nil?
       io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}CODECS=""#{codecs}"",BANDWIDTH=#{bitrate}"
       io.puts playlist
     end
 
     def add_segment duration, segment
-      validate false
+      validate_playlist_type false
       @@master = false
       @@empty = false
 
@@ -93,7 +94,7 @@ module M3u8
 
     private
 
-    def validate master
+    def validate_playlist_type master
       unless @@empty
         if master and not master?
           raise PlaylistTypeError.new "Playlist is not a master playlist, playlist can not be added."
