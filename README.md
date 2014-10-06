@@ -1,3 +1,4 @@
+[![Gem Version](https://badge.fury.io/rb/m3u8.svg)](http://badge.fury.io/rb/m3u8)
 # m3u8
 
 m3u8 provides generation of m3u8 playlists used the [HTTP Live Streaming](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/streamingmediaguide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008332-CH1-SW1) (HLS) specification created by Apple. This is useful if you wish to generate m3u8 playlists on the fly in your web application (to integrate authentication, do something custom,  etc) while of course serving up the actual MPEG transport stream files (.ts) from a CDN. You could also use m3u8 to generate playlist files as part of an encoding pipeline.
@@ -19,6 +20,7 @@ Or install it yourself as:
     $ gem install m3u8
 
 ## Usage
+
 
 	require 'm3u8'
 	
