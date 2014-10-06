@@ -70,12 +70,13 @@ Or install it yourself as:
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
-* Can write playlist to StringIO/File or to_s.
+* Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 
 ## Contributing
 
 1. Fork it ( https://github.com/sethdeckard/m3u8/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+3. Run the specs, make sure they pass and that few features are covered
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create a new Pull Request
