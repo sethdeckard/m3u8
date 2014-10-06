@@ -89,7 +89,11 @@ module M3u8
 
 
     def to_s
-      io.string
+      if master?
+        io.string
+      else
+        io.string + "#EXT-X-ENDLIST"
+      end
     end
 
     private

@@ -106,7 +106,8 @@ describe M3u8::Playlist do
       "#EXT-X-ALLOW-CACHE:YES\n" +
       "#EXT-X-TARGETDURATION:10\n" +
       "#EXTINF:11.344644,\n" +
-      "1080-7mbps00000.ts\n"
+      "1080-7mbps00000.ts\n" +
+      "#EXT-X-ENDLIST"
 
     expect(playlist.to_s).to eq output
 
@@ -120,7 +121,8 @@ describe M3u8::Playlist do
       "#EXTINF:11.344644,\n" +
       "1080-7mbps00000.ts\n" +
       "#EXTINF:11.261233,\n" +
-      "1080-7mbps00001.ts\n"
+      "1080-7mbps00001.ts\n" +
+      "#EXT-X-ENDLIST"
 
     expect(playlist.to_s).to eq output
 
@@ -134,7 +136,8 @@ describe M3u8::Playlist do
       "#EXT-X-ALLOW-CACHE:NO\n" +
       "#EXT-X-TARGETDURATION:12\n" +
       "#EXTINF:11.344644,\n" +
-      "1080-7mbps00000.ts\n"
+      "1080-7mbps00000.ts\n" +
+      "#EXT-X-ENDLIST"
 
     expect(playlist.to_s).to eq output
   end
