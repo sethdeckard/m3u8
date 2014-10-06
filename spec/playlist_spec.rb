@@ -81,8 +81,8 @@ describe M3u8::Playlist do
     playlist.add_playlist '1', 'playlist_url', 6400, { :audio => 'mp3' }
 
     output = "#EXTM3U\n" +
-    "#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=""mp4a.40.34"",BANDWIDTH=6400\n" +
-    "playlist_url\n"
+      "#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=""mp4a.40.34"",BANDWIDTH=6400\n" +
+      "playlist_url\n"
 
     expect(playlist.to_s).to eq output
 
@@ -91,8 +91,37 @@ describe M3u8::Playlist do
     playlist.add_playlist '2', 'playlist_url', 50000, options
 
     output = "#EXTM3U\n" +
-    "#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,CODECS=""avc1.640028,mp4a.40.2"",BANDWIDTH=50000\n" +
-    "playlist_url\n"
+      "#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,CODECS=""avc1.640028,mp4a.40.2"",BANDWIDTH=50000\n" +
+      "playlist_url\n"
+
+    expect(playlist.to_s).to eq output
+  end
+
+  it 'should render playlist' do
+    playlist = M3u8::Playlist.new
+    playlist.add_segment 11.344644, "1080-7mbps00000.ts"
+
+    output = "#EXTM3U\n" +
+      "#EXT-X-VERSION:3\n" +
+      "#EXT-X-MEDIA-SEQUENCE:0\n" +
+      "#EXT-X-ALLOW-CACHE:YES\n" +
+      "#EXT-X-TARGETDURATION:10\n" +
+      "#EXTINF:11.344644,\n" +
+      "1080-7mbps00000.ts\n"
+
+    expect(playlist.to_s).to eq output
+
+    playlist.add_segment 11.261233, "1080-7mbps00001.ts"
+
+    output = "#EXTM3U\n" +
+      "#EXT-X-VERSION:3\n" +
+      "#EXT-X-MEDIA-SEQUENCE:0\n" +
+      "#EXT-X-ALLOW-CACHE:YES\n" +
+      "#EXT-X-TARGETDURATION:10\n" +
+      "#EXTINF:11.344644,\n" +
+      "1080-7mbps00000.ts\n" +
+      "#EXTINF:11.261233,\n" +
+      "1080-7mbps00001.ts\n"
 
     expect(playlist.to_s).to eq output
   end

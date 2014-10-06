@@ -1,14 +1,12 @@
 module M3u8
   class Playlist
-    attr_accessor :playlists, :io
+    attr_accessor :io, :header
 
     def initialize
       self.io = StringIO.open
       io.puts "#EXTM3U"
     end
 
-    #audio: AAC-LC, HE-AAC, MP3
-    #:width, :height, :profile, :level, :audio
     def add_playlist program_id, playlist, bitrate, options={}
       options = {
         :width => nil,
@@ -21,6 +19,16 @@ module M3u8
       codecs = codecs({:audio => options[:audio], :profile => options[:profile], :level => options[:level]})
       io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}CODECS=""#{codecs}"",BANDWIDTH=#{bitrate}"
       io.puts playlist
+    end
+
+    def add_segment duration, segment
+      unless header
+        write_header
+        self.header = true
+      end
+
+      io.puts "#EXTINF:#{duration},"
+      io.puts segment
     end
 
     def self.codecs options={}
@@ -54,6 +62,13 @@ module M3u8
     end
 
     private
+
+    def write_header
+      io.puts "#EXT-X-VERSION:3"
+      io.puts "#EXT-X-MEDIA-SEQUENCE:0"
+      io.puts "#EXT-X-ALLOW-CACHE:YES"
+      io.puts "#EXT-X-TARGETDURATION:10"
+    end
 
     def audio_codec audio
       unless audio.nil?
