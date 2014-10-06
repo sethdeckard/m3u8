@@ -160,4 +160,17 @@ describe M3u8::Playlist do
     expect(playlist.master?).to be true
   end
 
+  it 'should throw error if type of playlist is changed' do 
+    playlist = M3u8::Playlist.new
+    playlist.add_playlist '1', 'playlist_url', 6400, { :audio => 'mp3' }
+
+    message = "Playlist is a master playlist, segment can not be added."
+    expect { playlist.add_segment 11.344644, "1080-7mbps00000.ts" }.to raise_error(M3u8::PlaylistTypeError, message)
+
+    playlist = M3u8::Playlist.new
+    playlist.add_segment 11.344644, "1080-7mbps00000.ts"
+    message = "Playlist is not a master playlist, playlist can not be added."
+    expect { playlist.add_playlist '1', 'playlist_url', 6400 }.to raise_error(M3u8::PlaylistTypeError, message)
+  end
+
 end

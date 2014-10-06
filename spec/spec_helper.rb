@@ -1,4 +1,5 @@
 require 'm3u8/playlist'
+require 'm3u8/error'
 
 require 'coveralls'
 Coveralls.wear!

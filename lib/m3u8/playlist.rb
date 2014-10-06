@@ -10,7 +10,8 @@ module M3u8
         :target => 10
         }.merge options
 
-      @@master = false
+      @@empty = true
+      @@master = nil
       self.io = StringIO.open
       io.puts "#EXTM3U"
     end
@@ -29,7 +30,9 @@ module M3u8
         :audio => nil
       }.merge options
 
+      validate true
       @@master = true
+      @@empty = false
 
       resolution = resolution options[:width], options[:height]
       codecs = codecs({:audio => options[:audio], :profile => options[:profile], :level => options[:level]})
@@ -38,6 +41,10 @@ module M3u8
     end
 
     def add_segment duration, segment
+      validate false
+      @@master = false
+      @@empty = false
+
       unless header
         write_header
         self.header = true
@@ -73,14 +80,28 @@ module M3u8
     end
 
     def master?
-      @@master
+      if not @@empty
+        return @@master
+      end
+      false
     end
+
 
     def to_s
       io.string
     end
 
     private
+
+    def validate master
+      unless @@empty
+        if master and not master?
+          raise PlaylistTypeError.new "Playlist is not a master playlist, playlist can not be added."
+        elsif not master and master?
+          raise PlaylistTypeError.new "Playlist is a master playlist, segment can not be added."
+        end
+      end
+    end
 
     def write_header
       io.puts "#EXT-X-VERSION:#{options[:version]}"
