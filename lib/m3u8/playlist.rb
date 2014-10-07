@@ -1,6 +1,6 @@
 module M3u8
   class Playlist
-    attr_accessor :io, :header, :options
+    attr_accessor :io, :options
 
     def initialize options={}
       self.options = {
@@ -10,6 +10,7 @@ module M3u8
         :target => 10
         }.merge options
 
+      @@header = false
       @@empty = true
       @@master = nil
       self.io = StringIO.open
@@ -46,9 +47,9 @@ module M3u8
       @@master = false
       @@empty = false
 
-      unless header
+      unless @@header
         write_header
-        self.header = true
+        @@header = true
       end
 
       io.puts "#EXTINF:#{duration},"
