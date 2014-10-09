@@ -166,6 +166,15 @@ describe M3u8::Playlist do
       "playlist_url\n"
 
     expect(test_io.string).to eq output
+
+    test_io = StringIO.new
+    playlist.write test_io
+
+    output = "#EXTM3U\n" +
+      "#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=""mp4a.40.34"",BANDWIDTH=6400\n" +
+      "playlist_url\n"
+
+    expect(test_io.string).to eq output
   end
 
   it 'should report if it is a master playlist' do
