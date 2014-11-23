@@ -44,8 +44,8 @@ module M3u8
       codecs = codecs(audio: options[:audio], profile: options[:profile],
                       level: options[:level])
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
-      io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}" \
-        "CODECS=""#{codecs}"",BANDWIDTH=#{bitrate}"
+      io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}" +
+        %Q{CODECS="#{codecs}",BANDWIDTH=#{bitrate}}
       io.puts playlist
     end
 
