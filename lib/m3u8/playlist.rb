@@ -1,6 +1,7 @@
 module M3u8
   class Playlist
-    attr_accessor :io, :options, :header, :empty, :master
+    attr_accessor :io, :header, :empty, :master, :items, :version, :cache,
+                  :target, :sequence
     MISSING_CODEC_MESSAGE = 'An audio or video codec should be provided.'
     NON_MASTER_ERROR_MESSAGE = 'Playlist is not a master playlist, playlist' \
       ' can not be added.'
@@ -8,18 +9,28 @@ module M3u8
       'be added.'
 
     def initialize(options = {})
-      self.options = {
+      assign_options options
+
+      self.header = false
+      self.empty = true
+      self.master = nil
+      self.items = []
+      self.io = StringIO.open
+      io.puts '#EXTM3U'
+    end
+
+    def assign_options(options)
+      options = {
         version: 3,
         sequence: 0,
         cache: true,
         target: 10
       }.merge options
 
-      self.header = false
-      self.empty = true
-      self.master = nil
-      self.io = StringIO.open
-      io.puts '#EXTM3U'
+      self.version = options[:version]
+      self.sequence = options[:sequence]
+      self.cache = options[:cache]
+      self.target = options[:target]
     end
 
     def self.codecs(options = {})
@@ -45,7 +56,7 @@ module M3u8
                       level: options[:level])
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
       io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}" +
-        %Q{CODECS="#{codecs}",BANDWIDTH=#{bitrate}}
+        %(CODECS="#{codecs}",BANDWIDTH=#{bitrate})
       io.puts playlist
     end
 
@@ -113,14 +124,14 @@ module M3u8
     end
 
     def write_header
-      io.puts "#EXT-X-VERSION:#{options[:version]}"
-      io.puts "#EXT-X-MEDIA-SEQUENCE:#{options[:sequence]}"
+      io.puts "#EXT-X-VERSION:#{version}"
+      io.puts "#EXT-X-MEDIA-SEQUENCE:#{sequence}"
       io.puts "#EXT-X-ALLOW-CACHE:#{cache_string}"
-      io.puts "#EXT-X-TARGETDURATION:#{options[:target]}"
+      io.puts "#EXT-X-TARGETDURATION:#{target}"
     end
 
     def cache_string
-      options[:cache] ? 'YES' : 'NO'
+      cache ? 'YES' : 'NO'
     end
 
     def audio_codec(audio)

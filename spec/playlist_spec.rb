@@ -210,4 +210,12 @@ describe M3u8::Playlist do
       .to raise_error(M3u8::MissingCodecError, message)
   end
 
+  it 'should expose options as attributes' do
+    options = { version: 1, cache: false, target: 12, sequence: 1 }
+    playlist = M3u8::Playlist.new options
+    expect(playlist.version).to be 1
+    expect(playlist.cache).to be false
+    expect(playlist.target).to be 12
+    expect(playlist.sequence).to be 1
+  end
 end
