@@ -94,7 +94,7 @@ module M3u8
       self.open = true
 
       self.item = M3u8::SegmentItem.new
-      item.time = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
+      item.duration = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
         .to_f
     end
 

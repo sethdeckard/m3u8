@@ -60,7 +60,7 @@ module M3u8
       validate_playlist_type false
       self.master = false
 
-      params = { time: duration, segment: segment }
+      params = { duration: duration, segment: segment }
       item = SegmentItem.new params
       items.push item
     end

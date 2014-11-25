@@ -1,6 +1,6 @@
 module M3u8
   class SegmentItem
-    attr_accessor :time, :segment
+    attr_accessor :duration, :segment
 
     def initialize(params = {})
       params.each do |key, value|
@@ -9,7 +9,7 @@ module M3u8
     end
 
     def to_s
-      "#EXTINF:#{time},\n#{segment}"
+      "#EXTINF:#{duration},\n#{segment}"
     end
   end
 end

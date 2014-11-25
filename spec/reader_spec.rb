@@ -33,7 +33,7 @@ describe M3u8::Reader do
 
     item = playlist.items[0]
     expect(item).to be_a(M3u8::SegmentItem)
-    expect(item.time).to eq 11.344644
+    expect(item.duration).to eq 11.344644
 
     expect(playlist.items.size).to eq 138
   end
