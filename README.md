@@ -31,7 +31,7 @@ Or install it yourself as:
 	
 	#create a master playlist and add child playlists for adaptive bitrate streaming:
 	playlist = M3u8::Playlist.new
-	options = { :width => 1920, :height => 1080, :profile => 'high', :level => 4.1, :audio => 'aac-lc'}
+	options = { width: 1920, height: 1080, profile: 'high', level: 4.1, audio: 'aac-lc'}
     playlist.add_playlist '2', 'http://playlist_url_or_path_file', 50000, options
     
     #create a standard playlist and add TS segments:
@@ -43,12 +43,12 @@ Or install it yourself as:
     playlist.items.push item
     
     #just get the codec string for custom use
-    options = { :profile => 'baseline', :level => 3.0, :audio => 'aac-lc' }
+    options = { profile: 'baseline', level: 3.0, audio: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
      => "avc1.66.30,mp4a.40.2"
 	
 	#specify options for playlist, these are ignored if playlist becomes a master playlist (child playlist added):
-	options = { :version => 1, :cache => false, :target => 12, :sequence => 1}
+	options = { version: 1, cache: false, target: 12, sequence: 1 }
     playlist = M3u8::Playlist.new options
     
     #You can pass an IO object to the write method
