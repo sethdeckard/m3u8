@@ -1,6 +1,6 @@
 module M3u8
   class Reader
-    attr_accessor :playlist, :item, :open
+    attr_accessor :playlist, :item, :open, :master
     PLAYLIST_START = '#EXTM3U'
     VERSION_START = '#EXT-X-VERSION:'
     SEQUENCE_START = '#EXT-X-MEDIA-SEQUENCE:'
@@ -68,7 +68,7 @@ module M3u8
     end
 
     def parse_stream(line)
-      playlist.master = true
+      self.master = true
       self.open = true
 
       self.item = M3u8::PlaylistItem.new
@@ -90,7 +90,7 @@ module M3u8
     end
 
     def parse_segment(line)
-      playlist.master = false
+      self.master = false
       self.open = true
 
       self.item = M3u8::SegmentItem.new
@@ -105,7 +105,7 @@ module M3u8
 
     def parse_value(line)
       value = line.gsub "\n", ''
-      if playlist.master?
+      if master
         item.playlist = value
       else
         item.segment = value

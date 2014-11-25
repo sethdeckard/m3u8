@@ -1,16 +1,15 @@
 module M3u8
   class Playlist
-    attr_accessor :master, :items, :version, :cache, :target, :sequence
+    attr_accessor :items, :version, :cache, :target, :sequence
     MISSING_CODEC_MESSAGE = 'An audio or video codec should be provided.'
     NON_MASTER_ERROR_MESSAGE = 'Playlist is not a master playlist, playlist' \
       ' can not be added.'
     MASTER_ERROR_MESSAGE = 'Playlist is a master playlist, segment can not ' \
       'be added.'
+    MIXED_TYPE_ERROR_MESSAGE = 'Playlist contains mixed types of items'
 
     def initialize(options = {})
       assign_options options
-
-      self.master = nil
       self.items = []
     end
 
@@ -43,7 +42,6 @@ module M3u8
       }.merge options
 
       validate_playlist_type true
-      self.master = true
 
       codecs = codecs(audio: options[:audio], profile: options[:profile],
                       level: options[:level])
@@ -58,7 +56,6 @@ module M3u8
 
     def add_segment(duration, segment)
       validate_playlist_type false
-      self.master = false
 
       params = { duration: duration, segment: segment }
       item = SegmentItem.new params
@@ -101,8 +98,11 @@ module M3u8
     end
 
     def master?
-      return false if master.nil?
-      master
+      playlists = items.select { |item| item.is_a?(PlaylistItem) }.size
+      segments = items.select { |item| item.is_a?(SegmentItem) }.size
+      return false if playlists == 0 && segments == 0
+
+      playlists > 0
     end
 
     def to_s
@@ -123,7 +123,7 @@ module M3u8
 
     def validate
       return if valid?
-      fail PlaylistTypeError, 'Playlist contains mixed types of items'
+      fail PlaylistTypeError, MIXED_TYPE_ERROR_MESSAGE
     end
 
     def validate_playlist_type(master)
