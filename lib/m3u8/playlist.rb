@@ -1,7 +1,6 @@
 module M3u8
   class Playlist
-    attr_accessor :io, :header, :empty, :master, :items, :version, :cache,
-                  :target, :sequence
+    attr_accessor :master, :items, :version, :cache, :target, :sequence
     MISSING_CODEC_MESSAGE = 'An audio or video codec should be provided.'
     NON_MASTER_ERROR_MESSAGE = 'Playlist is not a master playlist, playlist' \
       ' can not be added.'
@@ -11,12 +10,8 @@ module M3u8
     def initialize(options = {})
       assign_options options
 
-      self.header = false
-      self.empty = true
       self.master = nil
       self.items = []
-      self.io = StringIO.open
-      io.puts '#EXTM3U'
     end
 
     def assign_options(options)
@@ -49,29 +44,25 @@ module M3u8
 
       validate_playlist_type true
       self.master = true
-      self.empty = false
 
-      resolution = resolution options[:width], options[:height]
       codecs = codecs(audio: options[:audio], profile: options[:profile],
                       level: options[:level])
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
-      io.puts "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution}" +
-        %(CODECS="#{codecs}",BANDWIDTH=#{bitrate})
-      io.puts playlist
+
+      params = { program_id: program_id, playlist: playlist, bitrate: bitrate,
+                 width: options[:width], height: options[:height],
+                 codecs: codecs }
+      item = PlaylistItem.new params
+      items.push item
     end
 
     def add_segment(duration, segment)
       validate_playlist_type false
       self.master = false
-      self.empty = false
 
-      unless header
-        write_header
-        self.header = true
-      end
-
-      io.puts "#EXTINF:#{duration},"
-      io.puts segment
+      params = { time: duration, segment: segment }
+      item = SegmentItem.new params
+      items.push item
     end
 
     def codecs(options = {})
@@ -96,26 +87,32 @@ module M3u8
     end
 
     def write(output)
-      output.puts to_s
+      output.puts '#EXTM3U'
+      write_header(output) unless master?
+
+      items.each do |item|
+        output.puts item.to_s
+      end
+
+      return if master?
+      output.puts '#EXT-X-ENDLIST'
     end
 
     def master?
-      return false if empty
+      return false if master.nil?
       master
     end
 
     def to_s
-      if master?
-        io.string
-      else
-        "#{io.string}#EXT-X-ENDLIST"
-      end
+      output = StringIO.open
+      write output
+      output.string
     end
 
     private
 
     def validate_playlist_type(master)
-      return if empty
+      return if items.size == 0
       if master && !master?
         fail PlaylistTypeError, NON_MASTER_ERROR_MESSAGE
       elsif !master && master?
@@ -123,11 +120,11 @@ module M3u8
       end
     end
 
-    def write_header
-      io.puts "#EXT-X-VERSION:#{version}"
-      io.puts "#EXT-X-MEDIA-SEQUENCE:#{sequence}"
-      io.puts "#EXT-X-ALLOW-CACHE:#{cache_string}"
-      io.puts "#EXT-X-TARGETDURATION:#{target}"
+    def write_header(output)
+      output.puts "#EXT-X-VERSION:#{version}"
+      output.puts "#EXT-X-MEDIA-SEQUENCE:#{sequence}"
+      output.puts "#EXT-X-ALLOW-CACHE:#{cache_string}"
+      output.puts "#EXT-X-TARGETDURATION:#{target}"
     end
 
     def cache_string
@@ -153,11 +150,6 @@ module M3u8
       return 'avc1.64001f' if profile == 'high' && level == 3.1
       return 'avc1.640028' if profile == 'high' &&
                               (level == 4.0 || level == 4.1)
-    end
-
-    def resolution(width, height)
-      return if width.nil?
-      "RESOLUTION=#{width}x#{height},"
     end
   end
 end

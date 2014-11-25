@@ -20,7 +20,6 @@ module M3u8
     def read(input)
       input.each_line do |line|
         parse_line line
-        playlist.empty = false
       end
       playlist
     end

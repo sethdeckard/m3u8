@@ -10,7 +10,7 @@ module M3u8
 
     def resolution
       return if width.nil?
-      "#{width}x#{height}"  
+      "#{width}x#{height}"
     end
 
     def to_s
@@ -18,7 +18,7 @@ module M3u8
         %(CODECS="#{codecs}",BANDWIDTH=#{bitrate}\n#{playlist})
     end
 
-    private 
+    private
 
     def resolution_format
       return if resolution.nil?
