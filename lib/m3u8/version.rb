@@ -1,3 +1,3 @@
 module M3u8
-  VERSION = "0.1.3"
+  VERSION = '0.2.0'
 end
