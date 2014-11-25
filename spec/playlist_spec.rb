@@ -241,7 +241,6 @@ describe M3u8::Playlist do
     item = M3u8::SegmentItem.new(hash)
     playlist.items.push item
 
-    io = StringIO.new
     expect(playlist.valid?).to be false
   end
 

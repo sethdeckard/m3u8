@@ -84,7 +84,7 @@ module M3u8
         when CODECS
           item.codecs = value
         when BANDWIDTH
-          item.bitrate = value
+          item.bitrate = value.to_i
         end
       end
     end
@@ -99,8 +99,8 @@ module M3u8
     end
 
     def parse_resolution(resolution)
-      item.width = resolution.split('x')[0]
-      item.height = resolution.split('x')[1]
+      item.width = resolution.split('x')[0].to_i
+      item.height = resolution.split('x')[1].to_i
     end
 
     def parse_value(line)
