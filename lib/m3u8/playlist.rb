@@ -98,11 +98,8 @@ module M3u8
     end
 
     def master?
-      playlists = items.select { |item| item.is_a?(PlaylistItem) }.size
-      segments = items.select { |item| item.is_a?(SegmentItem) }.size
-      return false if playlists == 0 && segments == 0
-
-      playlists > 0
+      return false if playlist_size == 0 && segment_size == 0
+      playlist_size > 0
     end
 
     def to_s
@@ -112,10 +109,7 @@ module M3u8
     end
 
     def valid?
-      playlists = items.select { |item| item.is_a?(PlaylistItem) }.size
-      segments = items.select { |item| item.is_a?(SegmentItem) }.size
-
-      return false if playlists > 0 && segments > 0
+      return false if playlist_size > 0 && segment_size > 0
       true
     end
 
@@ -133,6 +127,14 @@ module M3u8
       elsif !master && master?
         fail PlaylistTypeError, MASTER_ERROR_MESSAGE
       end
+    end
+
+    def playlist_size
+      items.select { |item| item.is_a?(PlaylistItem) }.size
+    end
+
+    def segment_size
+      items.select { |item| item.is_a?(SegmentItem) }.size
     end
 
     def write_header(output)
