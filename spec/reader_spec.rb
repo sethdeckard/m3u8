@@ -13,9 +13,12 @@ describe M3u8::Reader do
     expect(item.program_id).to eq('1')
     expect(item.resolution).to eq('1920x1080')
     expect(item.codecs).to eq('avc1.640028,mp4a.40.2')
-    expect(item.bandwidth).to eq('5042000')
+    expect(item.bitrate).to eq('5042000')
 
     expect(playlist.items.size).to eq 6
+
+    item = playlist.items.last
+    expect(item.resolution).to be nil
   end
 
   it 'should parse segment playlist' do

@@ -81,11 +81,11 @@ module M3u8
         when PROGRAM_ID
           item.program_id = value
         when RESOLUTION
-          item.resolution = value
+          parse_resolution value
         when CODECS
           item.codecs = value
         when BANDWIDTH
-          item.bandwidth = value
+          item.bitrate = value
         end
       end
     end
@@ -97,6 +97,11 @@ module M3u8
       self.item = M3u8::SegmentItem.new
       item.time = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
         .to_f
+    end
+
+    def parse_resolution(resolution)
+      item.width = resolution.split('x')[0]
+      item.height = resolution.split('x')[1]
     end
 
     def parse_value(line)
