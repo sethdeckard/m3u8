@@ -87,6 +87,8 @@ module M3u8
     end
 
     def write(output)
+      validate
+
       output.puts '#EXTM3U'
       write_header(output) unless master?
 
@@ -109,7 +111,20 @@ module M3u8
       output.string
     end
 
+    def valid?
+      playlists = items.select { |item| item.is_a?(PlaylistItem) }.size
+      segments = items.select { |item| item.is_a?(SegmentItem) }.size
+
+      return false if playlists > 0 && segments > 0
+      true
+    end
+
     private
+
+    def validate
+      return if valid?
+      fail PlaylistTypeError, 'Playlist contains mixed types of items'
+    end
 
     def validate_playlist_type(master)
       return if items.size == 0

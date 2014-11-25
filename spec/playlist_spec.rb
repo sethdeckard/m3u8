@@ -203,6 +203,48 @@ describe M3u8::Playlist do
       .to raise_error(M3u8::PlaylistTypeError, message)
   end
 
+  it 'should raise error on write if item types are mixed' do
+    playlist = M3u8::Playlist.new
+
+    hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
+             bitrate: 540, playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new(hash)
+    playlist.items.push item
+
+    hash = { duration: 10.991, segment: 'test.ts' }
+    item = M3u8::SegmentItem.new(hash)
+    playlist.items.push item
+
+    message = 'Playlist contains mixed types of items'
+    io = StringIO.new
+    expect { playlist.write io }
+      .to raise_error(M3u8::PlaylistTypeError, message)
+  end
+
+  it 'should return valid status' do
+    playlist = M3u8::Playlist.new
+    expect(playlist.valid?).to be true
+
+    hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
+             bitrate: 540, playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new(hash)
+    playlist.items.push item
+    expect(playlist.valid?).to be true
+
+    hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
+             bitrate: 540, playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new(hash)
+    playlist.items.push item
+    expect(playlist.valid?).to be true
+
+    hash = { duration: 10.991, segment: 'test.ts' }
+    item = M3u8::SegmentItem.new(hash)
+    playlist.items.push item
+
+    io = StringIO.new
+    expect(playlist.valid?).to be false
+  end
+
   it 'should raise error if codecs are missing' do
     playlist = M3u8::Playlist.new
     message = 'An audio or video codec should be provided.'
