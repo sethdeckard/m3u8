@@ -2,6 +2,7 @@ module M3u8
   class PlaylistItem
     attr_accessor :program_id, :width, :height, :codecs, :bitrate, :playlist,
                   :audio, :level, :profile
+    MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
       params.each do |key, value|
@@ -32,11 +33,16 @@ module M3u8
     end
 
     def to_s
+      validate
       "#EXT-X-STREAM-INF:PROGRAM-ID=#{program_id},#{resolution_format}" +
         %(CODECS="#{codecs}",BANDWIDTH=#{bitrate}\n#{playlist})
     end
 
     private
+
+    def validate
+      fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
+    end
 
     def resolution_format
       return if resolution.nil?

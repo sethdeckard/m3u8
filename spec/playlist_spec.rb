@@ -176,13 +176,6 @@ describe M3u8::Playlist do
     expect(playlist.valid?).to be false
   end
 
-  it 'should raise error if codecs are missing' do
-    playlist = M3u8::Playlist.new
-    message = 'An audio or video codec should be provided.'
-    expect { playlist.add_playlist '1', 'playlist_url', 6400 }
-      .to raise_error(M3u8::MissingCodecError, message)
-  end
-
   it 'should expose options as attributes' do
     options = { version: 1, cache: false, target: 12, sequence: 1 }
     playlist = M3u8::Playlist.new options

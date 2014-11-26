@@ -1,7 +1,6 @@
 module M3u8
   class Playlist
     attr_accessor :items, :version, :cache, :target, :sequence
-    MISSING_CODEC_MESSAGE = 'An audio or video codec should be provided.'
     NON_MASTER_ERROR_MESSAGE = 'Playlist is not a master playlist, playlist' \
       ' can not be added.'
     MASTER_ERROR_MESSAGE = 'Playlist is a master playlist, segment can not ' \
@@ -21,14 +20,10 @@ module M3u8
     def add_playlist(program_id, playlist, bitrate, options = {})
       validate_playlist_type true
 
-      codecs = Playlist.codecs(audio: options[:audio],
-                               profile: options[:profile],
-                               level: options[:level])
-      fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
-
       params = { program_id: program_id, playlist: playlist, bitrate: bitrate,
                  width: options[:width], height: options[:height],
-                 codecs: codecs }
+                 audio: options[:audio], profile: options[:profile],
+                 level: options[:level] }
       item = PlaylistItem.new params
       items.push item
     end

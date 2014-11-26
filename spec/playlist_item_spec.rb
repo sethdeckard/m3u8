@@ -35,6 +35,9 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new
     expect(item.codecs).to be_nil
 
+    item = M3u8::PlaylistItem.new codecs: 'test'
+    expect(item.codecs).to eq 'test'
+
     item = M3u8::PlaylistItem.new audio: 'aac-lc'
     expect(item.codecs).to eq 'mp4a.40.2'
 
@@ -103,5 +106,12 @@ describe M3u8::PlaylistItem do
     options = { profile: 'high', level: 4.1 }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.640028'
+  end
+
+  it 'should raise error if codecs are missing' do
+    params = { program_id: 1, bitrate: 540, playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new params
+    message = 'Audio or video codec info should be provided.'
+    expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)
   end
 end
