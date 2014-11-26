@@ -31,22 +31,28 @@ Or install it yourself as:
 	
 	#create a master playlist and add child playlists for adaptive bitrate streaming:
 	playlist = M3u8::Playlist.new
-	options = { width: 1920, height: 1080, profile: 'high', level: 4.1, audio: 'aac-lc'}
-    playlist.add_playlist '2', 'http://playlist_url_or_path_file', 50000, options
+    #create a new playlist item with options
+    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
+                profile: 'high', level: 4.1, audio: 'aac-lc', bitrate: 540, 
+                playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
+
+    #alternatively you can set codecs rather than having it generated automatically:
+    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
+                codecs: 'avc1.66.30,mp4a.40.2', bitrate: 540, playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new options
     
-    #create a standard playlist and add TS segments:
+    #create a standard playlist and add MPEG-TS segments:
     playlist = M3u8::Playlist.new
-    playlist.add_segment 11.344644, "1080-7mbps00000.ts"
-    
-    #you can also add PlaylistItem or SegmentItem instances directly to the array of items
-    # in the playlist (new in v.2.0):
-    item = SegmentItem.new(duration: 11, segment: 'test.ts')
+    #create a new segment item with options
+    item = M3u8::SegmentItem.new duration: 11, segment: 'test.ts'
     playlist.items.push item
     
     #just get the codec string for custom use
     options = { profile: 'baseline', level: 3.0, audio: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
-     => "avc1.66.30,mp4a.40.2"
+    # => "avc1.66.30,mp4a.40.2"
 	
 	#specify options for playlist, these are ignored if playlist becomes a master playlist
     # (child playlist added):
@@ -78,15 +84,23 @@ Or install it yourself as:
     reader = M3u8::Reader.new
     playlist = reader.read file
     playlist.master?
-     => true
+    # => true
 
     #acess items in playlist:
     playlist.items
 
     playlist.items.first
-      => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
-      @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
-      @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
+    #  => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
+    #  @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
+    #  @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
+
+    #create a new playlist item with options
+    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
+                profile: 'high', level: 4.1, audio: 'aac-lc', bitrate: 540, 
+                playlist: 'test.url' }
+    item = M3u8::PlaylistItem.new options
+    #add it to the top of the playlist
+    playlist.items.insert 0, item
 	
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
