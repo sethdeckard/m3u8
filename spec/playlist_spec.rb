@@ -8,19 +8,23 @@ describe M3u8::Playlist do
   end
 
   it 'should render master playlist' do
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
+    playlist.items.push item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n"
-
     expect(playlist.to_s).to eq output
 
-    playlist = M3u8::Playlist.new
-    options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+                width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio: 'aac-lc' }
-    playlist.add_playlist '2', 'playlist_url', 50_000, options
+    item = M3u8::PlaylistItem.new options
+    playlist = M3u8::Playlist.new
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
              '#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,' +
@@ -30,23 +34,29 @@ describe M3u8::Playlist do
     expect(playlist.to_s).to eq output
 
     playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
-    options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
+    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+                width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio: 'aac-lc' }
-    playlist.add_playlist '2', 'playlist_url', 50_000, options
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n#EXT-X-STREAM-INF:PROGRAM-ID=2," +
              %(RESOLUTION=1920x1080,CODECS="avc1.640028,mp4a.40.2") +
              ",BANDWIDTH=50000\nplaylist_url\n"
-
     expect(playlist.to_s).to eq output
   end
 
   it 'should render playlist' do
+    options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
+    item =  M3u8::SegmentItem.new options
     playlist = M3u8::Playlist.new
-    playlist.add_segment 11.344644, '1080-7mbps00000.ts'
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:3\n" \
@@ -56,10 +66,11 @@ describe M3u8::Playlist do
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
       "#EXT-X-ENDLIST\n"
-
     expect(playlist.to_s).to eq output
 
-    playlist.add_segment 11.261233, '1080-7mbps00001.ts'
+    options = { duration: 11.261233, segment: '1080-7mbps00001.ts' }
+    item =  M3u8::SegmentItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:3\n" \
@@ -71,12 +82,13 @@ describe M3u8::Playlist do
       "#EXTINF:11.261233,\n" \
       "1080-7mbps00001.ts\n" \
       "#EXT-X-ENDLIST\n"
-
     expect(playlist.to_s).to eq output
 
     options = { version: 1, cache: false, target: 12, sequence: 1 }
     playlist = M3u8::Playlist.new options
-    playlist.add_segment 11.344644, '1080-7mbps00000.ts'
+    options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
+    item =  M3u8::SegmentItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:1\n" \
@@ -93,7 +105,10 @@ describe M3u8::Playlist do
   it 'should write playlist to io' do
     test_io = StringIO.new
     playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
     playlist.write test_io
 
     output = "#EXTM3U\n" +
@@ -115,24 +130,12 @@ describe M3u8::Playlist do
   it 'should report if it is a master playlist' do
     playlist = M3u8::Playlist.new
     expect(playlist.master?).to be false
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
 
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
     expect(playlist.master?).to be true
-  end
-
-  it 'should raise error if type of playlist is changed' do
-    playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
-
-    message = 'Playlist is a master playlist, segment can not be added.'
-    expect { playlist.add_segment 11.344644, '1080-7mbps00000.ts' }
-      .to raise_error(M3u8::PlaylistTypeError, message)
-
-    playlist = M3u8::Playlist.new
-    playlist.add_segment 11.344644, '1080-7mbps00000.ts'
-    message = 'Playlist is not a master playlist, playlist can not be added.'
-    expect { playlist.add_playlist '1', 'playlist_url', 6400 }
-      .to raise_error(M3u8::PlaylistTypeError, message)
   end
 
   it 'should raise error on write if item types are mixed' do

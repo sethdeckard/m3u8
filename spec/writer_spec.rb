@@ -2,8 +2,11 @@ require 'spec_helper'
 
 describe M3u8::Writer do
   it 'should render master playlist' do
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
+    playlist.items.push item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
@@ -14,10 +17,12 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    playlist = M3u8::Playlist.new
-    options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+                width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio: 'aac-lc' }
-    playlist.add_playlist '2', 'playlist_url', 50_000, options
+    item = M3u8::PlaylistItem.new options
+    playlist = M3u8::Playlist.new
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
              '#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,' +
@@ -30,10 +35,15 @@ describe M3u8::Writer do
     expect(io.string).to eq output
 
     playlist = M3u8::Playlist.new
-    playlist.add_playlist '1', 'playlist_url', 6400, audio: 'mp3'
-    options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
+    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+                width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio: 'aac-lc' }
-    playlist.add_playlist '2', 'playlist_url', 50_000, options
+    item = M3u8::PlaylistItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
@@ -48,8 +58,10 @@ describe M3u8::Writer do
   end
 
   it 'should render playlist' do
+    options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
+    item =  M3u8::SegmentItem.new options
     playlist = M3u8::Playlist.new
-    playlist.add_segment 11.344644, '1080-7mbps00000.ts'
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:3\n" \
@@ -59,13 +71,14 @@ describe M3u8::Writer do
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
       "#EXT-X-ENDLIST\n"
-
     io = StringIO.open
     writer = M3u8::Writer.new io
     writer.write playlist
     expect(io.string).to eq output
 
-    playlist.add_segment 11.261233, '1080-7mbps00001.ts'
+    options = { duration: 11.261233, segment: '1080-7mbps00001.ts' }
+    item =  M3u8::SegmentItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:3\n" \
@@ -77,7 +90,6 @@ describe M3u8::Writer do
       "#EXTINF:11.261233,\n" \
       "1080-7mbps00001.ts\n" \
       "#EXT-X-ENDLIST\n"
-
     io = StringIO.open
     writer = M3u8::Writer.new io
     writer.write playlist
@@ -85,7 +97,9 @@ describe M3u8::Writer do
 
     options = { version: 1, cache: false, target: 12, sequence: 1 }
     playlist = M3u8::Playlist.new options
-    playlist.add_segment 11.344644, '1080-7mbps00000.ts'
+    options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
+    item =  M3u8::SegmentItem.new options
+    playlist.items.push item
 
     output = "#EXTM3U\n" \
       "#EXT-X-VERSION:1\n" \
@@ -95,7 +109,6 @@ describe M3u8::Writer do
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
       "#EXT-X-ENDLIST\n"
-
     io = StringIO.open
     writer = M3u8::Writer.new io
     writer.write playlist
