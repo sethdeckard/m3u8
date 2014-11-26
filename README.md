@@ -66,6 +66,8 @@ Or install it yourself as:
    
   	#You can also access the playlist as a string
   	playlist.to_s
+
+    #There is a M3u8::Writer class if you want more control over the write process
     
     #values for :audio (Codec name)
     #aac-lc, he-aac, mp3
@@ -81,8 +83,7 @@ Or install it yourself as:
 ## Parsing Usage (new in v.2.0)
 
     file = File.open 'spec/fixtures/master.m3u8'
-    reader = M3u8::Reader.new
-    playlist = reader.read file
+    playlist = M3u8::Playlist.read file
     playlist.master?
     # => true
 
@@ -101,6 +102,8 @@ Or install it yourself as:
     item = M3u8::PlaylistItem.new options
     #add it to the top of the playlist
     playlist.items.insert 0, item
+
+    #There is a M3u8::Reader class if you want more control over parsing
 	
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
