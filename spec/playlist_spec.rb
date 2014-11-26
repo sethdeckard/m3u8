@@ -147,7 +147,7 @@ describe M3u8::Playlist do
     item = M3u8::SegmentItem.new(hash)
     playlist.items.push item
 
-    message = 'Playlist contains mixed types of items'
+    message = 'Playlist is invalid.'
     io = StringIO.new
     expect { playlist.write io }
       .to raise_error(M3u8::PlaylistTypeError, message)

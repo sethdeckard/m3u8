@@ -5,7 +5,6 @@ module M3u8
       ' can not be added.'
     MASTER_ERROR_MESSAGE = 'Playlist is a master playlist, segment can not ' \
       'be added.'
-    MIXED_TYPE_ERROR_MESSAGE = 'Playlist contains mixed types of items'
 
     def initialize(options = {})
       assign_options options
@@ -37,17 +36,8 @@ module M3u8
     end
 
     def write(output)
-      validate
-
-      output.puts '#EXTM3U'
-      write_header(output) unless master?
-
-      items.each do |item|
-        output.puts item.to_s
-      end
-
-      return if master?
-      output.puts '#EXT-X-ENDLIST'
+      writer = Writer.new output
+      writer.write self
     end
 
     def master?
@@ -82,11 +72,6 @@ module M3u8
       self.target = options[:target]
     end
 
-    def validate
-      return if valid?
-      fail PlaylistTypeError, MIXED_TYPE_ERROR_MESSAGE
-    end
-
     def validate_playlist_type(master)
       return if items.size == 0
       if master && !master?
@@ -102,17 +87,6 @@ module M3u8
 
     def segment_size
       items.select { |item| item.is_a?(SegmentItem) }.size
-    end
-
-    def write_header(output)
-      output.puts "#EXT-X-VERSION:#{version}"
-      output.puts "#EXT-X-MEDIA-SEQUENCE:#{sequence}"
-      output.puts "#EXT-X-ALLOW-CACHE:#{cache_string}"
-      output.puts "#EXT-X-TARGETDURATION:#{target}"
-    end
-
-    def cache_string
-      cache ? 'YES' : 'NO'
     end
   end
 end
