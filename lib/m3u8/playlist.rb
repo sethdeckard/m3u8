@@ -12,6 +12,11 @@ module M3u8
       item.codecs
     end
 
+    def self.read(input)
+      reader = Reader.new
+      reader.read input
+    end
+
     def write(output)
       writer = Writer.new output
       writer.write self

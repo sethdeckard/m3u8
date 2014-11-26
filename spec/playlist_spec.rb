@@ -187,4 +187,11 @@ describe M3u8::Playlist do
     expect(playlist.target).to be 12
     expect(playlist.sequence).to be 1
   end
+
+  it 'should allow reading of playlists' do
+    file = File.open 'spec/fixtures/master.m3u8'
+    playlist = M3u8::Playlist.read file
+    expect(playlist.master?).to be true
+    expect(playlist.items.size).to eq 6
+  end
 end
