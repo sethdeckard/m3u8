@@ -37,6 +37,9 @@ describe M3u8::Reader do
     expect(item).to be_a(M3u8::SegmentItem)
     expect(item.duration).to eq 11.344644
 
-    expect(playlist.items.size).to eq 138
+    item = playlist.items[1]
+    expect(item).to be_a(M3u8::SegmentTagDiscontinuity)
+
+    expect(playlist.items.size).to eq 139
   end
 end

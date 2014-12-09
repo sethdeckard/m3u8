@@ -8,6 +8,7 @@ module M3u8
     TARGET_START = '#EXT-X-TARGETDURATION:'
     STREAM_START = '#EXT-X-STREAM-INF:'
     SEGMENT_START = '#EXTINF:'
+    SEGMENT_DISCONTINUITY_TAG_START = '#EXT-X-DISCONTINUITY'
     PROGRAM_ID = 'PROGRAM-ID'
     RESOLUTION = 'RESOLUTION'
     CODECS = 'CODECS'
@@ -41,6 +42,8 @@ module M3u8
         parse_stream line
       elsif line.start_with? SEGMENT_START
         parse_segment line
+      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
+        parse_segment_discontinuity_tag line
       elsif !item.nil? && open
         parse_value(line)
       end
@@ -96,6 +99,14 @@ module M3u8
       self.item = M3u8::SegmentItem.new
       item.duration = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
         .to_f
+    end
+
+    def parse_segment_discontinuity_tag(line)
+      self.master = false
+      self.open = false
+
+      self.item = M3u8::SegmentTagDiscontinuity.new
+      playlist.items.push item
     end
 
     def parse_resolution(resolution)
