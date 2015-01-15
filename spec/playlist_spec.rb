@@ -194,4 +194,20 @@ describe M3u8::Playlist do
     expect(playlist.master?).to be true
     expect(playlist.items.size).to eq 6
   end
+
+  it 'should return the total duration of a playlist' do
+    playlist = M3u8::Playlist.new
+
+
+    item = M3u8::SegmentItem.new({ duration: 10.991, segment: 'test_01.ts' })
+    playlist.items.push item
+    item = M3u8::SegmentItem.new({ duration: 9.891, segment: 'test_02.ts' })
+    playlist.items.push item
+    item = M3u8::SegmentItem.new({ duration: 10.556, segment: 'test_03.ts' })
+    playlist.items.push item
+    item = M3u8::SegmentItem.new({ duration: 8.790, segment: 'test_04.ts' })
+    playlist.items.push item
+
+    expect(playlist.duration.round(3)).to eq 40.228
+  end
 end
