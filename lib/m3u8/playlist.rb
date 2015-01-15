@@ -41,9 +41,7 @@ module M3u8
     def duration
       duration = 0.0
       items.each do |item|
-        if item.is_a?(M3u8::SegmentItem)
-          duration += item.duration
-        end
+        duration += item.duration if item.is_a?(M3u8::SegmentItem)
       end
       duration
     end
