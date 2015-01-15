@@ -38,6 +38,16 @@ module M3u8
       true
     end
 
+    def duration
+      duration = 0.0
+      items.each do |item|
+        if item.is_a?(M3u8::SegmentItem)
+          duration += item.duration
+        end
+      end
+      duration
+    end
+
     private
 
     def assign_options(options)
