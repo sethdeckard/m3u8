@@ -197,8 +197,6 @@ describe M3u8::Playlist do
 
   it 'should return the total duration of a playlist' do
     playlist = M3u8::Playlist.new
-
-
     item = M3u8::SegmentItem.new({ duration: 10.991, segment: 'test_01.ts' })
     playlist.items.push item
     item = M3u8::SegmentItem.new({ duration: 9.891, segment: 'test_02.ts' })
