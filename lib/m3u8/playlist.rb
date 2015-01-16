@@ -1,6 +1,6 @@
 module M3u8
   class Playlist
-    attr_accessor :items, :version, :cache, :target, :sequence
+    attr_accessor :items, :version, :cache, :target, :sequence, :type
 
     def initialize(options = {})
       assign_options options
@@ -60,6 +60,7 @@ module M3u8
       self.sequence = options[:sequence]
       self.cache = options[:cache]
       self.target = options[:target]
+      self.type = options[:type]
     end
 
     def playlist_size

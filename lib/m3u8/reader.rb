@@ -2,6 +2,7 @@ module M3u8
   class Reader
     attr_accessor :playlist, :item, :open, :master
     PLAYLIST_START = '#EXTM3U'
+    PLAYLIST_TYPE_START = '#EXT-X-PLAYLIST-TYPE:'
     VERSION_START = '#EXT-X-VERSION:'
     SEQUENCE_START = '#EXT-X-MEDIA-SEQUENCE:'
     CACHE_START = '#EXT-X-ALLOW-CACHE:'
@@ -29,7 +30,9 @@ module M3u8
     def parse_line(line)
       return if line.start_with? PLAYLIST_START
 
-      if line.start_with? VERSION_START
+      if line.start_with? PLAYLIST_TYPE_START
+        parse_playlist_type line
+      elsif line.start_with? VERSION_START
         parse_version line
       elsif line.start_with? SEQUENCE_START
         parse_sequence line
@@ -44,6 +47,10 @@ module M3u8
       elsif !item.nil? && open
         parse_value(line)
       end
+    end
+
+    def parse_playlist_type(line)
+      playlist.type = line.gsub(PLAYLIST_TYPE_START, '').delete!("\n")
     end
 
     def parse_version(line)

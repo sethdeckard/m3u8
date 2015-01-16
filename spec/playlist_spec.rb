@@ -95,13 +95,15 @@ describe M3u8::Playlist do
       "#EXT-X-ENDLIST\n"
     expect(playlist.to_s).to eq output
 
-    options = { version: 1, cache: false, target: 12, sequence: 1 }
+    options = { version: 1, cache: false, target: 12, sequence: 1, 
+                type: 'VOD' }
     playlist = M3u8::Playlist.new options
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
     item =  M3u8::SegmentItem.new options
     playlist.items.push item
 
     output = "#EXTM3U\n" \
+      "EXT-X-PLAYLIST-TYPE:VOD\n" \
       "#EXT-X-VERSION:1\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \
@@ -191,12 +193,14 @@ describe M3u8::Playlist do
   end
 
   it 'should expose options as attributes' do
-    options = { version: 1, cache: false, target: 12, sequence: 1 }
+    options = { version: 1, cache: false, target: 12, sequence: 1,
+                type: 'VOD' }
     playlist = M3u8::Playlist.new options
     expect(playlist.version).to be 1
     expect(playlist.cache).to be false
     expect(playlist.target).to be 12
     expect(playlist.sequence).to be 1
+    expect(playlist.type).to eq('VOD')
   end
 
   it 'should allow reading of playlists' do

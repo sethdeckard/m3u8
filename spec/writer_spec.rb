@@ -110,13 +110,15 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { version: 1, cache: false, target: 12, sequence: 1 }
+    options = { version: 1, cache: false, target: 12, sequence: 1,
+                type: 'EVENT' }
     playlist = M3u8::Playlist.new options
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
     item =  M3u8::SegmentItem.new options
     playlist.items.push item
 
     output = "#EXTM3U\n" \
+      "EXT-X-PLAYLIST-TYPE:EVENT\n" \
       "#EXT-X-VERSION:1\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \
