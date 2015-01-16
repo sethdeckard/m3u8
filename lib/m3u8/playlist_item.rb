@@ -35,11 +35,11 @@ module M3u8
     def to_s
       validate
 
-      str = "#EXT-X-STREAM-INF:"
-      str += [program_id_format, resolution_format, codecs_format, bandwidth_format].compact.join(',')
-      str += "\n#{playlist}"
-
-      return str
+      attributes = [program_id_format,
+                    resolution_format,
+                    codecs_format,
+                    bandwidth_format].compact.join(',')
+      "#EXT-X-STREAM-INF:#{attributes}\n#{playlist}"
     end
 
     private
