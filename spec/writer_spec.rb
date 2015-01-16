@@ -2,6 +2,21 @@ require 'spec_helper'
 
 describe M3u8::Writer do
   it 'should render master playlist' do
+    options = { playlist: 'playlist_url', bitrate: 6400,
+                audio: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist = M3u8::Playlist.new
+    playlist.items.push item
+
+    output = "#EXTM3U\n" +
+             %(#EXT-X-STREAM-INF:CODECS="mp4a.40.34") +
+             ",BANDWIDTH=6400\nplaylist_url\n"
+
+    io = StringIO.open
+    writer = M3u8::Writer.new io
+    writer.write playlist
+    expect(io.string).to eq output
+
     options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
                 audio: 'mp3' }
     item = M3u8::PlaylistItem.new options
