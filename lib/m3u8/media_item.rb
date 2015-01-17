@@ -14,7 +14,7 @@ module M3u8
       attributes = [type_format,
                     group_format,
                     language_format,
-                    assoc_language,
+                    assoc_language_format,
                     name_format,
                     auto_format,
                     default_format,
