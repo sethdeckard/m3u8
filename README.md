@@ -119,6 +119,8 @@ Or install it yourself as:
 
 ## Contributing
 
+(Be sure to check to dev branch to make sure I'm not already working on it)
+
 1. Fork it ( https://github.com/sethdeckard/m3u8/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Run the specs, make sure they pass and that new features are covered
