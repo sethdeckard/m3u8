@@ -1,2 +1,5 @@
+AllCops:
+  Exclude:
+    - 'spec/spec_helper.rb'
 Style/StringLiterals:
   EnforcedStyle: single_quotes

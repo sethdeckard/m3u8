@@ -8,11 +8,19 @@ module M3u8
     CACHE_START = '#EXT-X-ALLOW-CACHE:'
     TARGET_START = '#EXT-X-TARGETDURATION:'
     STREAM_START = '#EXT-X-STREAM-INF:'
+    MEDIA_START = '#EXT-X-MEDIA:'
     SEGMENT_START = '#EXTINF:'
     PROGRAM_ID = 'PROGRAM-ID'
     RESOLUTION = 'RESOLUTION'
     CODECS = 'CODECS'
     BANDWIDTH = 'BANDWIDTH'
+    TYPE = 'TYPE'
+    GROUP_ID = 'GROUP-ID'
+    LANGUAGE = 'LANGUAGE'
+    NAME = 'NAME'
+    AUTOSELECT = 'AUTOSELECT'
+    DEFAULT = 'DEFAULT'
+    URI = 'URI'
 
     def initialize
       self.playlist = Playlist.new
@@ -44,6 +52,8 @@ module M3u8
         parse_stream line
       elsif line.start_with? SEGMENT_START
         parse_segment line
+      elsif line.start_with? MEDIA_START
+        parse_media line
       elsif !item.nil? && open
         parse_value(line)
       end
@@ -103,6 +113,33 @@ module M3u8
       self.item = M3u8::SegmentItem.new
       item.duration = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
         .to_f
+    end
+
+    def parse_media(line)
+      self.open = false
+      self.item = M3u8::MediaItem.new
+      line = line.gsub MEDIA_START, ''
+      attributes = line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+      attributes.each do |pair|
+        value = pair[1].gsub("\n", '').gsub('"', '')
+        case pair[0]
+        when TYPE
+          item.type = value
+        when GROUP_ID
+          item.group = value
+        when LANGUAGE
+          item.language = value
+        when NAME
+          item.name = value
+        when AUTOSELECT
+          item.auto = parse_yes_no value
+        when DEFAULT
+          item.default = parse_yes_no value
+        when URI
+          item.uri = value
+        end
+      end
+      playlist.items.push item
     end
 
     def parse_resolution(resolution)

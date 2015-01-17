@@ -20,7 +20,7 @@ describe M3u8::Reader do
     expect(playlist.items.size).to eq 6
 
     item = playlist.items.last
-    expect(item.resolution).to be nil
+    expect(item.resolution).to be_nil
   end
 
   it 'should parse segment playlist' do
@@ -28,16 +28,54 @@ describe M3u8::Reader do
     reader = M3u8::Reader.new
     playlist = reader.read file
     expect(playlist.master?).to be false
-    expect(playlist.version).to be 4
-    expect(playlist.sequence).to be 1
+    expect(playlist.version).to eq 4
+    expect(playlist.sequence).to eq 1
     expect(playlist.cache).to be false
-    expect(playlist.target).to be 12
-    expect(playlist.type).to eq ('VOD')
+    expect(playlist.target).to eq 12
+    expect(playlist.type).to eq 'VOD'
 
     item = playlist.items[0]
     expect(item).to be_a(M3u8::SegmentItem)
     expect(item.duration).to eq 11.344644
 
     expect(playlist.items.size).to eq 138
+  end
+
+  it 'should parse variant playlist with audio options and groups' do
+    file = File.open 'spec/fixtures/variant_audio.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.master?).to be true
+    expect(playlist.items.size).to eq 10
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::MediaItem
+    expect(item.type).to eq 'AUDIO'
+    expect(item.group).to eq 'audio-lo'
+    expect(item.language).to eq 'eng'
+    expect(item.name).to eq 'English'
+    expect(item.auto).to be true
+    expect(item.default).to be true
+    expect(item.uri).to eq 'englo/prog_index.m3u8'
+  end
+
+  it 'should parse variant playlist with camera angles' do
+    file = File.open 'spec/fixtures/variant_angles.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.master?).to be true
+    expect(playlist.items.size).to eq 9
+
+    item = playlist.items[1]
+    expect(item).to be_a M3u8::MediaItem
+    expect(item.type).to eq 'VIDEO'
+    expect(item.group).to eq '200kbs'
+    expect(item.language).to be_nil
+    expect(item.name).to eq 'Angle2'
+    expect(item.auto).to be true
+    expect(item.default).to be false
+    expect(item.uri).to eq 'Angle2/200kbs/prog_index.m3u8'
   end
 end
