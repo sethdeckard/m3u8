@@ -1,4 +1,4 @@
-### 0.3.2 (1/16/2015) - PROGRAM-ID was removed in protocol version 6, if not provided it will now be ommited. Thanks @elsurudo
+### 0.3.2 (1/16/2015) - PROGRAM-ID was removed in protocol version 6, if not provided it will now be omitted. Thanks @elsurudo
 
 ### 0.3.1 (1/15/2015) - Added duration method to Playlist to get the total length of segments contained within it. Thanks @DaKaZ
 
