@@ -68,7 +68,7 @@ describe M3u8::Reader do
     playlist = reader.read file
 
     expect(playlist.master?).to be true
-    expect(playlist.items.size).to eq 9
+    expect(playlist.items.size).to eq 11
 
     item = playlist.items[1]
     expect(item).to be_a M3u8::MediaItem
@@ -79,5 +79,12 @@ describe M3u8::Reader do
     expect(item.auto).to be true
     expect(item.default).to be false
     expect(item.uri).to eq 'Angle2/200kbs/prog_index.m3u8'
+
+    item = playlist.items[9]
+    expect(item.average_bandwidth).to eq 300_001
+    expect(item.audio).to eq 'aac'
+    expect(item.video).to eq '200kbs'
+    expect(item.closed_captions).to eq 'captions'
+    expect(item.subtitles).to eq 'subs'
   end
 end

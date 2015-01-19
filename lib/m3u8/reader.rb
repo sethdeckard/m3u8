@@ -15,7 +15,11 @@ module M3u8
     RESOLUTION = 'RESOLUTION'
     CODECS = 'CODECS'
     BANDWIDTH = 'BANDWIDTH'
-
+    AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
+    VIDEO = 'VIDEO'
+    AUDIO = 'AUDIO'
+    SUBTITLES = 'SUBTITLES'
+    CLOSED_CAPTIONS = 'CLOSED-CAPTIONS'
     #media
     TYPE = 'TYPE'
     GROUP_ID = 'GROUP-ID'
@@ -107,6 +111,16 @@ module M3u8
           item.codecs = value
         when BANDWIDTH
           item.bitrate = value.to_i
+        when AVERAGE_BANDWIDTH
+          item.average_bandwidth = value.to_i
+        when AUDIO
+          item.audio = value
+        when VIDEO
+          item.video = value
+        when SUBTITLES
+          item.subtitles = value
+        when CLOSED_CAPTIONS
+          item.closed_captions = value
         end
       end
     end

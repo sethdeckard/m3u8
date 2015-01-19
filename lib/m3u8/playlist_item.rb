@@ -1,7 +1,8 @@
 module M3u8
   class PlaylistItem
     attr_accessor :program_id, :width, :height, :codecs, :bitrate, :playlist,
-                  :audio, :level, :profile
+                  :audio, :level, :profile, :video, :audio, :average_bandwidth,
+                  :subtitles, :closed_captions
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
