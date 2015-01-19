@@ -54,10 +54,12 @@ describe M3u8::Reader do
     expect(item.type).to eq 'AUDIO'
     expect(item.group).to eq 'audio-lo'
     expect(item.language).to eq 'eng'
+    expect(item.assoc_language).to eq 'spoken'
     expect(item.name).to eq 'English'
     expect(item.auto).to be true
     expect(item.default).to be true
     expect(item.uri).to eq 'englo/prog_index.m3u8'
+    expect(item.forced).to be true
   end
 
   it 'should parse variant playlist with camera angles' do

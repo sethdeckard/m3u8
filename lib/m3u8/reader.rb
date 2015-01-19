@@ -10,17 +10,22 @@ module M3u8
     STREAM_START = '#EXT-X-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SEGMENT_START = '#EXTINF:'
+    #stream
     PROGRAM_ID = 'PROGRAM-ID'
     RESOLUTION = 'RESOLUTION'
     CODECS = 'CODECS'
     BANDWIDTH = 'BANDWIDTH'
+
+    #media
     TYPE = 'TYPE'
     GROUP_ID = 'GROUP-ID'
     LANGUAGE = 'LANGUAGE'
+    ASSOC_LANGUAGE = 'ASSOC-LANGUAGE'
     NAME = 'NAME'
     AUTOSELECT = 'AUTOSELECT'
     DEFAULT = 'DEFAULT'
     URI = 'URI'
+    FORCED = 'FORCED'
 
     def initialize
       self.playlist = Playlist.new
@@ -129,6 +134,8 @@ module M3u8
           item.group = value
         when LANGUAGE
           item.language = value
+        when ASSOC_LANGUAGE
+          item.assoc_language = value
         when NAME
           item.name = value
         when AUTOSELECT
@@ -137,6 +144,8 @@ module M3u8
           item.default = parse_yes_no value
         when URI
           item.uri = value
+        when FORCED
+          item.forced = parse_yes_no value
         end
       end
       playlist.items.push item
