@@ -31,11 +31,8 @@ module M3u8
     URI = 'URI'
     FORCED = 'FORCED'
 
-    def initialize
-      self.playlist = Playlist.new
-    end
-
     def read(input)
+      self.playlist = Playlist.new
       input.each_line do |line|
         parse_line line
       end

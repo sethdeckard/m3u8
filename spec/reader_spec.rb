@@ -87,4 +87,17 @@ describe M3u8::Reader do
     expect(item.closed_captions).to eq 'captions'
     expect(item.subtitles).to eq 'subs'
   end
+
+  it 'should process multiple reads as separate playlists' do
+    file = File.open 'spec/fixtures/master.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 6
+
+    file = File.open 'spec/fixtures/master.m3u8'
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 6
+  end
 end
