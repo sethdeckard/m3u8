@@ -100,9 +100,11 @@ module M3u8
       self.master = false
       self.open = true
 
+      values = line.gsub(SEGMENT_START, '').gsub("\n", ',').split(',')
+
       self.item = M3u8::SegmentItem.new
-      item.duration = line.gsub(SEGMENT_START, '').gsub("\n", '').gsub(',', '')
-        .to_f
+      item.duration = values[0].to_f
+      item.comment = values[1] unless values[1].nil?
     end
 
     def parse_resolution(resolution)
