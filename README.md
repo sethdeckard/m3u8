@@ -33,7 +33,7 @@ Or install it yourself as:
 	playlist = M3u8::Playlist.new
     #create a new playlist item with options
     options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-                profile: 'high', level: 4.1, audio: 'aac-lc', bitrate: 540, 
+                profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
                 playlist: 'test.url' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
@@ -50,7 +50,7 @@ Or install it yourself as:
     playlist.items.push item
     
     #just get the codec string for custom use
-    options = { profile: 'baseline', level: 3.0, audio: 'aac-lc' }
+    options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
     # => "avc1.66.30,mp4a.40.2"
 	
@@ -69,7 +69,7 @@ Or install it yourself as:
 
     #There is a M3u8::Writer class if you want more control over the write process
     
-    #values for :audio (Codec name)
+    #values for :audio_codec (Codec name)
     #aac-lc, he-aac, mp3
     
     #values for :profile (H.264 Profile)
@@ -97,7 +97,7 @@ Or install it yourself as:
 
     #create a new playlist item with options
     options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-                profile: 'high', level: 4.1, audio: 'aac-lc', bitrate: 540, 
+                profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
                 playlist: 'test.url' }
     item = M3u8::PlaylistItem.new options
     #add it to the top of the playlist
@@ -115,7 +115,9 @@ Or install it yourself as:
 
 ## Missing (but planned) Features 
 * Support for encryption keys and DRM.
-* Support for more obscure tags.
+* Support I-Frame and Byte-Range.
+* Validation of all attributes to match the spec completely.
+* Support for all additional attributes in the latest version of the spec.
 
 ## Contributing
 
