@@ -150,7 +150,7 @@ module M3u8
         when NAME
           item.name = value
         when AUTOSELECT
-          item.auto = parse_yes_no value
+          item.autoselect = parse_yes_no value
         when DEFAULT
           item.default = parse_yes_no value
         when URI

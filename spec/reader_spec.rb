@@ -56,7 +56,7 @@ describe M3u8::Reader do
     expect(item.language).to eq 'eng'
     expect(item.assoc_language).to eq 'spoken'
     expect(item.name).to eq 'English'
-    expect(item.auto).to be true
+    expect(item.autoselect).to be true
     expect(item.default).to be true
     expect(item.uri).to eq 'englo/prog_index.m3u8'
     expect(item.forced).to be true
@@ -76,7 +76,7 @@ describe M3u8::Reader do
     expect(item.group).to eq '200kbs'
     expect(item.language).to be_nil
     expect(item.name).to eq 'Angle2'
-    expect(item.auto).to be true
+    expect(item.autoselect).to be true
     expect(item.default).to be false
     expect(item.uri).to eq 'Angle2/200kbs/prog_index.m3u8'
 

@@ -1,8 +1,8 @@
 module M3u8
   # MediaItem represents a set of EXT-X-MEDIA attributes
   class MediaItem
-    attr_accessor :type, :group, :language, :assoc_language, :name, :auto,
-                  :default, :uri, :forced
+    attr_accessor :type, :group, :language, :assoc_language, :name,
+                  :autoselect, :default, :uri, :forced
 
     def initialize(params = {})
       params.each do |key, value|
@@ -16,7 +16,7 @@ module M3u8
                     language_format,
                     assoc_language_format,
                     name_format,
-                    auto_format,
+                    autoselect_format,
                     default_format,
                     uri_format,
                     forced_format].compact.join(',')
@@ -47,9 +47,9 @@ module M3u8
       %(NAME="#{name}")
     end
 
-    def auto_format
-      return if auto.nil?
-      "AUTOSELECT=#{to_yes_no auto}"
+    def autoselect_format
+      return if autoselect.nil?
+      "AUTOSELECT=#{to_yes_no autoselect}"
     end
 
     def default_format
