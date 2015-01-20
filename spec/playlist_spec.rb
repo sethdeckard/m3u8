@@ -2,14 +2,14 @@ require 'spec_helper'
 
 describe M3u8::Playlist do
   it 'should generate codecs string' do
-    options = { profile: 'baseline', level: 3.0, audio: 'aac-lc' }
+    options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
     expect(codecs).to eq 'avc1.66.30,mp4a.40.2'
   end
 
   it 'should render master playlist' do
     options = { playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
     playlist.items.push item
@@ -20,7 +20,7 @@ describe M3u8::Playlist do
     expect(playlist.to_s).to eq output
 
     options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
     playlist.items.push item
@@ -32,7 +32,7 @@ describe M3u8::Playlist do
 
     options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
-                audio: 'aac-lc' }
+                audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
     playlist.items.push item
@@ -46,12 +46,12 @@ describe M3u8::Playlist do
 
     playlist = M3u8::Playlist.new
     options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
     options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
-                audio: 'aac-lc' }
+                audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
 
@@ -119,7 +119,7 @@ describe M3u8::Playlist do
     test_io = StringIO.new
     playlist = M3u8::Playlist.new
     options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
     playlist.write test_io
@@ -144,7 +144,7 @@ describe M3u8::Playlist do
     playlist = M3u8::Playlist.new
     expect(playlist.master?).to be false
     options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
 

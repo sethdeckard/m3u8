@@ -1,4 +1,6 @@
 module M3u8
+  # Playlist represents an m3u8 playlist, it can be a master playlist or a set
+  # of media segments
   class Playlist
     attr_accessor :items, :version, :cache, :target, :sequence, :type
 

@@ -29,6 +29,16 @@ describe M3u8::PlaylistItem do
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,' +
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
+
+    hash = { codecs: 'avc', bitrate: 540, playlist: 'test.url', audio: 'test',
+             video: 'test2', average_bandwidth: 550, subtitles: 'subs',
+             closed_captions: 'caps' }
+    item = M3u8::PlaylistItem.new(hash)
+    output = item.to_s
+    expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+               %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
+               %(SUBTITLES="subs",CLOSED-CAPTIONS="caps"\ntest.url)
+    expect(output).to eq expected
   end
 
   it 'should generate codecs string' do
@@ -38,36 +48,36 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new codecs: 'test'
     expect(item.codecs).to eq 'test'
 
-    item = M3u8::PlaylistItem.new audio: 'aac-lc'
+    item = M3u8::PlaylistItem.new audio_codec: 'aac-lc'
     expect(item.codecs).to eq 'mp4a.40.2'
 
-    item = M3u8::PlaylistItem.new audio: 'AAC-LC'
+    item = M3u8::PlaylistItem.new audio_codec: 'AAC-LC'
     expect(item.codecs).to eq 'mp4a.40.2'
 
-    item = M3u8::PlaylistItem.new audio: 'he-aac'
+    item = M3u8::PlaylistItem.new audio_codec: 'he-aac'
     expect(item.codecs).to eq 'mp4a.40.5'
 
-    item = M3u8::PlaylistItem.new audio: 'HE-AAC'
+    item = M3u8::PlaylistItem.new audio_codec: 'HE-AAC'
     expect(item.codecs).to eq 'mp4a.40.5'
 
-    item = M3u8::PlaylistItem.new audio: 'he-acc1'
+    item = M3u8::PlaylistItem.new audio_codec: 'he-acc1'
     expect(item.codecs).to be_nil
 
-    item = M3u8::PlaylistItem.new audio: 'mp3'
+    item = M3u8::PlaylistItem.new audio_codec: 'mp3'
     expect(item.codecs).to eq 'mp4a.40.34'
 
-    item = M3u8::PlaylistItem.new audio: 'MP3'
+    item = M3u8::PlaylistItem.new audio_codec: 'MP3'
     expect(item.codecs).to eq 'mp4a.40.34'
 
     options = { profile: 'baseline', level: 3.0 }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.66.30'
 
-    options = { profile: 'baseline', level: 3.0, audio: 'aac-lc' }
+    options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.66.30,mp4a.40.2'
 
-    options = { profile: 'baseline', level: 3.0, audio: 'mp3' }
+    options = { profile: 'baseline', level: 3.0, audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.66.30,mp4a.40.34'
 
@@ -75,7 +85,7 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.42001f'
 
-    options = { profile: 'baseline', level: 3.1, audio: 'he-aac' }
+    options = { profile: 'baseline', level: 3.1, audio_codec: 'he-aac' }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.42001f,mp4a.40.5'
 
@@ -83,7 +93,7 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.77.30'
 
-    options = { profile: 'main', level: 3.0, audio: 'aac-lc' }
+    options = { profile: 'main', level: 3.0, audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.77.30,mp4a.40.2'
 

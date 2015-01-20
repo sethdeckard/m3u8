@@ -1,8 +1,9 @@
 module M3u8
+  # PlaylistItem represents a set of EXT-X-STREAM-INF attributes
   class PlaylistItem
     attr_accessor :program_id, :width, :height, :codecs, :bitrate, :playlist,
-                  :audio, :level, :profile, :video, :audio, :average_bandwidth,
-                  :subtitles, :closed_captions
+                  :audio_codec, :level, :profile, :video, :audio,
+                  :average_bandwidth, :subtitles, :closed_captions
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
@@ -19,7 +20,6 @@ module M3u8
     def codecs
       return @codecs unless @codecs.nil?
 
-      audio_codec = audio_codec audio
       video_codec = video_codec profile, level
 
       if video_codec.nil?
@@ -39,7 +39,12 @@ module M3u8
       attributes = [program_id_format,
                     resolution_format,
                     codecs_format,
-                    bandwidth_format].compact.join(',')
+                    bandwidth_format,
+                    average_bandwidth_format,
+                    audio_format,
+                    video_format,
+                    subtitles_format,
+                    closed_captions_format].compact.join(',')
       "#EXT-X-STREAM-INF:#{attributes}\n#{playlist}"
     end
 
@@ -60,18 +65,43 @@ module M3u8
     end
 
     def codecs_format
-      "CODECS=\"#{codecs}\""
+      %(CODECS="#{codecs}")
     end
 
     def bandwidth_format
       "BANDWIDTH=#{bitrate}"
     end
 
-    def audio_codec(audio)
+    def average_bandwidth_format
+      return if average_bandwidth.nil?
+      "AVERAGE-BANDWIDTH=#{average_bandwidth}"
+    end
+
+    def audio_format
       return if audio.nil?
-      return 'mp4a.40.2' if audio.downcase == 'aac-lc'
-      return 'mp4a.40.5' if audio.downcase == 'he-aac'
-      return 'mp4a.40.34' if audio.downcase == 'mp3'
+      %(AUDIO="#{audio}")
+    end
+
+    def video_format
+      return if video.nil?
+      %(VIDEO="#{video}")
+    end
+
+    def subtitles_format
+      return if subtitles.nil?
+      %(SUBTITLES="#{subtitles}")
+    end
+
+    def closed_captions_format
+      return if closed_captions.nil?
+      %(CLOSED-CAPTIONS="#{closed_captions}")
+    end
+
+    def audio_codec
+      return if @audio_codec.nil?
+      return 'mp4a.40.2' if @audio_codec.downcase == 'aac-lc'
+      return 'mp4a.40.5' if @audio_codec.downcase == 'he-aac'
+      return 'mp4a.40.34' if @audio_codec.downcase == 'mp3'
     end
 
     def video_codec(profile, level)
