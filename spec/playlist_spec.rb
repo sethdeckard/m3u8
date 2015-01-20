@@ -103,7 +103,7 @@ describe M3u8::Playlist do
     playlist.items.push item
 
     output = "#EXTM3U\n" \
-      "EXT-X-PLAYLIST-TYPE:VOD\n" \
+      "#EXT-X-PLAYLIST-TYPE:VOD\n" \
       "#EXT-X-VERSION:1\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \

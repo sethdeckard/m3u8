@@ -28,7 +28,7 @@ module M3u8
     end
 
     def write_header(playlist)
-      io.puts "EXT-X-PLAYLIST-TYPE:#{playlist.type}" unless playlist.type.nil?
+      io.puts "#EXT-X-PLAYLIST-TYPE:#{playlist.type}" unless playlist.type.nil?
       io.puts "#EXT-X-VERSION:#{playlist.version}"
       io.puts "#EXT-X-MEDIA-SEQUENCE:#{playlist.sequence}"
       io.puts "#EXT-X-ALLOW-CACHE:#{cache(playlist)}"
