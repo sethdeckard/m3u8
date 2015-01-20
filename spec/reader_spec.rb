@@ -37,6 +37,26 @@ describe M3u8::Reader do
     item = playlist.items[0]
     expect(item).to be_a(M3u8::SegmentItem)
     expect(item.duration).to eq 11.344644
+    expect(item.comment).to be_nil
+
+    expect(playlist.items.size).to eq 138
+  end
+
+  it 'should parse segment playlist with comments' do
+    file = File.open 'spec/fixtures/playlist_with_comments.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+    expect(playlist.master?).to be false
+    expect(playlist.version).to be 4
+    expect(playlist.sequence).to be 1
+    expect(playlist.cache).to be false
+    expect(playlist.target).to be 12
+    expect(playlist.type).to eq ('VOD')
+
+    item = playlist.items[0]
+    expect(item).to be_a(M3u8::SegmentItem)
+    expect(item.duration).to eq 11.344644
+    expect(item.comment).to eq 'anything'
 
     expect(playlist.items.size).to eq 138
   end
