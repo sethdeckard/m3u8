@@ -51,7 +51,7 @@ describe M3u8::Reader do
     expect(playlist.sequence).to be 1
     expect(playlist.cache).to be false
     expect(playlist.target).to be 12
-    expect(playlist.type).to eq ('VOD')
+    expect(playlist.type).to eq 'VOD'
 
     item = playlist.items[0]
     expect(item).to be_a(M3u8::SegmentItem)

@@ -9,7 +9,7 @@ module M3u8
         instance_variable_set("@#{key}", value)
       end
     end
-    
+
     def to_s
       attributes = [type_format,
                     group_format,
