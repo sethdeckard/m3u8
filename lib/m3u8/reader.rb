@@ -10,25 +10,12 @@ module M3u8
     STREAM_START = '#EXT-X-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SEGMENT_START = '#EXTINF:'
-    # EXT-X-STREAM-INF:
-    PROGRAM_ID = 'PROGRAM-ID'
     RESOLUTION = 'RESOLUTION'
-    CODECS = 'CODECS'
     BANDWIDTH = 'BANDWIDTH'
     AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
-    VIDEO = 'VIDEO'
-    AUDIO = 'AUDIO'
-    SUBTITLES = 'SUBTITLES'
-    CLOSED_CAPTIONS = 'CLOSED-CAPTIONS'
-    # EXT-X-MEDIA:
-    TYPE = 'TYPE'
     GROUP_ID = 'GROUP-ID'
-    LANGUAGE = 'LANGUAGE'
-    ASSOC_LANGUAGE = 'ASSOC-LANGUAGE'
-    NAME = 'NAME'
     AUTOSELECT = 'AUTOSELECT'
     DEFAULT = 'DEFAULT'
-    URI = 'URI'
     FORCED = 'FORCED'
 
     def read(input)
@@ -110,24 +97,15 @@ module M3u8
       attributes.each do |pair|
         value = pair[1].gsub("\n", '').gsub('"', '')
         case pair[0]
-        when PROGRAM_ID
-          item.program_id = value
         when RESOLUTION
           parse_resolution value
-        when CODECS
-          item.codecs = value
         when BANDWIDTH
           item.bitrate = value.to_i
         when AVERAGE_BANDWIDTH
           item.average_bandwidth = value.to_i
-        when AUDIO
-          item.audio = value
-        when VIDEO
-          item.video = value
-        when SUBTITLES
-          item.subtitles = value
-        when CLOSED_CAPTIONS
-          item.closed_captions = value
+        else
+          name = pair[0].downcase.gsub('-','_')
+          item.instance_variable_set("@#{name}", value)
         end
       end
     end
@@ -156,24 +134,17 @@ module M3u8
       attributes.each do |pair|
         value = pair[1].gsub("\n", '').gsub('"', '')
         case pair[0]
-        when TYPE
-          item.type = value
         when GROUP_ID
           item.group = value
-        when LANGUAGE
-          item.language = value
-        when ASSOC_LANGUAGE
-          item.assoc_language = value
-        when NAME
-          item.name = value
         when AUTOSELECT
           item.autoselect = parse_yes_no value
         when DEFAULT
           item.default = parse_yes_no value
-        when URI
-          item.uri = value
         when FORCED
           item.forced = parse_yes_no value
+        else
+          name = pair[0].downcase.gsub('-','_')
+          item.instance_variable_set("@#{name}", value)
         end
       end
     end
