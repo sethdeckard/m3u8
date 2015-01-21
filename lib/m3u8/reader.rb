@@ -44,6 +44,20 @@ module M3u8
     def parse_line(line)
       return if line.start_with? PLAYLIST_START
 
+      if line.start_with? STREAM_START
+        parse_stream line
+      elsif line.start_with? SEGMENT_START
+        parse_segment line
+      elsif line.start_with? MEDIA_START
+        parse_media line
+      elsif !item.nil? && open
+        parse_value line
+      else 
+        parse_header line
+      end
+    end
+
+    def parse_header(line)
       if line.start_with? PLAYLIST_TYPE_START
         parse_playlist_type line
       elsif line.start_with? VERSION_START
@@ -54,14 +68,6 @@ module M3u8
         parse_cache line
       elsif line.start_with? TARGET_START
         parse_target line
-      elsif line.start_with? STREAM_START
-        parse_stream line
-      elsif line.start_with? SEGMENT_START
-        parse_segment line
-      elsif line.start_with? MEDIA_START
-        parse_media line
-      elsif !item.nil? && open
-        parse_value(line)
       end
     end
 
@@ -96,7 +102,11 @@ module M3u8
 
       self.item = M3u8::PlaylistItem.new
       line = line.gsub STREAM_START, ''
-      attributes = line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+      attributes = parse_attributes line
+      parse_stream_attributes attributes
+    end
+
+    def parse_stream_attributes(attributes)
       attributes.each do |pair|
         value = pair[1].gsub("\n", '').gsub('"', '')
         case pair[0]
@@ -137,7 +147,12 @@ module M3u8
       self.open = false
       self.item = M3u8::MediaItem.new
       line = line.gsub MEDIA_START, ''
-      attributes = line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+      attributes = parse_attributes line
+      parse_media_attributes attributes
+      playlist.items.push item
+    end
+
+    def parse_media_attributes(attributes)
       attributes.each do |pair|
         value = pair[1].gsub("\n", '').gsub('"', '')
         case pair[0]
@@ -161,7 +176,6 @@ module M3u8
           item.forced = parse_yes_no value
         end
       end
-      playlist.items.push item
     end
 
     def parse_resolution(resolution)
@@ -178,6 +192,10 @@ module M3u8
       end
       playlist.items.push item
       self.open = false
+    end
+
+    def parse_attributes(line)
+      line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
     end
   end
 end
