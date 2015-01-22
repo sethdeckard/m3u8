@@ -72,7 +72,7 @@ describe M3u8::Reader do
     item = playlist.items[0]
     expect(item).to be_a M3u8::MediaItem
     expect(item.type).to eq 'AUDIO'
-    expect(item.group).to eq 'audio-lo'
+    expect(item.group_id).to eq 'audio-lo'
     expect(item.language).to eq 'eng'
     expect(item.assoc_language).to eq 'spoken'
     expect(item.name).to eq 'English'
@@ -93,7 +93,7 @@ describe M3u8::Reader do
     item = playlist.items[1]
     expect(item).to be_a M3u8::MediaItem
     expect(item.type).to eq 'VIDEO'
-    expect(item.group).to eq '200kbs'
+    expect(item.group_id).to eq '200kbs'
     expect(item.language).to be_nil
     expect(item.name).to eq 'Angle2'
     expect(item.autoselect).to be true

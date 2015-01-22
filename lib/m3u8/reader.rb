@@ -13,7 +13,6 @@ module M3u8
     RESOLUTION = 'RESOLUTION'
     BANDWIDTH = 'BANDWIDTH'
     AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
-    GROUP_ID = 'GROUP-ID'
     AUTOSELECT = 'AUTOSELECT'
     DEFAULT = 'DEFAULT'
     FORCED = 'FORCED'
@@ -138,8 +137,6 @@ module M3u8
         value = parse_value pair[1]
         name = pair[0]
         case name
-        when GROUP_ID
-          item.group = value
         when AUTOSELECT
           item.autoselect = parse_yes_no value
         when DEFAULT

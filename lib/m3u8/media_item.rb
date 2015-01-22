@@ -1,7 +1,7 @@
 module M3u8
   # MediaItem represents a set of EXT-X-MEDIA attributes
   class MediaItem
-    attr_accessor :type, :group, :language, :assoc_language, :name,
+    attr_accessor :type, :group_id, :language, :assoc_language, :name,
                   :autoselect, :default, :uri, :forced
 
     def initialize(params = {})
@@ -12,7 +12,7 @@ module M3u8
 
     def to_s
       attributes = [type_format,
-                    group_format,
+                    group_id_format,
                     language_format,
                     assoc_language_format,
                     name_format,
@@ -29,8 +29,8 @@ module M3u8
       "TYPE=#{type}"
     end
 
-    def group_format
-      %(GROUP-ID="#{group}")
+    def group_id_format
+      %(GROUP-ID="#{group_id}")
     end
 
     def language_format
