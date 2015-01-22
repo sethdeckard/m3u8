@@ -38,7 +38,7 @@ module M3u8
       elsif line.start_with? MEDIA_START
         parse_media line
       elsif !item.nil? && open
-        parse_value line
+        parse_next_line line
       else 
         parse_header line
       end
@@ -95,8 +95,9 @@ module M3u8
 
     def parse_stream_attributes(attributes)
       attributes.each do |pair|
-        value = pair[1].gsub("\n", '').gsub('"', '')
-        case pair[0]
+        value = parse_value pair[1]
+        name = pair[0]
+        case name
         when RESOLUTION
           parse_resolution value
         when BANDWIDTH
@@ -104,19 +105,21 @@ module M3u8
         when AVERAGE_BANDWIDTH
           item.average_bandwidth = value.to_i
         else
-          name = pair[0].downcase.gsub('-','_')
-          item.instance_variable_set("@#{name}", value)
+          set_value name, value
         end
       end
+    end
+
+    def parse_value(value)
+      value.gsub("\n", '').gsub('"', '')
     end
 
     def parse_segment(line)
       self.master = false
       self.open = true
 
-      values = line.gsub(SEGMENT_START, '').gsub("\n", ',').split(',')
-
       self.item = M3u8::SegmentItem.new
+      values = line.gsub(SEGMENT_START, '').gsub("\n", ',').split(',')
       item.duration = values[0].to_f
       item.comment = values[1] unless values[1].nil?
     end
@@ -132,8 +135,9 @@ module M3u8
 
     def parse_media_attributes(attributes)
       attributes.each do |pair|
-        value = pair[1].gsub("\n", '').gsub('"', '')
-        case pair[0]
+        value = parse_value pair[1]
+        name = pair[0]
+        case name
         when GROUP_ID
           item.group = value
         when AUTOSELECT
@@ -143,8 +147,7 @@ module M3u8
         when FORCED
           item.forced = parse_yes_no value
         else
-          name = pair[0].downcase.gsub('-','_')
-          item.instance_variable_set("@#{name}", value)
+          set_value name, value
         end
       end
     end
@@ -154,7 +157,7 @@ module M3u8
       item.height = resolution.split('x')[1].to_i
     end
 
-    def parse_value(line)
+    def parse_next_line(line)
       value = line.gsub "\n", ''
       if master
         item.playlist = value
@@ -167,6 +170,11 @@ module M3u8
 
     def parse_attributes(line)
       line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+    end
+
+    def set_value name, value
+      name = name.downcase.gsub('-','_')
+      item.instance_variable_set("@#{name}", value)
     end
   end
 end
