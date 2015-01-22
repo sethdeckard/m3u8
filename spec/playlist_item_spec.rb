@@ -3,34 +3,35 @@ require 'spec_helper'
 describe M3u8::PlaylistItem do
   it 'should initialize with hash' do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bitrate: 540, playlist: 'test.url' }
+             bandwidth: 540, playlist: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     expect(item.program_id).to eq 1
     expect(item.width).to eq 1920
     expect(item.height).to eq 1080
     expect(item.resolution).to eq '1920x1080'
     expect(item.codecs).to eq 'avc'
-    expect(item.bitrate).to eq 540
+    expect(item.bandwidth).to eq 540
     expect(item.playlist).to eq 'test.url'
   end
 
   it 'should provide m3u8 format representation' do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bitrate: 540, playlist: 'test.url' }
+             bandwidth: 540, playlist: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
 
-    hash = { program_id: 1, codecs: 'avc', bitrate: 540, playlist: 'test.url' }
+    hash = { program_id: 1, codecs: 'avc', bandwidth: 540, 
+             playlist: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,' +
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
 
-    hash = { codecs: 'avc', bitrate: 540, playlist: 'test.url', audio: 'test',
+    hash = { codecs: 'avc', bandwidth: 540, playlist: 'test.url', audio: 'test',
              video: 'test2', average_bandwidth: 550, subtitles: 'subs',
              closed_captions: 'caps' }
     item = M3u8::PlaylistItem.new(hash)
@@ -119,7 +120,7 @@ describe M3u8::PlaylistItem do
   end
 
   it 'should raise error if codecs are missing' do
-    params = { program_id: 1, bitrate: 540, playlist: 'test.url' }
+    params = { program_id: 1, bandwidth: 540, playlist: 'test.url' }
     item = M3u8::PlaylistItem.new params
     message = 'Audio or video codec info should be provided.'
     expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)

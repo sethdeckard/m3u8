@@ -1,7 +1,7 @@
 module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF attributes
   class PlaylistItem
-    attr_accessor :program_id, :width, :height, :codecs, :bitrate, :playlist,
+    attr_accessor :program_id, :width, :height, :codecs, :bandwidth, :playlist,
                   :audio_codec, :level, :profile, :video, :audio,
                   :average_bandwidth, :subtitles, :closed_captions
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
@@ -69,7 +69,7 @@ module M3u8
     end
 
     def bandwidth_format
-      "BANDWIDTH=#{bitrate}"
+      "BANDWIDTH=#{bandwidth}"
     end
 
     def average_bandwidth_format

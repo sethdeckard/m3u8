@@ -38,7 +38,7 @@ module M3u8
         parse_media line
       elsif !item.nil? && open
         parse_next_line line
-      else 
+      else
         parse_header line
       end
     end
@@ -96,7 +96,7 @@ module M3u8
         when RESOLUTION
           parse_resolution value
         when BANDWIDTH
-          item.bitrate = value.to_i
+          item.bandwidth = value.to_i
         when AVERAGE_BANDWIDTH
           item.average_bandwidth = value.to_i
         else
@@ -170,7 +170,7 @@ module M3u8
     end
 
     def set_value(name, value)
-      name = name.downcase.gsub('-','_')
+      name = name.downcase.gsub('-', '_')
       item.instance_variable_set("@#{name}", value)
     end
   end
