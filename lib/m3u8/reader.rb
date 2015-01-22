@@ -74,10 +74,6 @@ module M3u8
       playlist.cache = parse_yes_no(line)
     end
 
-    def parse_yes_no(string)
-      string == 'YES' ? true : false
-    end
-
     def parse_target(line)
       playlist.target = line.gsub(TARGET_START, '').to_i
     end
@@ -109,8 +105,9 @@ module M3u8
       end
     end
 
-    def parse_value(value)
-      value.gsub("\n", '').gsub('"', '')
+    def parse_resolution(resolution)
+      item.width = resolution.split('x')[0].to_i
+      item.height = resolution.split('x')[1].to_i
     end
 
     def parse_segment(line)
@@ -149,11 +146,6 @@ module M3u8
       end
     end
 
-    def parse_resolution(resolution)
-      item.width = resolution.split('x')[0].to_i
-      item.height = resolution.split('x')[1].to_i
-    end
-
     def parse_next_line(line)
       value = line.gsub "\n", ''
       if master
@@ -165,8 +157,16 @@ module M3u8
       self.open = false
     end
 
+    def parse_yes_no(string)
+      string == 'YES' ? true : false
+    end
+
     def parse_attributes(line)
       line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+    end
+
+    def parse_value(value)
+      value.gsub("\n", '').gsub('"', '')
     end
 
     def set_value name, value
