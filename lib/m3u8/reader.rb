@@ -169,7 +169,7 @@ module M3u8
       value.gsub("\n", '').gsub('"', '')
     end
 
-    def set_value name, value
+    def set_value(name, value)
       name = name.downcase.gsub('-','_')
       item.instance_variable_set("@#{name}", value)
     end
