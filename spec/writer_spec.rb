@@ -2,8 +2,23 @@ require 'spec_helper'
 
 describe M3u8::Writer do
   it 'should render master playlist' do
-    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+    options = { playlist: 'playlist_url', bandwidth: 6400,
+                audio_codec: 'mp3' }
+    item = M3u8::PlaylistItem.new options
+    playlist = M3u8::Playlist.new
+    playlist.items.push item
+
+    output = "#EXTM3U\n" +
+             %(#EXT-X-STREAM-INF:CODECS="mp4a.40.34") +
+             ",BANDWIDTH=6400\nplaylist_url\n"
+
+    io = StringIO.open
+    writer = M3u8::Writer.new io
+    writer.write playlist
+    expect(io.string).to eq output
+
+    options = { program_id: '1', playlist: 'playlist_url', bandwidth: 6400,
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
     playlist.items.push item
@@ -17,9 +32,9 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+    options = { program_id: '2', playlist: 'playlist_url', bandwidth: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
-                audio: 'aac-lc' }
+                audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
     playlist.items.push item
@@ -35,13 +50,13 @@ describe M3u8::Writer do
     expect(io.string).to eq output
 
     playlist = M3u8::Playlist.new
-    options = { program_id: '1', playlist: 'playlist_url', bitrate: 6400,
-                audio: 'mp3' }
+    options = { program_id: '1', playlist: 'playlist_url', bandwidth: 6400,
+                audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
-    options = { program_id: '2', playlist: 'playlist_url', bitrate: 50_000,
+    options = { program_id: '2', playlist: 'playlist_url', bandwidth: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
-                audio: 'aac-lc' }
+                audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
 
@@ -95,13 +110,15 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { version: 1, cache: false, target: 12, sequence: 1 }
+    options = { version: 1, cache: false, target: 12, sequence: 1,
+                type: 'EVENT' }
     playlist = M3u8::Playlist.new options
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
     item =  M3u8::SegmentItem.new options
     playlist.items.push item
 
     output = "#EXTM3U\n" \
+      "#EXT-X-PLAYLIST-TYPE:EVENT\n" \
       "#EXT-X-VERSION:1\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \
@@ -119,7 +136,7 @@ describe M3u8::Writer do
     playlist = M3u8::Playlist.new
 
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bitrate: 540, playlist: 'test.url' }
+             bandwidth: 540, playlist: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     playlist.items.push item
 
