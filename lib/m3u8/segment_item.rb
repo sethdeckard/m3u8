@@ -10,7 +10,19 @@ module M3u8
     end
 
     def to_s
-      "#EXTINF:#{duration},#{comment}\n#{segment}"
+      "#EXTINF:#{duration},#{comment}#{byterange_format}\n#{segment}"
+    end
+
+    private
+
+    def byterange_format
+      return if byterange_length.nil?
+      "\n#EXT-X-BYTERANGE:#{byterange_length}#{byterange_start_format}"
+    end
+
+    def byterange_start_format
+      return if byterange_start.nil?
+      "@#{byterange_start}"
     end
   end
 end
