@@ -2,7 +2,8 @@ module M3u8
   # Playlist represents an m3u8 playlist, it can be a master playlist or a set
   # of media segments
   class Playlist
-    attr_accessor :items, :version, :cache, :target, :sequence, :type
+    attr_accessor :items, :version, :cache, :target, :sequence, :type,
+                  :iframes_only
 
     def initialize(options = {})
       assign_options options
@@ -55,7 +56,8 @@ module M3u8
         version: 3,
         sequence: 0,
         cache: true,
-        target: 10
+        target: 10,
+        iframes_only: false
       }.merge options
 
       self.version = options[:version]
@@ -63,6 +65,7 @@ module M3u8
       self.cache = options[:cache]
       self.target = options[:target]
       self.type = options[:type]
+      self.iframes_only = options[:iframes_only]
     end
 
     def playlist_size

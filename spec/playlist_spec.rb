@@ -201,6 +201,7 @@ describe M3u8::Playlist do
     expect(playlist.target).to be 12
     expect(playlist.sequence).to be 1
     expect(playlist.type).to eq('VOD')
+    expect(playlist.iframes_only).to be false
   end
 
   it 'should allow reading of playlists' do

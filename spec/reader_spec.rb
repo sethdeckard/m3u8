@@ -42,6 +42,26 @@ describe M3u8::Reader do
     expect(playlist.items.size).to eq 138
   end
 
+  it 'should parse I-Frame playlist' do
+    file = File.open 'spec/fixtures/iframes.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.iframes_only).to be true
+    expect(playlist.items.size).to eq 3
+
+    item = playlist.items[0]
+    expect(item).to be_a(M3u8::SegmentItem)
+    expect(item.duration).to eq 4.12
+    expect(item.byterange_length).to eq 9400
+    expect(item.byterange_start).to eq 376
+    expect(item.segment).to eq 'segment1.ts'
+
+    item = playlist.items[1]
+    expect(item.byterange_length).to eq 7144
+    expect(item.byterange_start).to be_nil
+  end
+
   it 'should parse segment playlist with comments' do
     file = File.open 'spec/fixtures/playlist_with_comments.m3u8'
     reader = M3u8::Reader.new

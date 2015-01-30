@@ -23,7 +23,7 @@ describe M3u8::PlaylistItem do
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
 
-    hash = { program_id: 1, codecs: 'avc', bandwidth: 540, 
+    hash = { program_id: 1, codecs: 'avc', bandwidth: 540,
              playlist: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s

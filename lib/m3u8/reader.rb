@@ -7,9 +7,11 @@ module M3u8
     SEQUENCE_START = '#EXT-X-MEDIA-SEQUENCE:'
     CACHE_START = '#EXT-X-ALLOW-CACHE:'
     TARGET_START = '#EXT-X-TARGETDURATION:'
+    IFRAME_START = '#EXT-X-I-FRAMES-ONLY'
     STREAM_START = '#EXT-X-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SEGMENT_START = '#EXTINF:'
+    BYTERANGE_START = '#EXT-X-BYTERANGE:'
     RESOLUTION = 'RESOLUTION'
     BANDWIDTH = 'BANDWIDTH'
     AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
@@ -36,6 +38,8 @@ module M3u8
         parse_segment line
       elsif line.start_with? MEDIA_START
         parse_media line
+      elsif line.start_with? BYTERANGE_START
+        parse_byterange line
       elsif !item.nil? && open
         parse_next_line line
       else
@@ -54,6 +58,8 @@ module M3u8
         parse_cache line
       elsif line.start_with? TARGET_START
         parse_target line
+      elsif line.start_with? IFRAME_START
+        playlist.iframes_only = true
       end
     end
 
@@ -111,13 +117,19 @@ module M3u8
     end
 
     def parse_segment(line)
-      self.master = false
-      self.open = true
-
       self.item = M3u8::SegmentItem.new
       values = line.gsub(SEGMENT_START, '').gsub("\n", ',').split(',')
       item.duration = values[0].to_f
       item.comment = values[1] unless values[1].nil?
+
+      self.master = false
+      self.open = true
+    end
+
+    def parse_byterange(line)
+      values = line.gsub(BYTERANGE_START, '').gsub("\n", ',').split '@'
+      item.byterange_length = values[0].to_i
+      item.byterange_start = values[1].to_i unless values[1].nil?
     end
 
     def parse_media(line)

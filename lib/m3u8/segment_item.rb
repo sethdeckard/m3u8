@@ -1,6 +1,7 @@
 module M3u8
   class SegmentItem
-    attr_accessor :duration, :segment, :comment
+    attr_accessor :duration, :segment, :comment, :byterange_length,
+                  :byterange_start
 
     def initialize(params = {})
       params.each do |key, value|
