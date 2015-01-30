@@ -123,15 +123,15 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
+* Supports I-Frames (Intra frames) and Byte Ranges in Segments.
 * Supports subtitles, closed captions, alternate audio and video, and comments.
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 * Can read playlists into a model (Playlist and Items) from an IO object.
 
 ## Missing (but planned) Features 
-* Support for encryption keys and DRM.
-* Support I-Frame and Byte-Range.
-* Validation of all attributes to match the spec completely.
-* Support for all additional attributes in the latest version of the spec.
+* Support for encrypted segments.
+* Validation of all attributes and their values to match the rules defined in the spec.
+* Still missing support for a few tags and attributes.
 
 ## Contributing
 
