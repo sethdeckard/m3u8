@@ -26,11 +26,10 @@ Or install it yourself as:
 
 ## Usage (Generation)
 
-
-	require 'm3u8'
-	
-	#create a master playlist and add child playlists for adaptive bitrate streaming:
-	playlist = M3u8::Playlist.new
+    require 'm3u8'
+    
+    #create a master playlist and add child playlists for adaptive bitrate streaming:
+    playlist = M3u8::Playlist.new
     #create a new playlist item with options
     options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
                 profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
@@ -42,6 +41,12 @@ Or install it yourself as:
     options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
                 codecs: 'avc1.66.30,mp4a.40.2', bitrate: 540, playlist: 'test.url' }
     item = M3u8::PlaylistItem.new options
+
+    #supports alternate audio, camera angles, closed captions and subtitles
+    hash = { type: 'AUDIO', group_id: 'audio-lo', language: 'fre',
+             assoc_language: 'spoken', name: 'Francais', autoselect: true,
+             default: false, forced: true, uri: 'frelo/prog_index.m3u8' }
+    item = M3u8::MediaItem.new(hash)
     
     #create a standard playlist and add MPEG-TS segments:
     playlist = M3u8::Playlist.new
@@ -53,10 +58,10 @@ Or install it yourself as:
     options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
     # => "avc1.66.30,mp4a.40.2"
-	
-	#specify options for playlist, these are ignored if playlist becomes a master playlist
+    
+    #specify options for playlist, these are ignored if playlist becomes a master playlist
     # (child playlist added):
-	options = { version: 1, cache: false, target: 12, sequence: 1 }
+    options = { version: 1, cache: false, target: 12, sequence: 1 }
     playlist = M3u8::Playlist.new options
     
     #You can pass an IO object to the write method
@@ -64,8 +69,8 @@ Or install it yourself as:
     f = Tempfile.new 'test'
     playlist.write f
    
-  	#You can also access the playlist as a string
-  	playlist.to_s
+    #You can also access the playlist as a string
+    playlist.to_s
 
     #There is a M3u8::Writer class if you want more control over the write process
     
@@ -80,7 +85,7 @@ Or install it yourself as:
     
     #not all Levels and Profiles can be combined, consult H.264 documentation
 
-## Parsing Usage (new in v.2.0)
+## Parsing Usage
 
     file = File.open 'spec/fixtures/master.m3u8'
     playlist = M3u8::Playlist.read file
@@ -104,12 +109,13 @@ Or install it yourself as:
     playlist.items.insert 0, item
 
     #There is a M3u8::Reader class if you want more control over parsing
-	
+    
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
+* Supports subtitles, closed captions, 
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 * Can read playlists into a model (Playlist and Items) from an IO object.
 
