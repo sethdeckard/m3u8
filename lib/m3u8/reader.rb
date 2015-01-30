@@ -90,8 +90,8 @@ module M3u8
 
     def parse_stream_attributes(attributes)
       attributes.each do |pair|
-        value = parse_value pair[1]
         name = pair[0]
+        value = parse_value pair[1]
         case name
         when RESOLUTION
           parse_resolution value
@@ -131,8 +131,8 @@ module M3u8
 
     def parse_media_attributes(attributes)
       attributes.each do |pair|
-        value = parse_value pair[1]
         name = pair[0]
+        value = parse_value pair[1]
         case name
         when AUTOSELECT
           item.autoselect = parse_yes_no value
