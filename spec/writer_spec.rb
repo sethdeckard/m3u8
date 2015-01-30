@@ -110,8 +110,8 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { version: 1, cache: false, target: 12, sequence: 1,
-                type: 'EVENT' }
+    options = { version: 4, cache: false, target: 12, sequence: 1,
+                type: 'EVENT', iframes_only: true }
     playlist = M3u8::Playlist.new options
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
     item =  M3u8::SegmentItem.new options
@@ -119,7 +119,8 @@ describe M3u8::Writer do
 
     output = "#EXTM3U\n" \
       "#EXT-X-PLAYLIST-TYPE:EVENT\n" \
-      "#EXT-X-VERSION:1\n" \
+      "#EXT-X-VERSION:4\n" \
+      "#EXT-X-I-FRAMES-ONLY\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \
       "#EXT-X-TARGETDURATION:12\n" \
