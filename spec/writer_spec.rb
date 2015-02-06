@@ -59,12 +59,18 @@ describe M3u8::Writer do
                 audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
+    options = { data_id: 'com.test.movie.title', value: 'Test',
+                uri: 'http://test', language: 'en' }
+    item = M3u8::SessionDataItem.new(options)
+    playlist.items.push item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n#EXT-X-STREAM-INF:PROGRAM-ID=2," +
              %(RESOLUTION=1920x1080,CODECS="avc1.640028,mp4a.40.2") +
-             ",BANDWIDTH=50000\nplaylist_url\n"
+             ",BANDWIDTH=50000\nplaylist_url\n" +
+             %(#EXT-X-SESSION-DATA:DATA-ID="com.test.movie.title",) +
+             %(VALUE="Test",URI="http://test",LANGUAGE="en"\n)
 
     io = StringIO.open
     writer = M3u8::Writer.new io

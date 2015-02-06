@@ -10,6 +10,7 @@ module M3u8
     IFRAME_START = '#EXT-X-I-FRAMES-ONLY'
     STREAM_START = '#EXT-X-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
+    SESSION_DATA_START = '#EXT-X-SESSION-DATA:'
     SEGMENT_START = '#EXTINF:'
     BYTERANGE_START = '#EXT-X-BYTERANGE:'
     RESOLUTION = 'RESOLUTION'
@@ -40,6 +41,8 @@ module M3u8
         parse_media line
       elsif line.start_with? BYTERANGE_START
         parse_byterange line
+      elsif line.start_with? SESSION_DATA_START
+        parse_session_data line
       elsif !item.nil? && open
         parse_next_line line
       else
@@ -130,6 +133,11 @@ module M3u8
       values = line.gsub(BYTERANGE_START, '').gsub("\n", ',').split '@'
       item.byterange_length = values[0].to_i
       item.byterange_start = values[1].to_i unless values[1].nil?
+    end
+
+    def parse_session_data(line)
+      item = M3u8::SessionDataItem.parse line
+      playlist.items.push item
     end
 
     def parse_media(line)

@@ -140,4 +140,17 @@ describe M3u8::Reader do
 
     expect(playlist.items.size).to eq 6
   end
+
+  it 'should parse playlist with session data' do
+    file = File.open 'spec/fixtures/session_data.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 3
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::SessionDataItem
+    expect(item.data_id).to eq 'com.example.lyrics'
+    expect(item.uri).to eq 'lyrics.json'
+  end
 end
