@@ -36,7 +36,7 @@ Create a new playlist item with options:
 ```ruby
 options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
             profile: 'high', level: 4.1, audio_codec: 'aac-lc', bandwidth: 540, 
-            playlist: 'test.url' }
+            uri: 'test.url' }
 item = M3u8::PlaylistItem.new options
 playlist.items.push item
 ```    
@@ -111,7 +111,7 @@ Create a new playlist item with options:
 ```ruby
 options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
             profile: 'high', level: 4.1, audio_codec: 'aac-lc', bandwidth: 540, 
-            playlist: 'test.url' }
+            uri: 'test.url' }
 item = M3u8::PlaylistItem.new options
 #add it to the top of the playlist
 playlist.items.insert 0, item
