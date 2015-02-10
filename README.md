@@ -35,7 +35,7 @@ playlist = M3u8::Playlist.new
 Create a new playlist item with options:
 ```ruby
 options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-            profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
+            profile: 'high', level: 4.1, audio_codec: 'aac-lc', bandwidth: 540, 
             playlist: 'test.url' }
 item = M3u8::PlaylistItem.new options
 playlist.items.push item
@@ -75,7 +75,7 @@ M3u8::Writer is the class that handles generating the playlist output.
 Alternatively you can set codecs rather than having it generated automatically:
 ```ruby
 options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-            codecs: 'avc1.66.30,mp4a.40.2', bitrate: 540, playlist: 'test.url' }
+            codecs: 'avc1.66.30,mp4a.40.2', bandwidth: 540, playlist: 'test.url' }
 item = M3u8::PlaylistItem.new options
 ```
 Just get the codec string for custom use:
@@ -110,7 +110,7 @@ playlist.items.first
 Create a new playlist item with options:
 ```ruby
 options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-            profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
+            profile: 'high', level: 4.1, audio_codec: 'aac-lc', bandwidth: 540, 
             playlist: 'test.url' }
 item = M3u8::PlaylistItem.new options
 #add it to the top of the playlist
