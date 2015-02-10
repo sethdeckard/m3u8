@@ -2,7 +2,7 @@ module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
-    attr_accessor :program_id, :width, :height, :codecs, :bandwidth, :playlist,
+    attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
@@ -50,7 +50,7 @@ module M3u8
     def m3u8_format
       return %(#EXT-X-I-FRAME-STREAM-INF:#{attributes},URI="#{uri}") if iframe
 
-      "#EXT-X-STREAM-INF:#{attributes}\n#{playlist}"
+      "#EXT-X-STREAM-INF:#{attributes}\n#{uri}"
     end
 
     def attributes

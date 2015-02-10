@@ -184,7 +184,7 @@ module M3u8
     def parse_next_line(line)
       value = line.gsub "\n", ''
       if master
-        item.playlist = value
+        item.uri = value
       else
         item.segment = value
       end

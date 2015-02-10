@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe M3u8::Writer do
   it 'should render master playlist' do
-    options = { playlist: 'playlist_url', bandwidth: 6400,
+    options = { uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
@@ -17,7 +17,7 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { program_id: '1', playlist: 'playlist_url', bandwidth: 6400,
+    options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
@@ -32,7 +32,7 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
-    options = { program_id: '2', playlist: 'playlist_url', bandwidth: 50_000,
+    options = { program_id: '2', uri: 'playlist_url', bandwidth: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
@@ -50,11 +50,11 @@ describe M3u8::Writer do
     expect(io.string).to eq output
 
     playlist = M3u8::Playlist.new
-    options = { program_id: '1', playlist: 'playlist_url', bandwidth: 6400,
+    options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist.items.push item
-    options = { program_id: '2', playlist: 'playlist_url', bandwidth: 50_000,
+    options = { program_id: '2', uri: 'playlist_url', bandwidth: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options

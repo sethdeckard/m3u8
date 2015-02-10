@@ -1,4 +1,4 @@
-### UNRELEASED - Breaking: renamed MediaItem.group to MediaItem.group_id and PlaylistItem.bitrate to PlaylistItem.bandwidth. Added support for EXT-X-I-FRAME-STREAM-INF, EXT-X-I-FRAMES-ONLY, EXT-X-BYTERANGE, and EXT-X-SESSION-DATA.
+### UNRELEASED - BREAKING: renamed PlaylistItem.playlist to PlaylistItem.uri, MediaItem.group to MediaItem.group_id, and PlaylistItem.bitrate to PlaylistItem.bandwidth. Added support for EXT-X-I-FRAME-STREAM-INF, EXT-X-I-FRAMES-ONLY, EXT-X-BYTERANGE, and EXT-X-SESSION-DATA.
 
 ### 0.4.0 (1/20/2015) - BREAKING: Playlist.audio is now Playlist.audio_codec, audio now represents the newly supported AUDIO attribute, please update your code accordingly. Added support for all EXT-X-MEDIA attributes as well as the following EXT-X-STREAM-INF attributes: AVERAGE-BANDWIDTH, AUDIO, VIDEO, SUBTILES, and CLOSED-CAPTIONS. This means the library now supports alternate audio / camera angles as well as subtitles and closed captions. The EXT-X-PLAYLIST-TYPE attribute is now supported as Playlist.type. SegmentItems now support comments (Thanks @elsurudo). A bug was also fixed in Reader that prevented reuse of the instance.
 

@@ -9,7 +9,7 @@ describe M3u8::Reader do
 
     item = playlist.items[0]
     expect(item).to be_a(M3u8::PlaylistItem)
-    expect(item.playlist).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
+    expect(item.uri).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
     expect(item.program_id).to eq('1')
     expect(item.width).to eq(1920)
     expect(item.height).to eq(1080)
