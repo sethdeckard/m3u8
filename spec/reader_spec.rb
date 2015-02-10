@@ -16,11 +16,27 @@ describe M3u8::Reader do
     expect(item.resolution).to eq('1920x1080')
     expect(item.codecs).to eq('avc1.640028,mp4a.40.2')
     expect(item.bandwidth).to eq(5_042_000)
+    expect(item.iframe).to be false
 
     expect(playlist.items.size).to eq 6
 
     item = playlist.items.last
     expect(item.resolution).to be_nil
+  end
+
+  it 'should parse master playlist with I-Frames' do
+    file = File.open 'spec/fixtures/master_iframes.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+    expect(playlist.master?).to be true
+
+    expect(playlist.items.size).to eq 7
+
+    item = playlist.items[1]
+    expect(item).to be_a(M3u8::PlaylistItem)
+    expect(item.bandwidth).to eq(86_000)
+    expect(item.iframe).to be true
+    expect(item.uri).to eq 'low/iframe.m3u8'
   end
 
   it 'should parse segment playlist' do

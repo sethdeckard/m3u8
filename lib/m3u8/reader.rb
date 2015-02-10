@@ -9,6 +9,7 @@ module M3u8
     TARGET_START = '#EXT-X-TARGETDURATION:'
     IFRAME_START = '#EXT-X-I-FRAMES-ONLY'
     STREAM_START = '#EXT-X-STREAM-INF:'
+    STREAM_IFRAME_START = '#EXT-X-I-FRAME-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SESSION_DATA_START = '#EXT-X-SESSION-DATA:'
     SEGMENT_START = '#EXTINF:'
@@ -35,6 +36,8 @@ module M3u8
 
       if line.start_with? STREAM_START
         parse_stream line
+      elsif line.start_with? STREAM_IFRAME_START
+        parse_iframe_stream line
       elsif line.start_with? SEGMENT_START
         parse_segment line
       elsif line.start_with? MEDIA_START
@@ -95,6 +98,18 @@ module M3u8
       line = line.gsub STREAM_START, ''
       attributes = parse_attributes line
       parse_stream_attributes attributes
+    end
+
+    def parse_iframe_stream(line)
+      self.master = true
+      self.open = false
+
+      self.item = M3u8::PlaylistItem.new
+      item.iframe = true
+      line = line.gsub STREAM_IFRAME_START, ''
+      attributes = parse_attributes line
+      parse_stream_attributes attributes
+      playlist.items.push item
     end
 
     def parse_stream_attributes(attributes)

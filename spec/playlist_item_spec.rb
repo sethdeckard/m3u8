@@ -12,6 +12,7 @@ describe M3u8::PlaylistItem do
     expect(item.codecs).to eq 'avc'
     expect(item.bandwidth).to eq 540
     expect(item.playlist).to eq 'test.url'
+    expect(item.iframe).to be false
   end
 
   it 'should provide m3u8 format representation' do
@@ -39,6 +40,16 @@ describe M3u8::PlaylistItem do
     expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
                %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
                %(SUBTITLES="subs",CLOSED-CAPTIONS="caps"\ntest.url)
+    expect(output).to eq expected
+  end
+
+  it 'should provided m3u8 format with I-Frame option' do
+    hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', iframe: true,
+             video: 'test2', average_bandwidth: 550 }
+    item = M3u8::PlaylistItem.new(hash)
+    output = item.to_s
+    expected = %(#EXT-X-I-FRAME-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+               %(AVERAGE-BANDWIDTH=550,VIDEO="test2",URI="test.url")
     expect(output).to eq expected
   end
 

@@ -1,12 +1,14 @@
 module M3u8
-  # PlaylistItem represents a set of EXT-X-STREAM-INF attributes
+  # PlaylistItem represents a set of EXT-X-STREAM-INF or
+  # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth, :playlist,
-                  :audio_codec, :level, :profile, :video, :audio,
-                  :average_bandwidth, :subtitles, :closed_captions
+                  :audio_codec, :level, :profile, :video, :audio, :uri,
+                  :average_bandwidth, :subtitles, :closed_captions, :iframe
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
+      self.iframe = false
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
@@ -36,22 +38,31 @@ module M3u8
     def to_s
       validate
 
-      attributes = [program_id_format,
-                    resolution_format,
-                    codecs_format,
-                    bandwidth_format,
-                    average_bandwidth_format,
-                    audio_format,
-                    video_format,
-                    subtitles_format,
-                    closed_captions_format].compact.join(',')
-      "#EXT-X-STREAM-INF:#{attributes}\n#{playlist}"
+      m3u8_format
     end
 
     private
 
     def validate
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
+    end
+
+    def m3u8_format
+      return %(#EXT-X-I-FRAME-STREAM-INF:#{attributes},URI="#{uri}") if iframe
+
+      "#EXT-X-STREAM-INF:#{attributes}\n#{playlist}"
+    end
+
+    def attributes
+      [program_id_format,
+       resolution_format,
+       codecs_format,
+       bandwidth_format,
+       average_bandwidth_format,
+       audio_format,
+       video_format,
+       subtitles_format,
+       closed_captions_format].compact.join(',')
     end
 
     def program_id_format
