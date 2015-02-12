@@ -35,10 +35,9 @@ module M3u8
 
     def parse_line(line)
       return if line.start_with? PLAYLIST_START
-      return if parse_header_tags line
       return if parse_master_playlist_tags line
       return if parse_segment_tags line
-
+      return if parse_header_tags line
       parse_next_line line if !item.nil? && open
     end
 
@@ -58,8 +57,6 @@ module M3u8
       else
         return false
       end
-
-      true
     end
 
     def parse_master_playlist_tags(line)
@@ -74,8 +71,6 @@ module M3u8
       else
         return false
       end
-
-      true
     end
 
     def parse_segment_tags(line)
@@ -88,8 +83,6 @@ module M3u8
       else
         return false
       end
-
-      true
     end
 
     def parse_playlist_type(line)
