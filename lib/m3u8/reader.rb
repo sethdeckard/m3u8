@@ -1,4 +1,5 @@
 module M3u8
+  # Reader provides parsing of m3u8 playlists
   class Reader
     attr_accessor :playlist, :item, :open, :master
     PLAYLIST_START = '#EXTM3U'
@@ -12,6 +13,7 @@ module M3u8
     STREAM_IFRAME_START = '#EXT-X-I-FRAME-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SESSION_DATA_START = '#EXT-X-SESSION-DATA:'
+    KEY_START = '#EXT-X-KEY:'
     SEGMENT_START = '#EXTINF:'
     BYTERANGE_START = '#EXT-X-BYTERANGE:'
     RESOLUTION = 'RESOLUTION'
@@ -38,6 +40,8 @@ module M3u8
         parse_stream line
       elsif line.start_with? STREAM_IFRAME_START
         parse_iframe_stream line
+      elsif line.start_with? KEY_START
+        parse_key line
       elsif line.start_with? SEGMENT_START
         parse_segment line
       elsif line.start_with? MEDIA_START
@@ -132,6 +136,11 @@ module M3u8
     def parse_resolution(resolution)
       item.width = resolution.split('x')[0].to_i
       item.height = resolution.split('x')[1].to_i
+    end
+
+    def parse_key(line)
+      item = M3u8::KeyItem.parse line
+      playlist.items.push item
     end
 
     def parse_segment(line)

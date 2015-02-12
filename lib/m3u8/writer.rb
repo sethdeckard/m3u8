@@ -1,4 +1,5 @@
 module M3u8
+  # Writer provides generation of text output of playlists in m3u8 format
   class Writer
     attr_accessor :io
 

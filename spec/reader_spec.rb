@@ -169,4 +169,17 @@ describe M3u8::Reader do
     expect(item.data_id).to eq 'com.example.lyrics'
     expect(item.uri).to eq 'lyrics.json'
   end
+
+  it 'should parse encrypted playlist' do
+    file = File.open 'spec/fixtures/encrypted.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 6
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::KeyItem
+    expect(item.method).to eq 'AES-128'
+    expect(item.uri).to eq 'https://priv.example.com/key.php?r=52'
+  end
 end

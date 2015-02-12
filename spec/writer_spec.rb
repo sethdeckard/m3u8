@@ -97,20 +97,28 @@ describe M3u8::Writer do
     writer.write playlist
     expect(io.string).to eq output
 
+    options = { method: 'AES-128', uri: 'http://test.key',
+                iv: 'D512BBF', key_format: 'identity',
+                key_format_versions: '1/3' }
+    item = M3u8::KeyItem.new options
+    playlist.items.push item
+
     options = { duration: 11.261233, segment: '1080-7mbps00001.ts' }
     item =  M3u8::SegmentItem.new options
     playlist.items.push item
 
     output = "#EXTM3U\n" \
-      "#EXT-X-VERSION:3\n" \
-      "#EXT-X-MEDIA-SEQUENCE:0\n" \
-      "#EXT-X-ALLOW-CACHE:YES\n" \
-      "#EXT-X-TARGETDURATION:10\n" \
-      "#EXTINF:11.344644,\n" \
-      "1080-7mbps00000.ts\n" \
-      "#EXTINF:11.261233,\n" \
-      "1080-7mbps00001.ts\n" \
-      "#EXT-X-ENDLIST\n"
+             "#EXT-X-VERSION:3\n" \
+             "#EXT-X-MEDIA-SEQUENCE:0\n" \
+             "#EXT-X-ALLOW-CACHE:YES\n" \
+             "#EXT-X-TARGETDURATION:10\n" \
+             "#EXTINF:11.344644,\n" \
+             "1080-7mbps00000.ts\n" +
+             %(#EXT-X-KEY:METHOD=AES-128,URI="http://test.key",) +
+             %(IV=D512BBF,KEYFORMAT="identity",KEYFORMATVERSIONS="1/3"\n) +
+             "#EXTINF:11.261233,\n" +
+             "1080-7mbps00001.ts\n" \
+             "#EXT-X-ENDLIST\n"
     io = StringIO.open
     writer = M3u8::Writer.new io
     writer.write playlist
