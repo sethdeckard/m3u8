@@ -43,63 +43,53 @@ module M3u8
     end
 
     def parse_header_tags(line)
-      parsed = false
       if line.start_with? PLAYLIST_TYPE_START
         parse_playlist_type line
-        parsed = true
       elsif line.start_with? VERSION_START
         parse_version line
-        parsed = true
       elsif line.start_with? SEQUENCE_START
         parse_sequence line
-        parsed = true
       elsif line.start_with? CACHE_START
         parse_cache line
-        parsed = true
       elsif line.start_with? TARGET_START
         parse_target line
-        parsed = true
       elsif line.start_with? IFRAME_START
         playlist.iframes_only = true
-        parsed = true
+      else
+        return false
       end
 
-      parsed
+      true
     end
 
     def parse_master_playlist_tags(line)
-      parsed = false
       if line.start_with? STREAM_START
         parse_stream line
-        parsed = true
       elsif line.start_with? STREAM_IFRAME_START
         parse_iframe_stream line
-        parsed = true
       elsif line.start_with? MEDIA_START
         parse_media line
-        parsed = true
       elsif line.start_with? SESSION_DATA_START
         parse_session_data line
-        parsed = true
+      else
+        return false
       end
 
-      parsed
+      true
     end
 
     def parse_segment_tags(line)
-      parsed = false
       if line.start_with? KEY_START
         parse_key line
-        parsed = true
       elsif line.start_with? SEGMENT_START
         parse_segment line
-        parsed = true
       elsif line.start_with? BYTERANGE_START
         parse_byterange line
-        parsed = true
+      else
+        return false
       end
 
-      parsed
+      true
     end
 
     def parse_playlist_type(line)
