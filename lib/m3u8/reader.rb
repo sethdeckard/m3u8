@@ -35,42 +35,68 @@ module M3u8
 
     def parse_line(line)
       return if line.start_with? PLAYLIST_START
+      return if parse_header_tags line
+      return if parse_master_playlist_tags line
+      return if parse_segment_tags line
 
-      if line.start_with? STREAM_START
-        parse_stream line
-      elsif line.start_with? STREAM_IFRAME_START
-        parse_iframe_stream line
-      elsif line.start_with? KEY_START
-        parse_key line
-      elsif line.start_with? SEGMENT_START
-        parse_segment line
-      elsif line.start_with? MEDIA_START
-        parse_media line
-      elsif line.start_with? BYTERANGE_START
-        parse_byterange line
-      elsif line.start_with? SESSION_DATA_START
-        parse_session_data line
-      elsif !item.nil? && open
-        parse_next_line line
-      else
-        parse_header line
-      end
+      parse_next_line line if !item.nil? && open
     end
 
-    def parse_header(line)
+    def parse_header_tags(line)
       if line.start_with? PLAYLIST_TYPE_START
         parse_playlist_type line
+        return true
       elsif line.start_with? VERSION_START
         parse_version line
+        return true
       elsif line.start_with? SEQUENCE_START
         parse_sequence line
+        return true
       elsif line.start_with? CACHE_START
         parse_cache line
+        return true
       elsif line.start_with? TARGET_START
         parse_target line
+        return true
       elsif line.start_with? IFRAME_START
         playlist.iframes_only = true
+        return true
       end
+
+      false
+    end
+
+    def parse_master_playlist_tags(line)
+      if line.start_with? STREAM_START
+        parse_stream line
+        return true
+      elsif line.start_with? STREAM_IFRAME_START
+        parse_iframe_stream line
+        return true
+      elsif line.start_with? MEDIA_START
+        parse_media line
+        return true
+      elsif line.start_with? SESSION_DATA_START
+        parse_session_data line
+        return true
+      end
+
+      false
+    end
+
+    def parse_segment_tags(line)
+      if line.start_with? KEY_START
+        parse_key line
+        return true
+      elsif line.start_with? SEGMENT_START
+        parse_segment line
+        return true
+      elsif line.start_with? BYTERANGE_START
+        parse_byterange line
+        return true
+      end
+
+      false
     end
 
     def parse_playlist_type(line)
