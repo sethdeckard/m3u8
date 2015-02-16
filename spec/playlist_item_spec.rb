@@ -3,7 +3,7 @@ require 'spec_helper'
 describe M3u8::PlaylistItem do
   it 'should initialize with hash' do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bandwidth: 540, playlist: 'test.url' }
+             bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     expect(item.program_id).to eq 1
     expect(item.width).to eq 1920
@@ -11,27 +11,28 @@ describe M3u8::PlaylistItem do
     expect(item.resolution).to eq '1920x1080'
     expect(item.codecs).to eq 'avc'
     expect(item.bandwidth).to eq 540
-    expect(item.playlist).to eq 'test.url'
+    expect(item.uri).to eq 'test.url'
+    expect(item.iframe).to be false
   end
 
   it 'should provide m3u8 format representation' do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bandwidth: 540, playlist: 'test.url' }
+             bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
 
-    hash = { program_id: 1, codecs: 'avc', bandwidth: 540, 
-             playlist: 'test.url' }
+    hash = { program_id: 1, codecs: 'avc', bandwidth: 540,
+             uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,' +
                %(CODECS="avc",BANDWIDTH=540\ntest.url)
     expect(output).to eq expected
 
-    hash = { codecs: 'avc', bandwidth: 540, playlist: 'test.url', audio: 'test',
+    hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', audio: 'test',
              video: 'test2', average_bandwidth: 550, subtitles: 'subs',
              closed_captions: 'caps' }
     item = M3u8::PlaylistItem.new(hash)
@@ -39,6 +40,16 @@ describe M3u8::PlaylistItem do
     expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
                %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
                %(SUBTITLES="subs",CLOSED-CAPTIONS="caps"\ntest.url)
+    expect(output).to eq expected
+  end
+
+  it 'should provided m3u8 format with I-Frame option' do
+    hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', iframe: true,
+             video: 'test2', average_bandwidth: 550 }
+    item = M3u8::PlaylistItem.new(hash)
+    output = item.to_s
+    expected = %(#EXT-X-I-FRAME-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+               %(AVERAGE-BANDWIDTH=550,VIDEO="test2",URI="test.url")
     expect(output).to eq expected
   end
 
@@ -120,7 +131,7 @@ describe M3u8::PlaylistItem do
   end
 
   it 'should raise error if codecs are missing' do
-    params = { program_id: 1, bandwidth: 540, playlist: 'test.url' }
+    params = { program_id: 1, bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new params
     message = 'Audio or video codec info should be provided.'
     expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)

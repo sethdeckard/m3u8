@@ -8,9 +8,12 @@ describe M3u8::SegmentItem do
     expect(item.segment).to eq 'test.ts'
     expect(item.comment).to be_nil
 
-    hash = { duration: 10.991, segment: 'test.ts', comment: 'anything' }
+    hash = { duration: 10.991, segment: 'test.ts', comment: 'anything',
+             byterange_length: 4500, byterange_start: 600 }
     item = M3u8::SegmentItem.new(hash)
     expect(item.duration).to eq 10.991
+    expect(item.byterange_length).to eq 4500
+    expect(item.byterange_start).to eq 600
     expect(item.segment).to eq 'test.ts'
     expect(item.comment).to eq 'anything'
   end
@@ -26,6 +29,20 @@ describe M3u8::SegmentItem do
     item = M3u8::SegmentItem.new(hash)
     output = item.to_s
     expected = "#EXTINF:10.991,anything\ntest.ts"
+    expect(output).to eq expected
+
+    hash = { duration: 10.991, segment: 'test.ts', comment: 'anything',
+             byterange_length: 4500, byterange_start: 600 }
+    item = M3u8::SegmentItem.new(hash)
+    output = item.to_s
+    expected = "#EXTINF:10.991,anything\n#EXT-X-BYTERANGE:4500@600\ntest.ts"
+    expect(output).to eq expected
+
+    hash = { duration: 10.991, segment: 'test.ts', comment: 'anything',
+             byterange_length: 4500 }
+    item = M3u8::SegmentItem.new(hash)
+    output = item.to_s
+    expected = "#EXTINF:10.991,anything\n#EXT-X-BYTERANGE:4500\ntest.ts"
     expect(output).to eq expected
   end
 end

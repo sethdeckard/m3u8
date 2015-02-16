@@ -24,100 +24,114 @@ Or install it yourself as:
 
     $ gem install m3u8
 
-## Usage (Generation)
-
-
-	require 'm3u8'
-	
-	#create a master playlist and add child playlists for adaptive bitrate streaming:
-	playlist = M3u8::Playlist.new
-    #create a new playlist item with options
-    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-                profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
-                playlist: 'test.url' }
-    item = M3u8::PlaylistItem.new options
-    playlist.items.push item
-
-    #alternatively you can set codecs rather than having it generated automatically:
-    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-                codecs: 'avc1.66.30,mp4a.40.2', bitrate: 540, playlist: 'test.url' }
-    item = M3u8::PlaylistItem.new options
+## Usage (creating playlists)
     
-    #create a standard playlist and add MPEG-TS segments:
-    playlist = M3u8::Playlist.new
-    #create a new segment item with options
-    item = M3u8::SegmentItem.new duration: 11, segment: 'test.ts'
-    playlist.items.push item
+Create a master playlist and add child playlists for adaptive bitrate streaming:
+```ruby
+require 'm3u8'
+playlist = M3u8::Playlist.new
+```
+
+Create a new playlist item with options:
+```ruby
+options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+            audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
+item = M3u8::PlaylistItem.new options
+playlist.items.push item
+```    
+ 
+Add alternate audio, camera angles, closed captions and subtitles by creating MediaItem instances and adding them to the Playlist:
+
+```ruby
+hash = { type: 'AUDIO', group_id: 'audio-lo', language: 'fre',
+         assoc_language: 'spoken', name: 'Francais', autoselect: true,
+         default: false, forced: true, uri: 'frelo/prog_index.m3u8' }
+item = M3u8::MediaItem.new(hash)
+playlist.items.push item
+```
+  
+Create a standard playlist and add MPEG-TS segments via SegmentItem. You can also specify options for this type of playlist, however these options are ignored if playlist becomes a master playlist (anything but segments added):
+```ruby
+options = { version: 1, cache: false, target: 12, sequence: 1 }
+playlist = M3u8::Playlist.new options
+
+item = M3u8::SegmentItem.new duration: 11, segment: 'test.ts'
+playlist.items.push item
+```
     
-    #just get the codec string for custom use
-    options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
-    codecs = M3u8::Playlist.codecs options
-    # => "avc1.66.30,mp4a.40.2"
-	
-	#specify options for playlist, these are ignored if playlist becomes a master playlist
-    # (child playlist added):
-	options = { version: 1, cache: false, target: 12, sequence: 1 }
-    playlist = M3u8::Playlist.new options
+You can pass an IO object to the write method:
+```ruby
+require 'tempfile'
+f = Tempfile.new 'test'
+playlist.write f
+```
+You can also access the playlist as a string:
+```ruby
+playlist.to_s
+``` 
+M3u8::Writer is the class that handles generating the playlist output.
+
+Alternatively you can set codecs rather than having it generated automatically:
+```ruby
+options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
+            bandwidth: 540, uri: 'test.url' }
+item = M3u8::PlaylistItem.new options
+```
+Just get the codec string for custom use:
+```ruby
+options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
+codecs = M3u8::Playlist.codecs options
+# => "avc1.66.30,mp4a.40.2"
+```        
+Values for audio_codec (codec name): aac-lc, he-aac, mp3
     
-    #You can pass an IO object to the write method
-    require 'tempfile'
-    f = Tempfile.new 'test'
-    playlist.write f
-   
-  	#You can also access the playlist as a string
-  	playlist.to_s
-
-    #There is a M3u8::Writer class if you want more control over the write process
+Possible values for profile (H.264 Profile): baseline, main, high.
     
-    #values for :audio_codec (Codec name)
-    #aac-lc, he-aac, mp3
+Possible values for level (H.264 Level): 3.0, 3.1, 4.0, 4.1. 
+
+Not all Levels and Profiles can be combined, consult H.264 documentation
+
+## Parsing Usage
+
+```ruby
+file = File.open 'spec/fixtures/master.m3u8'
+playlist = M3u8::Playlist.read file
+playlist.master?
+# => true
+```
+Acess items in playlist:
+```ruby
+playlist.items.first
+#  => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
+#  @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
+#  @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
+```
+Create a new playlist item with options:
+```ruby
+options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
+            audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
+item = M3u8::PlaylistItem.new options
+#add it to the top of the playlist
+playlist.items.insert 0, item
+```
+M3u8::Reader is the class handles parsing if you want more control over the process.
     
-    #values for :profile (H.264 Profile)
-    #baseline, main, high
-    
-    #values for :level
-    #3.0, 3.1, 4.0, 4.1
-    
-    #not all Levels and Profiles can be combined, consult H.264 documentation
-
-## Parsing Usage (new in v.2.0)
-
-    file = File.open 'spec/fixtures/master.m3u8'
-    playlist = M3u8::Playlist.read file
-    playlist.master?
-    # => true
-
-    #acess items in playlist:
-    playlist.items
-
-    playlist.items.first
-    #  => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
-    #  @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
-    #  @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
-
-    #create a new playlist item with options
-    options = { program_id: 1, width: 1920, height: 1080, width: 1920, height: 1080, 
-                profile: 'high', level: 4.1, audio_codec: 'aac-lc', bitrate: 540, 
-                playlist: 'test.url' }
-    item = M3u8::PlaylistItem.new options
-    #add it to the top of the playlist
-    playlist.items.insert 0, item
-
-    #There is a M3u8::Reader class if you want more control over parsing
-	
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
+* Supports I-Frames (Intra frames) and Byte Ranges in Segments.
+* Supports subtitles, closed captions, alternate audio and video, and comments.
+# Supports Session Data in master playlists.
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 * Can read playlists into a model (Playlist and Items) from an IO object.
+* Any tag or attribute supported by the object model is supported both parsing and generation of m3u8 playlists.
 
 ## Missing (but planned) Features 
-* Support for encryption keys and DRM.
-* Support I-Frame and Byte-Range.
-* Validation of all attributes to match the spec completely.
-* Support for all additional attributes in the latest version of the spec.
+* Support for encrypted segments.
+* Validation of all attributes and their values to match the rules defined in the spec.
+* Still missing support for a few tags and attributes.
 
 ## Contributing
 

@@ -9,18 +9,34 @@ describe M3u8::Reader do
 
     item = playlist.items[0]
     expect(item).to be_a(M3u8::PlaylistItem)
-    expect(item.playlist).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
+    expect(item.uri).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
     expect(item.program_id).to eq('1')
     expect(item.width).to eq(1920)
     expect(item.height).to eq(1080)
     expect(item.resolution).to eq('1920x1080')
     expect(item.codecs).to eq('avc1.640028,mp4a.40.2')
     expect(item.bandwidth).to eq(5_042_000)
+    expect(item.iframe).to be false
 
     expect(playlist.items.size).to eq 6
 
     item = playlist.items.last
     expect(item.resolution).to be_nil
+  end
+
+  it 'should parse master playlist with I-Frames' do
+    file = File.open 'spec/fixtures/master_iframes.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+    expect(playlist.master?).to be true
+
+    expect(playlist.items.size).to eq 7
+
+    item = playlist.items[1]
+    expect(item).to be_a(M3u8::PlaylistItem)
+    expect(item.bandwidth).to eq(86_000)
+    expect(item.iframe).to be true
+    expect(item.uri).to eq 'low/iframe.m3u8'
   end
 
   it 'should parse segment playlist' do
@@ -40,6 +56,26 @@ describe M3u8::Reader do
     expect(item.comment).to be_nil
 
     expect(playlist.items.size).to eq 139
+  end
+
+  it 'should parse I-Frame playlist' do
+    file = File.open 'spec/fixtures/iframes.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.iframes_only).to be true
+    expect(playlist.items.size).to eq 3
+
+    item = playlist.items[0]
+    expect(item).to be_a(M3u8::SegmentItem)
+    expect(item.duration).to eq 4.12
+    expect(item.byterange_length).to eq 9400
+    expect(item.byterange_start).to eq 376
+    expect(item.segment).to eq 'segment1.ts'
+
+    item = playlist.items[1]
+    expect(item.byterange_length).to eq 7144
+    expect(item.byterange_start).to be_nil
   end
 
   it 'should parse segment playlist with comments' do
@@ -122,5 +158,31 @@ describe M3u8::Reader do
     playlist = reader.read file
 
     expect(playlist.items.size).to eq 6
+  end
+
+  it 'should parse playlist with session data' do
+    file = File.open 'spec/fixtures/session_data.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 3
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::SessionDataItem
+    expect(item.data_id).to eq 'com.example.lyrics'
+    expect(item.uri).to eq 'lyrics.json'
+  end
+
+  it 'should parse encrypted playlist' do
+    file = File.open 'spec/fixtures/encrypted.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 6
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::KeyItem
+    expect(item.method).to eq 'AES-128'
+    expect(item.uri).to eq 'https://priv.example.com/key.php?r=52'
   end
 end
