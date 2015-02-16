@@ -148,7 +148,7 @@ module M3u8
       end
     end
 
-    def parse_segment_discontinuity_tag(line)
+    def parse_segment_discontinuity_tag(*)
       self.master = false
       self.open = false
 

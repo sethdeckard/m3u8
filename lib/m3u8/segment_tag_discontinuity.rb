@@ -2,7 +2,7 @@ module M3u8
   class SegmentTagDiscontinuity
     attr_accessor :tag
 
-    def initialize()
+    def initialize
     end
 
     def to_s
