@@ -124,18 +124,17 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * Supports I-Frames (Intra frames) and Byte Ranges in Segments.
 * Supports subtitles, closed captions, alternate audio and video, and comments.
 # Supports Session Data in master playlists.
+* Supports keys for encrypted media segments (EXT-X-KEY).
+* Supports EXT-X-DISCONTINUITY in media segments.
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 * Can read playlists into a model (Playlist and Items) from an IO object.
 * Any tag or attribute supported by the object model is supported both parsing and generation of m3u8 playlists.
 
 ## Missing (but planned) Features 
-* Support for encrypted segments.
 * Validation of all attributes and their values to match the rules defined in the spec.
 * Still missing support for a few tags and attributes.
 
 ## Contributing
-
-(Be sure to check to dev branch to make sure I'm not already working on it)
 
 1. Fork it ( https://github.com/sethdeckard/m3u8/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
