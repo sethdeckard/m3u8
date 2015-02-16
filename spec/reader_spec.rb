@@ -55,7 +55,7 @@ describe M3u8::Reader do
     expect(item.duration).to eq 11.344644
     expect(item.comment).to be_nil
 
-    expect(playlist.items.size).to eq 138
+    expect(playlist.items.size).to eq 139
   end
 
   it 'should parse I-Frame playlist' do
@@ -94,7 +94,10 @@ describe M3u8::Reader do
     expect(item.duration).to eq 11.344644
     expect(item.comment).to eq 'anything'
 
-    expect(playlist.items.size).to eq 138
+    item = playlist.items[1]
+    expect(item).to be_a(M3u8::SegmentTagDiscontinuity)
+
+    expect(playlist.items.size).to eq 139
   end
 
   it 'should parse variant playlist with audio options and groups' do

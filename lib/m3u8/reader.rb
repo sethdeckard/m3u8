@@ -15,6 +15,7 @@ module M3u8
     SESSION_DATA_START = '#EXT-X-SESSION-DATA:'
     KEY_START = '#EXT-X-KEY:'
     SEGMENT_START = '#EXTINF:'
+    SEGMENT_DISCONTINUITY_TAG_START = '#EXT-X-DISCONTINUITY'
     BYTERANGE_START = '#EXT-X-BYTERANGE:'
     RESOLUTION = 'RESOLUTION'
     BANDWIDTH = 'BANDWIDTH'
@@ -66,6 +67,8 @@ module M3u8
         parse_iframe_stream line
       elsif line.start_with? MEDIA_START
         parse_media line
+      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
+        parse_segment_discontinuity_tag line
       elsif line.start_with? SESSION_DATA_START
         parse_session_data line
       else
@@ -143,6 +146,14 @@ module M3u8
           set_value name, value
         end
       end
+    end
+
+    def parse_segment_discontinuity_tag(*)
+      self.master = false
+      self.open = false
+
+      self.item = M3u8::SegmentTagDiscontinuity.new
+      playlist.items.push item
     end
 
     def parse_resolution(resolution)
