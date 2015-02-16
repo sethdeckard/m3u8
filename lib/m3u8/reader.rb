@@ -1,6 +1,7 @@
 module M3u8
   # Reader provides parsing of m3u8 playlists
   class Reader
+    include M3u8
     attr_accessor :playlist, :item, :open, :master
     PLAYLIST_START = '#EXTM3U'
     PLAYLIST_TYPE_START = '#EXT-X-PLAYLIST-TYPE:'
@@ -17,12 +18,6 @@ module M3u8
     SEGMENT_START = '#EXTINF:'
     SEGMENT_DISCONTINUITY_TAG_START = '#EXT-X-DISCONTINUITY'
     BYTERANGE_START = '#EXT-X-BYTERANGE:'
-    RESOLUTION = 'RESOLUTION'
-    BANDWIDTH = 'BANDWIDTH'
-    AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
-    AUTOSELECT = 'AUTOSELECT'
-    DEFAULT = 'DEFAULT'
-    FORCED = 'FORCED'
 
     def read(input)
       self.playlist = Playlist.new
@@ -164,27 +159,8 @@ module M3u8
     def parse_media(line)
       self.open = false
       self.item = M3u8::MediaItem.new
-      line = line.gsub MEDIA_START, ''
-      attributes = parse_attributes line
-      parse_media_attributes attributes
+      item.parse line
       playlist.items.push item
-    end
-
-    def parse_media_attributes(attributes)
-      attributes.each do |pair|
-        name = pair[0]
-        value = parse_value pair[1]
-        case name
-        when AUTOSELECT
-          item.autoselect = parse_yes_no value
-        when DEFAULT
-          item.default = parse_yes_no value
-        when FORCED
-          item.forced = parse_yes_no value
-        else
-          set_value name, value
-        end
-      end
     end
 
     def parse_next_line(line)
@@ -196,23 +172,6 @@ module M3u8
       end
       playlist.items.push item
       self.open = false
-    end
-
-    def parse_yes_no(string)
-      string == 'YES' ? true : false
-    end
-
-    def parse_attributes(line)
-      line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
-    end
-
-    def parse_value(value)
-      value.gsub("\n", '').gsub('"', '')
-    end
-
-    def set_value(name, value)
-      name = name.downcase.gsub('-', '_')
-      item.instance_variable_set("@#{name}", value)
     end
   end
 end

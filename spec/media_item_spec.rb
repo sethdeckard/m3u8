@@ -22,4 +22,22 @@ describe M3u8::MediaItem do
                'DEFAULT=NO,URI="frelo/prog_index.m3u8",FORCED=YES'
     expect(output).to eq expected
   end
+
+  it 'should parse m3u8 text into instance' do
+    format = '#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio-lo",LANGUAGE="fre",' \
+             'ASSOC-LANGUAGE="spoken",NAME="Francais",AUTOSELECT=YES,' +
+             %("DEFAULT=NO,URI="frelo/prog_index.m3u8",FORCED=YES\n")
+    item = M3u8::MediaItem.new
+    item.parse format
+
+    expect(item.type).to eq 'AUDIO'
+    expect(item.group_id).to eq 'audio-lo'
+    expect(item.language).to eq 'fre'
+    expect(item.assoc_language).to eq 'spoken'
+    expect(item.name).to eq 'Francais'
+    expect(item.autoselect).to be true
+    expect(item.default).to be false
+    expect(item.uri).to eq 'frelo/prog_index.m3u8'
+    expect(item.forced).to be true
+  end
 end

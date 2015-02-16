@@ -14,7 +14,11 @@ require 'm3u8/error'
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
   def parse_attributes(line)
-    array = line.scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+    array = line.gsub("\n", '').scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
     Hash[array.map { |key, value| [key, value.gsub('"', '')] }]
+  end
+
+  def parse_yes_no(value)
+    value == 'YES' ? true : false
   end
 end
