@@ -10,6 +10,7 @@ module M3u8
     STREAM_START = '#EXT-X-STREAM-INF:'
     MEDIA_START = '#EXT-X-MEDIA:'
     SEGMENT_START = '#EXTINF:'
+    SEGMENT_DISCONTINUITY_TAG_START = '#EXT-X-DISCONTINUITY'
     RESOLUTION = 'RESOLUTION'
     BANDWIDTH = 'BANDWIDTH'
     AVERAGE_BANDWIDTH = 'AVERAGE-BANDWIDTH'
@@ -36,6 +37,8 @@ module M3u8
         parse_segment line
       elsif line.start_with? MEDIA_START
         parse_media line
+      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
+        parse_segment_discontinuity_tag line
       elsif !item.nil? && open
         parse_next_line line
       else
@@ -103,6 +106,14 @@ module M3u8
           set_value name, value
         end
       end
+    end
+
+    def parse_segment_discontinuity_tag(line)
+      self.master = false
+      self.open = false
+
+      self.item = M3u8::SegmentTagDiscontinuity.new
+      playlist.items.push item
     end
 
     def parse_resolution(resolution)
