@@ -114,9 +114,7 @@ module M3u8
       self.open = true
 
       self.item = M3u8::PlaylistItem.new
-      line = line.gsub STREAM_START, ''
-      attributes = parse_attributes line
-      parse_stream_attributes attributes
+      item.parse line
     end
 
     def parse_iframe_stream(line)
@@ -124,28 +122,9 @@ module M3u8
       self.open = false
 
       self.item = M3u8::PlaylistItem.new
+      item.parse line
       item.iframe = true
-      line = line.gsub STREAM_IFRAME_START, ''
-      attributes = parse_attributes line
-      parse_stream_attributes attributes
       playlist.items.push item
-    end
-
-    def parse_stream_attributes(attributes)
-      attributes.each do |pair|
-        name = pair[0]
-        value = parse_value pair[1]
-        case name
-        when RESOLUTION
-          parse_resolution value
-        when BANDWIDTH
-          item.bandwidth = value.to_i
-        when AVERAGE_BANDWIDTH
-          item.average_bandwidth = value.to_i
-        else
-          set_value name, value
-        end
-      end
     end
 
     def parse_segment_discontinuity_tag(*)
@@ -154,11 +133,6 @@ module M3u8
 
       self.item = M3u8::DiscontinuityItem.new
       playlist.items.push item
-    end
-
-    def parse_resolution(resolution)
-      item.width = resolution.split('x')[0].to_i
-      item.height = resolution.split('x')[1].to_i
     end
 
     def parse_key(line)

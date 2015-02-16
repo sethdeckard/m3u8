@@ -2,6 +2,7 @@ module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
+    include M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe
@@ -12,6 +13,19 @@ module M3u8
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
+    end
+
+    def parse(text)
+      attributes = parse_attributes text
+      options = { program_id: attributes['PROGRAM-ID'],
+                  codecs: attributes['CODECS'],
+                  bandwidth: attributes['BANDWIDTH'].to_i,
+                  average_bandwidth: attributes['AVERAGE-BANDWIDTH'].to_i,
+                  video: attributes['VIDEO'], audio: attributes['AUDIO'],
+                  uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
+                  closed_captions: attributes['CLOSED-CAPTIONS'] }
+      initialize options
+      parse_resolution attributes['RESOLUTION']
     end
 
     def resolution
@@ -42,6 +56,12 @@ module M3u8
     end
 
     private
+
+    def parse_resolution(resolution)
+      return if resolution.nil?
+      self.width = resolution.split('x')[0].to_i
+      self.height = resolution.split('x')[1].to_i
+    end
 
     def validate
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
