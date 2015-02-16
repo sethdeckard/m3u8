@@ -67,8 +67,6 @@ module M3u8
         parse_iframe_stream line
       elsif line.start_with? MEDIA_START
         parse_media line
-      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
-        parse_segment_discontinuity_tag line
       elsif line.start_with? SESSION_DATA_START
         parse_session_data line
       else
@@ -81,6 +79,8 @@ module M3u8
         parse_key line
       elsif line.start_with? SEGMENT_START
         parse_segment line
+      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
+        parse_segment_discontinuity_tag line
       elsif line.start_with? BYTERANGE_START
         parse_byterange line
       else
