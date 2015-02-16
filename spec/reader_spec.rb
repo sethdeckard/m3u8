@@ -95,7 +95,7 @@ describe M3u8::Reader do
     expect(item.comment).to eq 'anything'
 
     item = playlist.items[1]
-    expect(item).to be_a(M3u8::SegmentTagDiscontinuity)
+    expect(item).to be_a(M3u8::DiscontinuityItem)
 
     expect(playlist.items.size).to eq 139
   end

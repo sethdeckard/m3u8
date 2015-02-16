@@ -152,7 +152,7 @@ module M3u8
       self.master = false
       self.open = false
 
-      self.item = M3u8::SegmentTagDiscontinuity.new
+      self.item = M3u8::DiscontinuityItem.new
       playlist.items.push item
     end
 
