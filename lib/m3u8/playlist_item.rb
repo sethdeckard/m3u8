@@ -17,10 +17,11 @@ module M3u8
 
     def parse(text)
       attributes = parse_attributes text
+      average = parse_average_bandwidth attributes['AVERAGE-BANDWIDTH']
       options = { program_id: attributes['PROGRAM-ID'],
                   codecs: attributes['CODECS'],
                   bandwidth: attributes['BANDWIDTH'].to_i,
-                  average_bandwidth: attributes['AVERAGE-BANDWIDTH'].to_i,
+                  average_bandwidth: average,
                   video: attributes['VIDEO'], audio: attributes['AUDIO'],
                   uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
                   closed_captions: attributes['CLOSED-CAPTIONS'] }
@@ -56,6 +57,10 @@ module M3u8
     end
 
     private
+
+    def parse_average_bandwidth(value)
+      value.to_i unless value.nil?
+    end
 
     def parse_resolution(resolution)
       return if resolution.nil?

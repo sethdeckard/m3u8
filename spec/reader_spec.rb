@@ -17,6 +17,7 @@ describe M3u8::Reader do
     expect(item.codecs).to eq('avc1.640028,mp4a.40.2')
     expect(item.bandwidth).to eq(5_042_000)
     expect(item.iframe).to be false
+    expect(item.average_bandwidth).to be_nil
 
     expect(playlist.items.size).to eq 6
 

@@ -35,15 +35,14 @@ describe M3u8::PlaylistItem do
     expect(item.uri).to eq 'test.url'
 
     format = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-             %(PROGRAM-ID=1,) +
-             %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
+             %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
     item = M3u8::PlaylistItem.new
     item.parse(format)
     expect(item.program_id).to eq '1'
     expect(item.codecs).to eq 'avc'
     expect(item.bandwidth).to eq 540
-    expect(item.average_bandwidth).to eq 550
+    expect(item.average_bandwidth).to be_nil
     expect(item.width).to be_nil
     expect(item.height).to be_nil
     expect(item.audio).to eq 'test'
