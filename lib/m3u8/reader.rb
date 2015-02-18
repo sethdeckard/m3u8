@@ -2,22 +2,14 @@ module M3u8
   # Reader provides parsing of m3u8 playlists
   class Reader
     include M3u8
-    attr_accessor :playlist, :item, :open, :master
-    PLAYLIST_START = '#EXTM3U'
-    PLAYLIST_TYPE_START = '#EXT-X-PLAYLIST-TYPE:'
-    VERSION_START = '#EXT-X-VERSION:'
-    SEQUENCE_START = '#EXT-X-MEDIA-SEQUENCE:'
-    CACHE_START = '#EXT-X-ALLOW-CACHE:'
-    TARGET_START = '#EXT-X-TARGETDURATION:'
-    IFRAME_START = '#EXT-X-I-FRAMES-ONLY'
-    STREAM_START = '#EXT-X-STREAM-INF:'
-    STREAM_IFRAME_START = '#EXT-X-I-FRAME-STREAM-INF:'
-    MEDIA_START = '#EXT-X-MEDIA:'
-    SESSION_DATA_START = '#EXT-X-SESSION-DATA:'
-    KEY_START = '#EXT-X-KEY:'
-    SEGMENT_START = '#EXTINF:'
-    SEGMENT_DISCONTINUITY_TAG_START = '#EXT-X-DISCONTINUITY'
-    BYTERANGE_START = '#EXT-X-BYTERANGE:'
+    attr_accessor :playlist, :item, :open, :master, :tags
+
+    def initialize(*)
+      @tags = [basic_tags,
+               media_segment_tags,
+               media_playlist_tags,
+               master_playlist_tags].inject(:merge)
+    end
 
     def read(input)
       self.playlist = Playlist.new
@@ -29,79 +21,66 @@ module M3u8
 
     private
 
+    def basic_tags
+      { '#EXTM3U' => proc {},
+        '#EXT-X-VERSION' => proc { |line| parse_version line }
+      }
+    end
+
+    def media_segment_tags
+      { '#EXTINF' => proc { |line| parse_segment line },
+        '#EXT-X-DISCONTINUITY' => proc { |line| parse_discontinuity line },
+        '#EXT-X-BYTERANGE' => proc { |line| parse_byterange line },
+        '#EXT-X-KEY' => proc { |line| parse_key line }
+      }
+    end
+
+    def media_playlist_tags
+      { '#EXT-X-MEDIA-SEQUENCE' => proc { |line| parse_sequence line },
+        '#EXT-X-ALLOW-CACHE' => proc { |line| parse_cache line },
+        '#EXT-X-TARGETDURATION' => proc { |line| parse_target line },
+        '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
+        '#EXT-X-PLAYLIST-TYPE' => proc { |line| parse_playlist_type line }
+      }
+    end
+
+    def master_playlist_tags
+      { '#EXT-X-MEDIA' => proc { |line| parse_media line },
+        '#EXT-X-SESSION-DATA' => proc { |line| parse_session_data line },
+        '#EXT-X-STREAM-INF' => proc { |line| parse_stream line },
+        '#EXT-X-I-FRAME-STREAM-INF' => proc { |line| parse_iframe_stream line }
+      }
+    end
+
     def parse_line(line)
-      return if line.start_with? PLAYLIST_START
-      return if parse_master_playlist_tags line
-      return if parse_segment_tags line
-      return if parse_header_tags line
+      return if match_tag(line)
       parse_next_line line if !item.nil? && open
     end
 
-    def parse_header_tags(line)
-      if line.start_with? PLAYLIST_TYPE_START
-        parse_playlist_type line
-      elsif line.start_with? VERSION_START
-        parse_version line
-      elsif line.start_with? SEQUENCE_START
-        parse_sequence line
-      elsif line.start_with? CACHE_START
-        parse_cache line
-      elsif line.start_with? TARGET_START
-        parse_target line
-      elsif line.start_with? IFRAME_START
-        playlist.iframes_only = true
-      else
-        return false
-      end
-    end
-
-    def parse_master_playlist_tags(line)
-      if line.start_with? STREAM_START
-        parse_stream line
-      elsif line.start_with? STREAM_IFRAME_START
-        parse_iframe_stream line
-      elsif line.start_with? MEDIA_START
-        parse_media line
-      elsif line.start_with? SESSION_DATA_START
-        parse_session_data line
-      else
-        return false
-      end
-    end
-
-    def parse_segment_tags(line)
-      if line.start_with? KEY_START
-        parse_key line
-      elsif line.start_with? SEGMENT_START
-        parse_segment line
-      elsif line.start_with? SEGMENT_DISCONTINUITY_TAG_START
-        parse_segment_discontinuity_tag line
-      elsif line.start_with? BYTERANGE_START
-        parse_byterange line
-      else
-        return false
-      end
+    def match_tag(line)
+      tag = @tags.select { |key| line.start_with? key }
+      tag.values.first.call line unless tag.empty?
     end
 
     def parse_playlist_type(line)
-      playlist.type = line.gsub(PLAYLIST_TYPE_START, '').delete!("\n")
+      playlist.type = line.gsub('#EXT-X-PLAYLIST-TYPE:', '').delete!("\n")
     end
 
     def parse_version(line)
-      playlist.version = line.gsub(VERSION_START, '').to_i
+      playlist.version = line.gsub('#EXT-X-VERSION:', '').to_i
     end
 
     def parse_sequence(line)
-      playlist.sequence = line.gsub(SEQUENCE_START, '').to_i
+      playlist.sequence = line.gsub('#EXT-X-MEDIA-SEQUENCE:', '').to_i
     end
 
     def parse_cache(line)
-      line = line.gsub(CACHE_START, '')
+      line = line.gsub('#EXT-X-ALLOW-CACHE:', '')
       playlist.cache = parse_yes_no(line)
     end
 
     def parse_target(line)
-      playlist.target = line.gsub(TARGET_START, '').to_i
+      playlist.target = line.gsub('#EXT-X-TARGETDURATION:', '').to_i
     end
 
     def parse_stream(line)
@@ -122,7 +101,7 @@ module M3u8
       playlist.items.push item
     end
 
-    def parse_segment_discontinuity_tag(*)
+    def parse_discontinuity(*)
       self.master = false
       self.open = false
 
@@ -137,7 +116,7 @@ module M3u8
 
     def parse_segment(line)
       self.item = M3u8::SegmentItem.new
-      values = line.gsub(SEGMENT_START, '').gsub("\n", ',').split(',')
+      values = line.gsub('#EXTINF:', '').gsub("\n", ',').split(',')
       item.duration = values[0].to_f
       item.comment = values[1] unless values[1].nil?
 
@@ -146,7 +125,7 @@ module M3u8
     end
 
     def parse_byterange(line)
-      values = line.gsub(BYTERANGE_START, '').gsub("\n", ',').split '@'
+      values = line.gsub('#EXT-X-BYTERANGE:', '').gsub("\n", ',').split '@'
       item.byterange_length = values[0].to_i
       item.byterange_start = values[1].to_i unless values[1].nil?
     end
