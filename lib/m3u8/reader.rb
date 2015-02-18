@@ -22,9 +22,7 @@ module M3u8
     private
 
     def basic_tags
-      { '#EXTM3U' => proc {},
-        '#EXT-X-VERSION' => proc { |line| parse_version line }
-      }
+      { '#EXT-X-VERSION' => proc { |line| parse_version line } }
     end
 
     def media_segment_tags
