@@ -1,3 +1,5 @@
+#### 0.5.2 (2/18/2015) - Fix issue where PlaylistItem.average_bandwidth would default to 0 instead of nil when not present in m3u8 being parsed.
+
 #### 0.5.1 (2/16/2015) - [takashisite](https://github.com/takashisite) added support for [EXT-X-DISCONTINUITY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-14#section-4.3.2.3). Added support for [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-14#section-4.3.2.4) (keys for encrypted segments). 
 ***
 #### 0.5.0 (2/10/2015) - BREAKING: renamed PlaylistItem.playlist to PlaylistItem.uri, MediaItem.group to MediaItem.group_id, and PlaylistItem.bitrate to PlaylistItem.bandwidth so attributes more closely match the spec. Added support for EXT-X-I-FRAME-STREAM-INF, EXT-X-I-FRAMES-ONLY, EXT-X-BYTERANGE, and EXT-X-SESSION-DATA.
