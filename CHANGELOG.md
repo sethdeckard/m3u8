@@ -1,3 +1,5 @@
+### 0.5.3 (2/24/2015) - [stan3](https://github.com/stan3) fixed issue recently introduced in Reader where EXT-X-STREAM-INF missing resolution would break parsing.
+
 #### 0.5.2 (2/18/2015) - Fix issue where PlaylistItem.average_bandwidth would default to 0 instead of nil when not present in m3u8 being parsed.
 
 #### 0.5.1 (2/16/2015) - [takashisite](https://github.com/takashisite) added support for [EXT-X-DISCONTINUITY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-14#section-4.3.2.3). Added support for [EXT-X-KEY](https://tools.ietf.org/html/draft-pantos-http-live-streaming-14#section-4.3.2.4) (keys for encrypted segments). 
