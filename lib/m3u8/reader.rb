@@ -57,7 +57,10 @@ module M3u8
 
     def match_tag(line)
       tag = @tags.select { |key| line.start_with? key }
-      tag.values.first.call line unless tag.empty?
+      if tag.values.first
+        tag.values.first.call line
+        true
+      end
     end
 
     def parse_playlist_type(line)
