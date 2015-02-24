@@ -19,6 +19,18 @@ describe M3u8::Reader do
     expect(item.iframe).to be false
     expect(item.average_bandwidth).to be_nil
 
+    item = playlist.items[5]
+    expect(item).to be_a(M3u8::PlaylistItem)
+    expect(item.uri).to eq('hls/64k/64k.m3u8')
+    expect(item.program_id).to eq('1')
+    expect(item.width).to be_nil
+    expect(item.height).to be_nil
+    expect(item.resolution).to be_nil
+    expect(item.codecs).to eq('mp4a.40.2')
+    expect(item.bandwidth).to eq(6400)
+    expect(item.iframe).to be false
+    expect(item.average_bandwidth).to be_nil
+
     expect(playlist.items.size).to eq 6
 
     item = playlist.items.last
