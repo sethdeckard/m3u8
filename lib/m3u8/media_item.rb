@@ -82,7 +82,7 @@ module M3u8
     end
 
     def to_yes_no(boolean)
-      boolean ==  true ? 'YES' : 'NO'
+      boolean == true ? 'YES' : 'NO'
     end
   end
 end

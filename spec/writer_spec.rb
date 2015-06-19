@@ -116,7 +116,7 @@ describe M3u8::Writer do
              "1080-7mbps00000.ts\n" +
              %(#EXT-X-KEY:METHOD=AES-128,URI="http://test.key",) +
              %(IV=D512BBF,KEYFORMAT="identity",KEYFORMATVERSIONS="1/3"\n) +
-             "#EXTINF:11.261233,\n" +
+             "#EXTINF:11.261233,\n" \
              "1080-7mbps00001.ts\n" \
              "#EXT-X-ENDLIST\n"
     io = StringIO.open

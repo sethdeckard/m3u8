@@ -69,11 +69,11 @@ module M3u8
     end
 
     def playlist_size
-      items.select { |item| item.is_a?(PlaylistItem) }.size
+      items.count { |item| item.is_a?(PlaylistItem) }
     end
 
     def segment_size
-      items.select { |item| item.is_a?(SegmentItem) }.size
+      items.count { |item| item.is_a?(SegmentItem) }
     end
   end
 end
