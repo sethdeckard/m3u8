@@ -29,7 +29,8 @@ module M3u8
       { '#EXTINF' => proc { |line| parse_segment line },
         '#EXT-X-DISCONTINUITY' => proc { |line| parse_discontinuity line },
         '#EXT-X-BYTERANGE' => proc { |line| parse_byterange line },
-        '#EXT-X-KEY' => proc { |line| parse_key line }
+        '#EXT-X-KEY' => proc { |line| parse_key line },
+        '#EXT-X-MAP' => -> { parse_map line }
       }
     end
 
@@ -111,6 +112,12 @@ module M3u8
 
     def parse_key(line)
       item = M3u8::KeyItem.parse line
+      playlist.items.push item
+    end
+
+    def parse_map(line)
+      item = M3u8::MapItem.new
+      item.parse line
       playlist.items.push item
     end
 

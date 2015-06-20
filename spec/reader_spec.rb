@@ -198,4 +198,18 @@ describe M3u8::Reader do
     expect(item.method).to eq 'AES-128'
     expect(item.uri).to eq 'https://priv.example.com/key.php?r=52'
   end
+
+  it 'should parse map (media intialization section) playlists' do
+    file = File.open 'spec/fixtures/map_playlist.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+
+    expect(playlist.items.size).to eq 1
+
+    item = playlist.items[0]
+    expect(item).to be_a M3u8::MapItem
+    expect(item.uri).to eq 'frelo/prog_index.m3u8'
+    expect(item.byterange.length).to eq 4500
+    expect(item.byterange.start).to eq 600
+  end
 end
