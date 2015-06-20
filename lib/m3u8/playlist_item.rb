@@ -2,7 +2,7 @@ module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
-    include M3u8
+    extend M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe
@@ -15,18 +15,20 @@ module M3u8
       end
     end
 
-    def parse(text)
+    def self.parse(text)
       attributes = parse_attributes text
+      resolution = parse_resolution attributes['RESOLUTION']
       average = parse_average_bandwidth attributes['AVERAGE-BANDWIDTH']
       options = { program_id: attributes['PROGRAM-ID'],
                   codecs: attributes['CODECS'],
+                  width: resolution[:width],
+                  height: resolution[:height],
                   bandwidth: attributes['BANDWIDTH'].to_i,
                   average_bandwidth: average,
                   video: attributes['VIDEO'], audio: attributes['AUDIO'],
                   uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
                   closed_captions: attributes['CLOSED-CAPTIONS'] }
-      initialize options
-      parse_resolution attributes['RESOLUTION']
+      PlaylistItem.new options
     end
 
     def resolution
@@ -58,14 +60,17 @@ module M3u8
 
     private
 
-    def parse_average_bandwidth(value)
+    def self.parse_average_bandwidth(value)
       value.to_i unless value.nil?
     end
 
-    def parse_resolution(resolution)
-      return if resolution.nil?
-      self.width = resolution.split('x')[0].to_i
-      self.height = resolution.split('x')[1].to_i
+    def self.parse_resolution(resolution)
+      return { width: nil, height: nil } if resolution.nil?
+
+      values = resolution.split('x')
+      width = values[0].to_i
+      height = values[1].to_i
+      { width: width, height: height }
     end
 
     def validate

@@ -25,8 +25,7 @@ describe M3u8::MapItem do
     input = '#EXT-X-MAP:URI="frelo/prog_index.m3u8",' \
             'BYTERANGE="3500@300"'
 
-    item = M3u8::MapItem.new
-    item.parse(input)
+    item = M3u8::MapItem.parse(input)
 
     expect(item.uri).to eq 'frelo/prog_index.m3u8'
     expect(item.byterange.length).to eq 3500
@@ -34,8 +33,7 @@ describe M3u8::MapItem do
 
     input = '#EXT-X-MAP:URI="frelo/prog_index.m3u8"'
 
-    item = M3u8::MapItem.new
-    item.parse(input)
+    item = M3u8::MapItem.parse(input)
 
     expect(item.uri).to eq 'frelo/prog_index.m3u8'
     expect(item.byterange).to be_nil

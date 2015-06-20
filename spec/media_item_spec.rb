@@ -27,8 +27,7 @@ describe M3u8::MediaItem do
     format = '#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID="audio-lo",LANGUAGE="fre",' \
              'ASSOC-LANGUAGE="spoken",NAME="Francais",AUTOSELECT=YES,' +
              %("DEFAULT=NO,URI="frelo/prog_index.m3u8",FORCED=YES\n")
-    item = M3u8::MediaItem.new
-    item.parse format
+    item = M3u8::MediaItem.parse format
 
     expect(item.type).to eq 'AUDIO'
     expect(item.group_id).to eq 'audio-lo'

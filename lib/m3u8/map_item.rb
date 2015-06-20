@@ -2,7 +2,7 @@ module M3u8
   # MapItem represents a EXT-X-MAP tag which specifies how to obtain the Media
   # Initialization Section
   class MapItem
-    include M3u8
+    extend M3u8
     attr_accessor :uri, :byterange
 
     def initialize(params = {})
@@ -12,15 +12,14 @@ module M3u8
       end
     end
 
-    def parse(text)
+    def self.parse(text)
       attributes = parse_attributes text
       range_value = attributes['BYTERANGE']
       unless range_value.nil?
-        range = ByteRange.new
-        range.parse range_value
+        range = ByteRange.parse range_value
       end
       options = { uri: attributes['URI'], byterange: range }
-      initialize options
+      MapItem.new options
     end
 
     def to_s

@@ -88,16 +88,14 @@ module M3u8
       self.master = true
       self.open = true
 
-      self.item = M3u8::PlaylistItem.new
-      item.parse line
+      self.item = M3u8::PlaylistItem.parse line
     end
 
     def parse_iframe_stream(line)
       self.master = true
       self.open = false
 
-      self.item = M3u8::PlaylistItem.new
-      item.parse line
+      self.item = M3u8::PlaylistItem.parse line
       item.iframe = true
       playlist.items.push item
     end
@@ -116,8 +114,7 @@ module M3u8
     end
 
     def parse_map(line)
-      item = M3u8::MapItem.new
-      item.parse line
+      item = M3u8::MapItem.parse line
       playlist.items.push item
     end
 
@@ -133,8 +130,7 @@ module M3u8
 
     def parse_byterange(line)
       values = line.gsub('#EXT-X-BYTERANGE:', '').gsub("\n", ',')
-      item.byterange = M3u8::ByteRange.new
-      item.byterange.parse values
+      item.byterange = M3u8::ByteRange.parse values
     end
 
     def parse_session_data(line)
@@ -144,8 +140,7 @@ module M3u8
 
     def parse_media(line)
       self.open = false
-      self.item = M3u8::MediaItem.new
-      item.parse line
+      self.item = M3u8::MediaItem.parse line
       playlist.items.push item
     end
 

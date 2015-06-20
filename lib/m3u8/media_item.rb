@@ -1,7 +1,7 @@
 module M3u8
   # MediaItem represents a set of EXT-X-MEDIA attributes
   class MediaItem
-    include M3u8
+    extend M3u8
     attr_accessor :type, :group_id, :language, :assoc_language, :name,
                   :autoselect, :default, :uri, :forced
 
@@ -11,7 +11,7 @@ module M3u8
       end
     end
 
-    def parse(text)
+    def self.parse(text)
       attributes = parse_attributes text
       options = { type: attributes['TYPE'], group_id: attributes['GROUP-ID'],
                   language: attributes['LANGUAGE'],
@@ -21,7 +21,7 @@ module M3u8
                   default: parse_yes_no(attributes['DEFAULT']),
                   forced: parse_yes_no(attributes['FORCED']),
                   uri: attributes['URI'] }
-      initialize options
+      MediaItem.new options
     end
 
     def to_s

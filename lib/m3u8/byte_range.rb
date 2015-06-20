@@ -9,12 +9,12 @@ module M3u8
       end
     end
 
-    def parse(text)
+    def self.parse(text)
       values = text.split '@'
       length_value = values[0].to_i
       start_value = values[1].to_i unless values[1].nil?
       options = { length: length_value, start: start_value }
-      initialize options
+      ByteRange.new options
     end
 
     def to_s

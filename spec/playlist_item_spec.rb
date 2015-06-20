@@ -20,8 +20,7 @@ describe M3u8::PlaylistItem do
              %(PROGRAM-ID=1,RESOLUTION=1920x1080,) +
              %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
-    item = M3u8::PlaylistItem.new
-    item.parse(format)
+    item = M3u8::PlaylistItem.parse(format)
     expect(item.program_id).to eq '1'
     expect(item.codecs).to eq 'avc'
     expect(item.bandwidth).to eq 540
@@ -37,8 +36,7 @@ describe M3u8::PlaylistItem do
     format = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
              %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
-    item = M3u8::PlaylistItem.new
-    item.parse(format)
+    item = M3u8::PlaylistItem.parse(format)
     expect(item.program_id).to eq '1'
     expect(item.codecs).to eq 'avc'
     expect(item.bandwidth).to eq 540
