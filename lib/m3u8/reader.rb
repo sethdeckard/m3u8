@@ -22,32 +22,32 @@ module M3u8
     private
 
     def basic_tags
-      { '#EXT-X-VERSION' => proc { |line| parse_version line } }
+      { '#EXT-X-VERSION' => ->(line) { parse_version line } }
     end
 
     def media_segment_tags
-      { '#EXTINF' => proc { |line| parse_segment line },
-        '#EXT-X-DISCONTINUITY' => proc { |line| parse_discontinuity line },
-        '#EXT-X-BYTERANGE' => proc { |line| parse_byterange line },
-        '#EXT-X-KEY' => proc { |line| parse_key line },
+      { '#EXTINF' => ->(line) { parse_segment line },
+        '#EXT-X-DISCONTINUITY' => ->(line) { parse_discontinuity line },
+        '#EXT-X-BYTERANGE' => ->(line) { parse_byterange line },
+        '#EXT-X-KEY' => ->(line) { parse_key line },
         '#EXT-X-MAP' => ->(line) { parse_map line }
       }
     end
 
     def media_playlist_tags
-      { '#EXT-X-MEDIA-SEQUENCE' => proc { |line| parse_sequence line },
-        '#EXT-X-ALLOW-CACHE' => proc { |line| parse_cache line },
-        '#EXT-X-TARGETDURATION' => proc { |line| parse_target line },
+      { '#EXT-X-MEDIA-SEQUENCE' => ->(line) { parse_sequence line },
+        '#EXT-X-ALLOW-CACHE' => ->(line) { parse_cache line },
+        '#EXT-X-TARGETDURATION' => ->(line) { parse_target line },
         '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
-        '#EXT-X-PLAYLIST-TYPE' => proc { |line| parse_playlist_type line }
+        '#EXT-X-PLAYLIST-TYPE' => ->(line) { parse_playlist_type line }
       }
     end
 
     def master_playlist_tags
-      { '#EXT-X-MEDIA' => proc { |line| parse_media line },
-        '#EXT-X-SESSION-DATA' => proc { |line| parse_session_data line },
-        '#EXT-X-STREAM-INF' => proc { |line| parse_stream line },
-        '#EXT-X-I-FRAME-STREAM-INF' => proc { |line| parse_iframe_stream line }
+      { '#EXT-X-MEDIA' => ->(line) { parse_media line },
+        '#EXT-X-SESSION-DATA' => ->(line) { parse_session_data line },
+        '#EXT-X-STREAM-INF' => ->(line) { parse_stream line },
+        '#EXT-X-I-FRAME-STREAM-INF' => ->(line) { parse_iframe_stream line }
       }
     end
 
