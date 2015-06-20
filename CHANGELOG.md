@@ -1,4 +1,6 @@
-### 0.5.3 (2/24/2015) - [stan3](https://github.com/stan3) fixed issue recently introduced in Reader where EXT-X-STREAM-INF missing resolution would break parsing.
+#### 0.6.0 (6/20/2015) - Added support for EXT-X-MAP tags, introduced ByteRange class to handled shared byterange parsing/serialization functionality. Breaking changes: SegmentItem now exposes a single byterange instance accessor rather than byterange_length and byterange_start, made all parse methods static for consistency (ex: MediaItem.parse).
+
+#### 0.5.3 (2/24/2015) - [stan3](https://github.com/stan3) fixed issue recently introduced in Reader where EXT-X-STREAM-INF missing resolution would break parsing.
 
 #### 0.5.2 (2/18/2015) - Fix issue where PlaylistItem.average_bandwidth would default to 0 instead of nil when not present in m3u8 being parsed.
 
