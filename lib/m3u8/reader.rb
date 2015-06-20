@@ -132,9 +132,9 @@ module M3u8
     end
 
     def parse_byterange(line)
-      values = line.gsub('#EXT-X-BYTERANGE:', '').gsub("\n", ',').split '@'
-      item.byterange_length = values[0].to_i
-      item.byterange_start = values[1].to_i unless values[1].nil?
+      values = line.gsub('#EXT-X-BYTERANGE:', '').gsub("\n", ',')
+      item.byterange = M3u8::ByteRange.new
+      item.byterange.parse values
     end
 
     def parse_session_data(line)
