@@ -30,7 +30,8 @@ module M3u8
         '#EXT-X-DISCONTINUITY' => ->(line) { parse_discontinuity line },
         '#EXT-X-BYTERANGE' => ->(line) { parse_byterange line },
         '#EXT-X-KEY' => ->(line) { parse_key line },
-        '#EXT-X-MAP' => ->(line) { parse_map line }
+        '#EXT-X-MAP' => ->(line) { parse_map line },
+        '#EXT-X-PROGRAM-DATE-TIME' => ->(line) { parse_time line }
       }
     end
 
@@ -142,6 +143,11 @@ module M3u8
       self.open = false
       self.item = M3u8::MediaItem.parse line
       playlist.items.push item
+    end
+
+    def parse_time(line)
+      self.open = false
+      playlist.items.push M3u8::TimeItem.parse line
     end
 
     def parse_next_line(line)

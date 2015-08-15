@@ -68,7 +68,11 @@ describe M3u8::Reader do
     expect(item.duration).to eq 11.344644
     expect(item.comment).to be_nil
 
-    expect(playlist.items.size).to eq 139
+    item = playlist.items[4]
+    expect(item).to be_a(M3u8::TimeItem)
+    expect(item.time).to eq(Time.iso8601('2010-02-19T14:54:23Z'))
+
+    expect(playlist.items.size).to eq 140
   end
 
   it 'should parse I-Frame playlist' do
