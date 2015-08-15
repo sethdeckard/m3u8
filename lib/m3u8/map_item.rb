@@ -3,13 +3,11 @@ module M3u8
   # Initialization Section
   class MapItem
     extend M3u8
+    include M3u8
     attr_accessor :uri, :byterange
 
     def initialize(params = {})
-      params.each do |key, value|
-        value = ByteRange.new(value) if value.is_a?(Hash)
-        instance_variable_set("@#{key}", value)
-      end
+      intialize_with_byterange(params)
     end
 
     def self.parse(text)

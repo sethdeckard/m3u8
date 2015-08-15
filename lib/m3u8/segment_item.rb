@@ -2,13 +2,11 @@ module M3u8
   # SegmentItem represents EXTINF attributes with the URI that follows,
   # optionally allowing an EXT-X-BYTERANGE tag to be set.
   class SegmentItem
+    include M3u8
     attr_accessor :duration, :segment, :comment, :byterange
 
     def initialize(params = {})
-      params.each do |key, value|
-        value = ByteRange.new(value) if value.is_a?(Hash)
-        instance_variable_set("@#{key}", value)
-      end
+      intialize_with_byterange(params)
     end
 
     def to_s

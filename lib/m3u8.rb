@@ -24,4 +24,11 @@ module M3u8
   def parse_yes_no(value)
     value == 'YES' ? true : false
   end
+
+  def intialize_with_byterange(params = {})
+    params.each do |key, value|
+      value = ByteRange.new(value) if value.is_a?(Hash)
+      instance_variable_set("@#{key}", value)
+    end
+  end
 end
