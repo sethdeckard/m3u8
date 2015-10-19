@@ -1,5 +1,6 @@
 AllCops:
   Exclude:
     - 'spec/spec_helper.rb'
+    - 'm3u8.gemspec'
 Style/StringLiterals:
   EnforcedStyle: single_quotes
