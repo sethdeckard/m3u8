@@ -4,4 +4,6 @@ source 'https://rubygems.org'
 gemspec
 
 gem 'coveralls', require: false
+gem 'guard'
+gem 'guard-rspec', require: false
 gem 'simplecov', require: false
