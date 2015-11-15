@@ -2,7 +2,7 @@ module M3u8
   # KeyItem represents a set of EXT-X-KEY attributes
   class KeyItem
     extend M3u8
-    include Encryptable
+    include M3u8::Encryptable
 
     def initialize(params = {})
       options = convert_key_names(params)
