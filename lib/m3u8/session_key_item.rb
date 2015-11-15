@@ -1,8 +1,8 @@
 module M3u8
   # KeyItem represents a set of EXT-X-SESSION-KEY attributes
   class SessionKeyItem
-    extend M3u8
     include Encryptable
+    extend M3u8
 
     def initialize(params = {})
       options = convert_key_names(params)
