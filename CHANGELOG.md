@@ -1,3 +1,5 @@
+#### MASTER - Added support for EXT-X-SESSION-KEY tags.
+
 #### 0.6.1 (8/15/2015) - Added support for EXT-X-PROGRAM-DATE-TIME tags.
 
 #### 0.6.0 (6/20/2015) - Added support for EXT-X-MAP tags, introduced ByteRange class to handled shared byterange parsing/serialization functionality. Breaking changes: SegmentItem now exposes a single byterange instance accessor rather than byterange_length and byterange_start, made all parse methods static for consistency (ex: MediaItem.parse).
