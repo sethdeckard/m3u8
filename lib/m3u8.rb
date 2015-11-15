@@ -1,6 +1,5 @@
 require 'stringio'
 Dir[File.dirname(__FILE__) + '/m3u8/*.rb'].each { |file| require file }
-require 'm3u8/encryptable'
 
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
