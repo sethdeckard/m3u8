@@ -4,8 +4,8 @@ Dir[File.dirname(__FILE__) + '/m3u8/*.rb'].each { |file| require file }
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
   def parse_attributes(line)
-    array = line.gsub("\n", '').scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
-    Hash[array.map { |key, value| [key, value.gsub('"', '')] }]
+    array = line.delete("\n").scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+    Hash[array.map { |key, value| [key, value.delete('"')] }]
   end
 
   def parse_yes_no(value)
