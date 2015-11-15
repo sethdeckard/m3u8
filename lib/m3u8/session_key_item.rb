@@ -5,14 +5,15 @@ module M3u8
     include Encryptable
 
     def initialize(params = {})
-      params.each do |key, value|
+      options = convert_key_names(params)
+      options.merge(params).each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
     def self.parse(text)
       attributes = parse_attributes(text)
-      SessionKeyItem.new(Encryptable.convert_key_names(attributes))
+      SessionKeyItem.new(attributes)
     end
 
     def to_s

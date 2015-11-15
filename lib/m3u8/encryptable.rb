@@ -9,18 +9,18 @@ module M3u8
       base.send :attr_accessor, :key_format_versions
     end
 
-    def self.convert_key_names(attributes)
-      { method: attributes['METHOD'], uri: attributes['URI'],
-        iv: attributes['IV'], key_format: attributes['KEYFORMAT'],
-        key_format_versions: attributes['KEYFORMATVERSIONS'] }
-    end
-
     def attributes_to_s
       [method_format,
        uri_format,
        iv_format,
        key_format_format,
        key_format_versions_format].compact.join(',')
+    end
+
+    def convert_key_names(attributes)
+      { method: attributes['METHOD'], uri: attributes['URI'],
+        iv: attributes['IV'], key_format: attributes['KEYFORMAT'],
+        key_format_versions: attributes['KEYFORMATVERSIONS'] }
     end
 
     private
