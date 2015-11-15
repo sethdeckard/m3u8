@@ -47,6 +47,7 @@ module M3u8
     def master_playlist_tags
       { '#EXT-X-MEDIA' => ->(line) { parse_media(line) },
         '#EXT-X-SESSION-DATA' => ->(line) { parse_session_data(line) },
+        '#EXT-X-SESSION-KEY' => ->(line) { parse_session_key(line) },
         '#EXT-X-STREAM-INF' => ->(line) { parse_stream(line) },
         '#EXT-X-I-FRAME-STREAM-INF' => ->(line) { parse_iframe_stream(line) }
       }
@@ -136,6 +137,11 @@ module M3u8
 
     def parse_session_data(line)
       item = M3u8::SessionDataItem.parse(line)
+      playlist.items << item
+    end
+
+    def parse_session_key(line)
+      item = M3u8::SessionKeyItem.parse(line)
       playlist.items << item
     end
 

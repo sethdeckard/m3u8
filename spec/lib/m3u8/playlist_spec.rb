@@ -208,7 +208,7 @@ describe M3u8::Playlist do
     file = File.open 'spec/fixtures/master.m3u8'
     playlist = M3u8::Playlist.read file
     expect(playlist.master?).to be true
-    expect(playlist.items.size).to eq 6
+    expect(playlist.items.size).to eq(7)
   end
 
   it 'should return the total duration of a playlist' do
@@ -222,6 +222,6 @@ describe M3u8::Playlist do
     item = M3u8::SegmentItem.new(duration: 8.790, segment: 'test_04.ts')
     playlist.items.push item
 
-    expect(playlist.duration.round(3)).to eq 40.228
+    expect(playlist.duration.round(3)).to eq(40.228)
   end
 end
