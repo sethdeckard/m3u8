@@ -1,18 +1,5 @@
 require 'stringio'
-require 'm3u8/version'
-require 'm3u8/playlist'
-require 'm3u8/playlist_item'
-require 'm3u8/segment_item'
-require 'm3u8/discontinuity_item'
-require 'm3u8/key_item'
-require 'm3u8/map_item'
-require 'm3u8/media_item'
-require 'm3u8/time_item'
-require 'm3u8/session_data_item'
-require 'm3u8/byte_range'
-require 'm3u8/reader'
-require 'm3u8/writer'
-require 'm3u8/error'
+Dir[File.dirname(__FILE__) + '/m3u8/*.rb'].each { |file| require file }
 
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
