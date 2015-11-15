@@ -27,16 +27,18 @@ Or install it yourself as:
 ## Usage (creating playlists)
     
 Create a master playlist and add child playlists for adaptive bitrate streaming:
+
 ```ruby
 require 'm3u8'
 playlist = M3u8::Playlist.new
 ```
 
 Create a new playlist item with options:
+
 ```ruby
 options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
             audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
-item = M3u8::PlaylistItem.new options
+item = M3u8::PlaylistItem.new(options)
 playlist.items << item
 ```    
  
@@ -51,38 +53,47 @@ playlist.items << item
 ```
   
 Create a standard playlist and add MPEG-TS segments via SegmentItem. You can also specify options for this type of playlist, however these options are ignored if playlist becomes a master playlist (anything but segments added):
+
 ```ruby
 options = { version: 1, cache: false, target: 12, sequence: 1 }
-playlist = M3u8::Playlist.new options
+playlist = M3u8::Playlist.new(options)
 
-item = M3u8::SegmentItem.new duration: 11, segment: 'test.ts'
+item = M3u8::SegmentItem.new(duration: 11, segment: 'test.ts')
 playlist.items << item
 ```
     
 You can pass an IO object to the write method:
+
 ```ruby
 require 'tempfile'
-f = Tempfile.new 'test'
-playlist.write f
+file = Tempfile.new('test')
+playlist.write(file)
 ```
+
 You can also access the playlist as a string:
+
 ```ruby
 playlist.to_s
 ``` 
+
 M3u8::Writer is the class that handles generating the playlist output.
 
 Alternatively you can set codecs rather than having it generated automatically:
+
 ```ruby
 options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
             bandwidth: 540, uri: 'test.url' }
-item = M3u8::PlaylistItem.new options
+item = M3u8::PlaylistItem.new(options)
 ```
+
 Just get the codec string for custom use:
+
 ```ruby
 options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
-codecs = M3u8::Playlist.codecs options
+codecs = M3u8::Playlist.codecs(options)
 # => "avc1.66.30,mp4a.40.2"
-```        
+```  
+      
 Values for audio_codec (codec name): aac-lc, he-aac, mp3
     
 Possible values for profile (H.264 Profile): baseline, main, high.
@@ -95,25 +106,30 @@ Not all Levels and Profiles can be combined, consult H.264 documentation
 
 ```ruby
 file = File.open 'spec/fixtures/master.m3u8'
-playlist = M3u8::Playlist.read file
+playlist = M3u8::Playlist.read(file)
 playlist.master?
 # => true
 ```
+
 Acess items in playlist:
+
 ```ruby
 playlist.items.first
 #  => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
 #  @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
 #  @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
 ```
+
 Create a new playlist item with options:
+
 ```ruby
 options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
             audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
-item = M3u8::PlaylistItem.new options
+item = M3u8::PlaylistItem.new(options)
 #add it to the top of the playlist
-playlist.items.insert 0, item
+playlist.items.unshift(item)
 ```
+
 M3u8::Reader is the class handles parsing if you want more control over the process.
     
 ## Features
@@ -121,18 +137,44 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * Automatically generates the audio/video codec string based on names and options you are familar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
-* Supports I-Frames (Intra frames) and Byte Ranges in Segments.
-* Supports subtitles, closed captions, alternate audio and video, and comments.
-# Supports Session Data in master playlists.
-* Supports keys for encrypted media segments (EXT-X-KEY).
-* Supports EXT-X-DISCONTINUITY in media segments.
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
 * Can read playlists into a model (Playlist and Items) from an IO object.
 * Any tag or attribute supported by the object model is supported both parsing and generation of m3u8 playlists.
+* Supports I-frames (Intra frames) and byte ranges in Segments.
+* Supports subtitles, closed captions, alternate audio and video, and comments.
+* Supports session data in master playlists.
+* Supports keys for encrypted media segments (EXT-X-KEY, EXT-SESSION-KEY).
 
-## Missing (but planned) Features 
+## HLS Spec Status (version 17)
+### Implemented:
+* EXTM3U
+* EXT-X-VERSION
+* EXTINF  
+* EXT-X-BYTERANGE
+* EXT-X-DISCONTINUITY
+* EXT-X-KEY
+* EXT-X-MAP
+* EXT-X-PROGRAM-DATE-TIME
+* EXT-X-TARGETDURATION
+* EXT-X-MEDIA-SEQUENCE
+* EXT-X-ENDLIST
+* EXT-X-PLAYLIST-TYPE
+* EXT-X-I-FRAMES-ONLY
+* EXT-X-MEDIA
+* EXT-X-STREAM-INF
+* EXT-X-I-FRAME-STREAM-INF
+* EXT-X-SESSION-DATA
+* EXT-X-SESSION-KEY
+
+### TODO:
+* EXT-X-DISCONTINUITY-SEQUENCE
+* EXT-X-INDEPENDENT-SEGMENTS
+* EXT-X-START
+
+## Roadmap 
+* Add the last remaining tags for latest version of the spec.
 * Validation of all attributes and their values to match the rules defined in the spec.
-* Still missing support for a few tags and attributes.
+* Support for different versions of spec, defaulting to latest.
 
 ## Contributing
 
