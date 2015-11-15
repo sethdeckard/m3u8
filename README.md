@@ -37,7 +37,7 @@ Create a new playlist item with options:
 options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
             audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
 item = M3u8::PlaylistItem.new options
-playlist.items.push item
+playlist.items << item
 ```    
  
 Add alternate audio, camera angles, closed captions and subtitles by creating MediaItem instances and adding them to the Playlist:
@@ -47,7 +47,7 @@ hash = { type: 'AUDIO', group_id: 'audio-lo', language: 'fre',
          assoc_language: 'spoken', name: 'Francais', autoselect: true,
          default: false, forced: true, uri: 'frelo/prog_index.m3u8' }
 item = M3u8::MediaItem.new(hash)
-playlist.items.push item
+playlist.items << item
 ```
   
 Create a standard playlist and add MPEG-TS segments via SegmentItem. You can also specify options for this type of playlist, however these options are ignored if playlist becomes a master playlist (anything but segments added):
@@ -56,7 +56,7 @@ options = { version: 1, cache: false, target: 12, sequence: 1 }
 playlist = M3u8::Playlist.new options
 
 item = M3u8::SegmentItem.new duration: 11, segment: 'test.ts'
-playlist.items.push item
+playlist.items << item
 ```
     
 You can pass an IO object to the write method:
