@@ -111,7 +111,7 @@ playlist.master?
 # => true
 ```
 
-Acess items in playlist:
+Access items in playlist:
 
 ```ruby
 playlist.items.first
@@ -134,7 +134,7 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
     
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
-* Automatically generates the audio/video codec string based on names and options you are familar with.
+* Automatically generates the audio/video codec string based on names and options you are familiar with.
 * Provides validation of input when adding playlists or segments.
 * Allows all options to be configured on a playlist (caching, version, etc.)
 * Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
@@ -180,7 +180,7 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 
 1. Fork it ( https://github.com/sethdeckard/m3u8/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Run the specs, make sure they pass and that new features are covered
+3. Run the specs, make sure they pass and that new features are covered. Code coverage should be 100%.
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
