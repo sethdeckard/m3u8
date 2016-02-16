@@ -1,4 +1,4 @@
-Copyright (c) 2014 Seth Deckard
+Copyright (c) 2016 Seth Deckard
 
 MIT License
 
