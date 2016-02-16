@@ -41,7 +41,7 @@ describe M3u8::Writer do
 
     output = "#EXTM3U\n" \
              '#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,' +
-             %(CODECS="avc1.640028,mp4a.40.2",BANDWIDTH=50000\n) +
+             %(CODECS="avc1.640029,mp4a.40.2",BANDWIDTH=50000\n) +
              "playlist_url\n"
 
     io = StringIO.open
@@ -67,7 +67,7 @@ describe M3u8::Writer do
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n#EXT-X-STREAM-INF:PROGRAM-ID=2," +
-             %(RESOLUTION=1920x1080,CODECS="avc1.640028,mp4a.40.2") +
+             %(RESOLUTION=1920x1080,CODECS="avc1.640029,mp4a.40.2") +
              ",BANDWIDTH=50000\nplaylist_url\n" +
              %(#EXT-X-SESSION-DATA:DATA-ID="com.test.movie.title",) +
              %(VALUE="Test",URI="http://test",LANGUAGE="en"\n)

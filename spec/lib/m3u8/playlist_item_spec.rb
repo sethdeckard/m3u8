@@ -162,7 +162,7 @@ describe M3u8::PlaylistItem do
 
     options = { profile: 'high', level: 4.1 }
     item = M3u8::PlaylistItem.new options
-    expect(item.codecs).to eq 'avc1.640028'
+    expect(item.codecs).to eq 'avc1.640029'
   end
 
   it 'should raise error if codecs are missing' do
