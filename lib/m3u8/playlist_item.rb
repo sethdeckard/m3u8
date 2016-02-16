@@ -148,15 +148,27 @@ module M3u8
     def video_codec(profile, level)
       return if profile.nil? || level.nil?
 
-      profile = profile.downcase
-      return 'avc1.66.30' if profile == 'baseline' && level == 3.0
-      return 'avc1.42001f' if profile == 'baseline' && level == 3.1
-      return 'avc1.77.30' if profile == 'main' && level == 3.0
-      return 'avc1.4d001f' if profile == 'main' && level == 3.1
-      return 'avc1.4d0028' if profile == 'main' && level == 4.0
-      return 'avc1.64001f' if profile == 'high' && level == 3.1
-      return 'avc1.640028' if profile == 'high' && level == 4.0
-      return 'avc1.640029' if profile == 'high' && level == 4.1
+      profile.downcase!
+      return baseline_codec_string(level) if profile == 'baseline'
+      return main_codec_string(level) if profile == 'main'
+      return high_codec_string(level) if profile == 'high'
+    end
+
+    def baseline_codec_string(level)
+      return 'avc1.66.30' if level == 3.0
+      return 'avc1.42001f' if level == 3.1
+    end
+
+    def main_codec_string(level)
+      return 'avc1.77.30' if level == 3.0
+      return 'avc1.4d001f' if level == 3.1
+      return 'avc1.4d0028' if level == 4.0
+    end
+
+    def high_codec_string(level)
+      return 'avc1.64001f' if level == 3.1
+      return 'avc1.640028' if level == 4.0
+      return 'avc1.640029' if level == 4.1
     end
   end
 end
