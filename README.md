@@ -184,3 +184,7 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
+
+
+## License
+MIT License - See [LICENSE.txt](https://github.com/sethdeckard/m3u8/blob/master/LICENSE.txt) for details.
