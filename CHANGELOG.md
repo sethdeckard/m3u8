@@ -1,4 +1,4 @@
-#### MASTER - Added support for EXT-X-SESSION-KEY tags.
+#### 0.6.2 (2/16/2016) - Added support for EXT-X-SESSION-KEY tags. Merged pulled request #6 from [jviney](https://github.com/jviney), fixing bug with codec string value.
 
 #### 0.6.1 (8/15/2015) - Added support for EXT-X-PROGRAM-DATE-TIME tags.
 
