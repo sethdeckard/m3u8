@@ -155,8 +155,8 @@ module M3u8
       return 'avc1.4d001f' if profile == 'main' && level == 3.1
       return 'avc1.4d0028' if profile == 'main' && level == 4.0
       return 'avc1.64001f' if profile == 'high' && level == 3.1
-      return 'avc1.640028' if profile == 'high' &&
-                              (level == 4.0 || level == 4.1)
+      return 'avc1.640028' if profile == 'high' && level == 4.0
+      return 'avc1.640029' if profile == 'high' && level == 4.1
     end
   end
 end
