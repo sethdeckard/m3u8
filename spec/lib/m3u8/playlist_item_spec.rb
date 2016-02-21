@@ -17,7 +17,7 @@ describe M3u8::PlaylistItem do
 
   it 'should parse m3u8 text into instance' do
     format = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-             %(PROGRAM-ID=1,RESOLUTION=1920x1080,) +
+             %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
              %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
     item = M3u8::PlaylistItem.parse(format)
@@ -27,6 +27,7 @@ describe M3u8::PlaylistItem do
     expect(item.average_bandwidth).to eq 550
     expect(item.width).to eq 1920
     expect(item.height).to eq 1080
+    expect(item.frame_rate).to eq BigDecimal('23.976')
     expect(item.audio).to eq 'test'
     expect(item.video).to eq 'test2'
     expect(item.subtitles).to eq 'subs'
@@ -69,12 +70,13 @@ describe M3u8::PlaylistItem do
 
     hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', audio: 'test',
              video: 'test2', average_bandwidth: 550, subtitles: 'subs',
-             closed_captions: 'caps' }
+             frame_rate: 30, closed_captions: 'caps' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-               %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
-               %(SUBTITLES="subs",CLOSED-CAPTIONS="caps"\ntest.url)
+               %(AVERAGE-BANDWIDTH=550,FRAME-RATE=30.000,) +
+               %(AUDIO="test",VIDEO="test2",SUBTITLES="subs",) +
+               %(CLOSED-CAPTIONS="caps"\ntest.url)
     expect(output).to eq expected
   end
 
