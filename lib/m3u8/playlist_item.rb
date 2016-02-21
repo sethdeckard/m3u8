@@ -151,7 +151,12 @@ module M3u8
 
     def closed_captions_format
       return if closed_captions.nil?
-      %(CLOSED-CAPTIONS="#{closed_captions}")
+
+      if closed_captions == 'NONE'
+        %(CLOSED-CAPTIONS=NONE)
+      else
+        %(CLOSED-CAPTIONS="#{closed_captions}")
+      end
     end
 
     def audio_codec
