@@ -52,11 +52,11 @@ describe M3u8::PlaylistItem do
 
   it 'should provide m3u8 format representation' do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bandwidth: 540, uri: 'test.url' }
+             bandwidth: 540, uri: 'test.url', closed_captions: 'NONE' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
-               %(CODECS="avc",BANDWIDTH=540\ntest.url)
+               %(CODECS="avc",BANDWIDTH=540,CLOSED-CAPTIONS=NONE\ntest.url)
     expect(output).to eq expected
 
     hash = { program_id: 1, codecs: 'avc', bandwidth: 540,
