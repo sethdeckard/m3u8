@@ -15,40 +15,45 @@ describe M3u8::PlaylistItem do
     expect(item.iframe).to be false
   end
 
-  it 'should parse m3u8 text into instance' do
-    format = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-             %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
-             %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
-             %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
-    item = M3u8::PlaylistItem.parse(format)
-    expect(item.program_id).to eq '1'
-    expect(item.codecs).to eq 'avc'
-    expect(item.bandwidth).to eq 540
-    expect(item.average_bandwidth).to eq 550
-    expect(item.width).to eq 1920
-    expect(item.height).to eq 1080
-    expect(item.frame_rate).to eq BigDecimal('23.976')
-    expect(item.audio).to eq 'test'
-    expect(item.video).to eq 'test2'
-    expect(item.subtitles).to eq 'subs'
-    expect(item.closed_captions).to eq 'caps'
-    expect(item.uri).to eq 'test.url'
+  describe 'parse' do
+    it 'should parse m3u8 text into instance' do
+      input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+              %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
+              %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
+              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
+      item = M3u8::PlaylistItem.parse(input)
+      expect(item.program_id).to eq '1'
+      expect(item.codecs).to eq 'avc'
+      expect(item.bandwidth).to eq 540
+      expect(item.average_bandwidth).to eq 550
+      expect(item.width).to eq 1920
+      expect(item.height).to eq 1080
+      expect(item.frame_rate).to eq BigDecimal('23.976')
+      expect(item.audio).to eq 'test'
+      expect(item.video).to eq 'test2'
+      expect(item.subtitles).to eq 'subs'
+      expect(item.closed_captions).to eq 'caps'
+      expect(item.uri).to eq 'test.url'
+    end
 
-    format = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-             %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
-             %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
-    item = M3u8::PlaylistItem.parse(format)
-    expect(item.program_id).to eq '1'
-    expect(item.codecs).to eq 'avc'
-    expect(item.bandwidth).to eq 540
-    expect(item.average_bandwidth).to be_nil
-    expect(item.width).to be_nil
-    expect(item.height).to be_nil
-    expect(item.audio).to eq 'test'
-    expect(item.video).to eq 'test2'
-    expect(item.subtitles).to eq 'subs'
-    expect(item.closed_captions).to eq 'caps'
-    expect(item.uri).to eq 'test.url'
+    it 'shuld parse m3u8 into current instance' do
+      input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+              %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
+              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
+      item = M3u8::PlaylistItem.new
+      item.parse(input)
+      expect(item.program_id).to eq '1'
+      expect(item.codecs).to eq 'avc'
+      expect(item.bandwidth).to eq 540
+      expect(item.average_bandwidth).to be_nil
+      expect(item.width).to be_nil
+      expect(item.height).to be_nil
+      expect(item.audio).to eq 'test'
+      expect(item.video).to eq 'test2'
+      expect(item.subtitles).to eq 'subs'
+      expect(item.closed_captions).to eq 'caps'
+      expect(item.uri).to eq 'test.url'
+    end
   end
 
   it 'should provide m3u8 format representation' do

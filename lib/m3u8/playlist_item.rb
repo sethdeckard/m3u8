@@ -2,7 +2,7 @@ module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
-    extend M3u8
+    include M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
@@ -17,21 +17,15 @@ module M3u8
     end
 
     def self.parse(text)
-      attributes = parse_attributes text
-      resolution = parse_resolution attributes['RESOLUTION']
-      average = parse_average_bandwidth attributes['AVERAGE-BANDWIDTH']
-      frame_rate = parse_frame_rate attributes['FRAME-RATE']
-      options = { program_id: attributes['PROGRAM-ID'],
-                  codecs: attributes['CODECS'],
-                  width: resolution[:width],
-                  height: resolution[:height],
-                  bandwidth: attributes['BANDWIDTH'].to_i,
-                  average_bandwidth: average,
-                  frame_rate: frame_rate,
-                  video: attributes['VIDEO'], audio: attributes['AUDIO'],
-                  uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
-                  closed_captions: attributes['CLOSED-CAPTIONS'] }
-      PlaylistItem.new options
+      item = PlaylistItem.new
+      item.parse(text)
+      item
+    end
+
+    def parse(text)
+      attributes = parse_attributes(text)
+      options = options_from_attributes(attributes)
+      initialize(options)
     end
 
     def resolution
@@ -63,11 +57,26 @@ module M3u8
 
     private
 
-    def self.parse_average_bandwidth(value)
+    def options_from_attributes(attributes)
+      resolution = parse_resolution(attributes['RESOLUTION'])
+      { program_id: attributes['PROGRAM-ID'],
+        codecs: attributes['CODECS'],
+        width: resolution[:width],
+        height: resolution[:height],
+        bandwidth: attributes['BANDWIDTH'].to_i,
+        average_bandwidth:
+          parse_average_bandwidth(attributes['AVERAGE-BANDWIDTH']),
+        frame_rate: parse_frame_rate(attributes['FRAME-RATE']),
+        video: attributes['VIDEO'], audio: attributes['AUDIO'],
+        uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
+        closed_captions: attributes['CLOSED-CAPTIONS'] }
+    end
+
+    def parse_average_bandwidth(value)
       value.to_i unless value.nil?
     end
 
-    def self.parse_resolution(resolution)
+    def parse_resolution(resolution)
       return { width: nil, height: nil } if resolution.nil?
 
       values = resolution.split('x')
@@ -76,7 +85,7 @@ module M3u8
       { width: width, height: height }
     end
 
-    def self.parse_frame_rate(frame_rate)
+    def parse_frame_rate(frame_rate)
       return if frame_rate.nil?
 
       value = BigDecimal(frame_rate)
