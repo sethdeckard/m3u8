@@ -68,12 +68,12 @@ describe M3u8::PlaylistItem do
     expect(output).to eq expected
 
     hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', audio: 'test',
-             video: 'test2', average_bandwidth: 550, subtitles: 'subs',
+             video: 'test2', average_bandwidth: 500, subtitles: 'subs',
              closed_captions: 'caps' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-               %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
+               %(AVERAGE-BANDWIDTH=500,AUDIO="test",VIDEO="test2",) +
                %(SUBTITLES="subs",CLOSED-CAPTIONS="caps"\ntest.url)
     expect(output).to eq expected
   end
