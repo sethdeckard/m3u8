@@ -36,7 +36,7 @@ describe M3u8::PlaylistItem do
       expect(item.uri).to eq 'test.url'
     end
 
-    it 'shuld parse m3u8 into current instance' do
+    it 'should parse m3u8 into current instance' do
       input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
               %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
               %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
