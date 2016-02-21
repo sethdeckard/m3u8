@@ -1,3 +1,4 @@
+require 'bigdecimal'
 require 'stringio'
 Dir[File.dirname(__FILE__) + '/m3u8/*.rb'].sort.each { |file| require file }
 

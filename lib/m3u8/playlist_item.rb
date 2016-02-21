@@ -5,7 +5,8 @@ module M3u8
     extend M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
-                  :average_bandwidth, :subtitles, :closed_captions, :iframe
+                  :average_bandwidth, :subtitles, :closed_captions, :iframe,
+                  :frame_rate
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
@@ -19,12 +20,14 @@ module M3u8
       attributes = parse_attributes text
       resolution = parse_resolution attributes['RESOLUTION']
       average = parse_average_bandwidth attributes['AVERAGE-BANDWIDTH']
+      frame_rate = parse_frame_rate attributes['FRAME-RATE']
       options = { program_id: attributes['PROGRAM-ID'],
                   codecs: attributes['CODECS'],
                   width: resolution[:width],
                   height: resolution[:height],
                   bandwidth: attributes['BANDWIDTH'].to_i,
                   average_bandwidth: average,
+                  frame_rate: frame_rate,
                   video: attributes['VIDEO'], audio: attributes['AUDIO'],
                   uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
                   closed_captions: attributes['CLOSED-CAPTIONS'] }
@@ -73,6 +76,13 @@ module M3u8
       { width: width, height: height }
     end
 
+    def self.parse_frame_rate(frame_rate)
+      return if frame_rate.nil?
+
+      value = BigDecimal(frame_rate)
+      value if value > 0
+    end
+
     def validate
       fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
     end
@@ -89,6 +99,7 @@ module M3u8
        codecs_format,
        bandwidth_format,
        average_bandwidth_format,
+       frame_rate_format,
        audio_format,
        video_format,
        subtitles_format,
@@ -103,6 +114,11 @@ module M3u8
     def resolution_format
       return if resolution.nil?
       "RESOLUTION=#{resolution}"
+    end
+
+    def frame_rate_format
+      return if frame_rate.nil?
+      "FRAME-RATE=#{format('%.3f', frame_rate)}"
     end
 
     def codecs_format
