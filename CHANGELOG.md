@@ -1,4 +1,6 @@
-#### 0.6.3 (2/17/2016) - Merged pulled request #7 from [jviney](https://github.com/jviney), fixing bug with require order.
+#### 0.6.4 (2/21/2016) - Merged pull requests #8, #9, and #10 from [jviney](https://github.com/jviney). Adds FRAME-RATE attribute to PlayListItem, fixes NONE option for CLOSED-CAPTIONS attribute. 
+
+#### 0.6.3 (2/17/2016) - Merged pull request #7 from [jviney](https://github.com/jviney), fixing bug with require order.
 
 #### 0.6.2 (2/16/2016) - Added support for EXT-X-SESSION-KEY tags. Merged pulled request #6 from [jviney](https://github.com/jviney), fixing bug with codec string value.
 
