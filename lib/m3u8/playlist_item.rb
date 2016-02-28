@@ -193,6 +193,7 @@ module M3u8
       return 'avc1.77.30' if level == 3.0
       return 'avc1.4d001f' if level == 3.1
       return 'avc1.4d0028' if level == 4.0
+      return 'avc1.4d0029' if level == 4.1
     end
 
     def high_codec_string(level)

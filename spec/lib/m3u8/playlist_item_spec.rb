@@ -159,6 +159,10 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.4d0028'
 
+    options = { profile: 'main', level: 4.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'avc1.4d0029'
+
     options = { profile: 'high', level: 3.1 }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.64001f'
