@@ -20,7 +20,8 @@ describe M3u8::PlaylistItem do
       input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
               %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
               %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
-              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
+              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",) +
+              %(NAME="1080p")
       item = M3u8::PlaylistItem.parse(input)
       expect(item.program_id).to eq '1'
       expect(item.codecs).to eq 'avc'
@@ -34,12 +35,14 @@ describe M3u8::PlaylistItem do
       expect(item.subtitles).to eq 'subs'
       expect(item.closed_captions).to eq 'caps'
       expect(item.uri).to eq 'test.url'
+      expect(item.name).to eq '1080p'
     end
 
     it 'should parse m3u8 into current instance' do
       input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
               %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
-              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url")
+              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",) +
+              %(NAME="SD")
       item = M3u8::PlaylistItem.new
       item.parse(input)
       expect(item.program_id).to eq '1'
@@ -53,6 +56,7 @@ describe M3u8::PlaylistItem do
       expect(item.subtitles).to eq 'subs'
       expect(item.closed_captions).to eq 'caps'
       expect(item.uri).to eq 'test.url'
+      expect(item.name).to eq 'SD'
     end
   end
 
@@ -75,13 +79,13 @@ describe M3u8::PlaylistItem do
 
     hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', audio: 'test',
              video: 'test2', average_bandwidth: 500, subtitles: 'subs',
-             frame_rate: 30, closed_captions: 'caps' }
+             frame_rate: 30, closed_captions: 'caps', name: 'SD' }
     item = M3u8::PlaylistItem.new(hash)
     output = item.to_s
     expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
                %(AVERAGE-BANDWIDTH=500,FRAME-RATE=30.000,) +
                %(AUDIO="test",VIDEO="test2",SUBTITLES="subs",) +
-               %(CLOSED-CAPTIONS="caps"\ntest.url)
+               %(CLOSED-CAPTIONS="caps",NAME="SD"\ntest.url)
     expect(output).to eq expected
   end
 
