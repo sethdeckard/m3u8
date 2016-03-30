@@ -6,7 +6,7 @@ module M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
-                  :frame_rate
+                  :frame_rate, :name
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
@@ -69,7 +69,8 @@ module M3u8
         frame_rate: parse_frame_rate(attributes['FRAME-RATE']),
         video: attributes['VIDEO'], audio: attributes['AUDIO'],
         uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
-        closed_captions: attributes['CLOSED-CAPTIONS'] }
+        closed_captions: attributes['CLOSED-CAPTIONS'],
+        name: attributes['NAME'] }
     end
 
     def parse_average_bandwidth(value)
@@ -112,7 +113,8 @@ module M3u8
        audio_format,
        video_format,
        subtitles_format,
-       closed_captions_format].compact.join(',')
+       closed_captions_format,
+       name_format].compact.join(',')
     end
 
     def program_id_format
@@ -166,6 +168,11 @@ module M3u8
       else
         %(CLOSED-CAPTIONS="#{closed_captions}")
       end
+    end
+
+    def name_format
+      return if name.nil?
+      %(NAME="#{name}")
     end
 
     def audio_codec
