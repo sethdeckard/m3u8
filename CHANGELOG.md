@@ -1,3 +1,5 @@
+#### 0.6.6 (3/30/2016) - Merged pull request #14 from [raphi](https://github.com/raphi). Adds support for non-standard name attribute on #EXT-X-STREAM-INF tags.
+
 #### 0.6.5 (3/18/2016) - Merged pull requests #11 from [jviney](https://github.com/jviney). Adds codec string for main profile level 4.1.
 
 #### 0.6.4 (2/21/2016) - Merged pull requests #8, #9, and #10 from [jviney](https://github.com/jviney). Adds FRAME-RATE attribute to PlayListItem, fixes NONE option for CLOSED-CAPTIONS attribute.
