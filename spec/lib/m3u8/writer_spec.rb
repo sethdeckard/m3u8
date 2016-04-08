@@ -147,6 +147,14 @@ describe M3u8::Writer do
     expect(io.string).to eq output
   end
 
+  it 'should render the target duration as a decimal-integer' do
+    playlist = M3u8::Playlist.new(target: 6.2)
+    io = StringIO.open
+    writer = M3u8::Writer.new io
+    writer.write playlist
+    expect(io.string).to include('#EXT-X-TARGETDURATION:6')
+  end
+
   it 'should raise error on write if item types are mixed' do
     playlist = M3u8::Playlist.new
 
