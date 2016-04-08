@@ -34,11 +34,15 @@ module M3u8
       io.puts '#EXT-X-I-FRAMES-ONLY' if playlist.iframes_only
       io.puts "#EXT-X-MEDIA-SEQUENCE:#{playlist.sequence}"
       io.puts "#EXT-X-ALLOW-CACHE:#{cache(playlist)}"
-      io.puts "#EXT-X-TARGETDURATION:#{playlist.target}"
+      io.puts target_duration_format(playlist)
     end
 
     def cache(playlist)
       playlist.cache ? 'YES' : 'NO'
+    end
+
+    def target_duration_format(playlist)
+      format('#EXT-X-TARGETDURATION:%d', playlist.target)
     end
   end
 end
