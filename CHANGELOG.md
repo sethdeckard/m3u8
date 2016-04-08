@@ -1,3 +1,5 @@
+#### 0.6.7 (4/8/2016) - Merged pull request #15 from [jviney](https://github.com/jviney). Fix: Always render the duration as a decimal integer.
+
 #### 0.6.6 (3/30/2016) - Merged pull request #14 from [raphi](https://github.com/raphi). Adds support for non-standard name attribute on #EXT-X-STREAM-INF tags.
 
 #### 0.6.5 (3/18/2016) - Merged pull requests #11 from [jviney](https://github.com/jviney). Adds codec string for main profile level 4.1.
