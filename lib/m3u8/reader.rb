@@ -152,8 +152,12 @@ module M3u8
     end
 
     def parse_time(line)
-      self.open = false
-      playlist.items << M3u8::TimeItem.parse(line)
+      if self.open
+        item.program_date_time = M3u8::TimeItem.parse(line)
+      else
+        self.open = false
+        playlist.items << M3u8::TimeItem.parse(line)
+      end
     end
 
     def parse_next_line(line)
