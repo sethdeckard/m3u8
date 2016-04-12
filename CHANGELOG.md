@@ -1,3 +1,5 @@
+#### 0.6.8 (4/12/2016) - Merged pull request #16 from [ghn](https://github.com/ghn). Fixes issue #12 to support parsing #EXT-X-PROGRAM-DATE-TIME correctly in media segments.
+
 #### 0.6.7 (4/8/2016) - Merged pull request #15 from [jviney](https://github.com/jviney). Fix: Always render the duration as a decimal integer.
 
 #### 0.6.6 (3/30/2016) - Merged pull request #14 from [raphi](https://github.com/raphi). Adds support for non-standard name attribute on #EXT-X-STREAM-INF tags.
