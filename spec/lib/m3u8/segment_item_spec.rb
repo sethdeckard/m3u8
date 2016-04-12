@@ -8,6 +8,7 @@ describe M3u8::SegmentItem do
     expect(item.segment).to eq 'test.ts'
     expect(item.comment).to be_nil
     expect(item.byterange).to be_nil
+    expect(item.program_date_time).to be_nil
 
     hash = { duration: 10.991, segment: 'test.ts', comment: 'anything',
              byterange: {
@@ -24,10 +25,15 @@ describe M3u8::SegmentItem do
   end
 
   it 'should provide m3u8 format representation' do
-    hash = { duration: 10.991, segment: 'test.ts' }
+    time_hash = { time: '2010-02-19T14:54:23.031' }
+    time_item = M3u8::TimeItem.new(time_hash)
+
+    hash = { duration: 10.991, segment: 'test.ts',
+             program_date_time: time_item }
     item = M3u8::SegmentItem.new(hash)
     output = item.to_s
-    expected = "#EXTINF:10.991,\ntest.ts"
+    date_time_output = item.program_date_time.to_s
+    expected = "#EXTINF:10.991,\n#{date_time_output}\ntest.ts"
     expect(output).to eq expected
 
     hash = { duration: 10.991, segment: 'test.ts', comment: 'anything' }

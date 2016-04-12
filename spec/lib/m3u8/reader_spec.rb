@@ -221,4 +221,15 @@ describe M3u8::Reader do
     expect(item.byterange.length).to eq 4500
     expect(item.byterange.start).to eq 600
   end
+
+  it 'should read segment with timestamp' do
+    file = File.open 'spec/fixtures/timestamp_playlist.m3u8'
+    reader = M3u8::Reader.new
+    playlist = reader.read file
+    expect(playlist.items.count).to eq 6
+
+    item_date_time = playlist.items.first.program_date_time
+    expect(item_date_time).to be_a M3u8::TimeItem
+    expect(item_date_time.time).to eq Time.iso8601('2016-04-11T15:24:31Z')
+  end
 end
