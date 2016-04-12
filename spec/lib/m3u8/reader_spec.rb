@@ -228,8 +228,8 @@ describe M3u8::Reader do
     playlist = reader.read file
     expect(playlist.items.count).to eq 6
 
-    item = playlist.items.first
-    expect(item.program_date_time).to be_a M3u8::TimeItem
-    expect(item.program_date_time.time).to eq Time.iso8601('2016-04-11T15:24:31Z')
+    item_date_time = playlist.items.first.program_date_time
+    expect(item_date_time).to be_a M3u8::TimeItem
+    expect(item_date_time.time).to eq Time.iso8601('2016-04-11T15:24:31Z')
   end
 end

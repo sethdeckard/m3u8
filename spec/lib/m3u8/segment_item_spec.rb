@@ -28,7 +28,8 @@ describe M3u8::SegmentItem do
     time_hash = { time: '2010-02-19T14:54:23.031' }
     time_item = M3u8::TimeItem.new(time_hash)
 
-    hash = { duration: 10.991, segment: 'test.ts', program_date_time: time_item }
+    hash = { duration: 10.991, segment: 'test.ts',
+             program_date_time: time_item }
     item = M3u8::SegmentItem.new(hash)
     output = item.to_s
     date_time_output = item.program_date_time.to_s

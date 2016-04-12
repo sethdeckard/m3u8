@@ -152,7 +152,7 @@ module M3u8
     end
 
     def parse_time(line)
-      if self.open
+      if open
         item.program_date_time = M3u8::TimeItem.parse(line)
       else
         self.open = false
