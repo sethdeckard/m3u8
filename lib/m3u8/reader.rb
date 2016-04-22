@@ -161,7 +161,7 @@ module M3u8
     end
 
     def parse_next_line(line)
-      value = line.delete("\n")
+      value = line.delete("\n").delete("\r")
       if master
         item.uri = value
       else
