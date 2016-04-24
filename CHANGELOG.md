@@ -1,4 +1,4 @@
-0.6.8 (4/12/2016) - Merged pull request #16 from ghn. Fixes issue #12 to support parsing `#EXT-X-PROGRAM-DATE-TIME` correctly in media segments.
+0.6.9 (4/24/2016) - Merged pull request #17 from [ghn](https://github.com/ghn). Removes return when parsing next line in playlist.
 
 ***
 
