@@ -8,13 +8,14 @@ module M3u8
       @tags = [basic_tags,
                media_segment_tags,
                media_playlist_tags,
-               master_playlist_tags].inject(:merge)
+               master_playlist_tags,
+               universal_tags].inject(:merge)
     end
 
     def read(input)
       self.playlist = Playlist.new
       input.each_line do |line|
-        parse_line line
+        parse_line(line)
       end
       playlist
     end
@@ -51,6 +52,10 @@ module M3u8
         '#EXT-X-STREAM-INF' => ->(line) { parse_stream(line) },
         '#EXT-X-I-FRAME-STREAM-INF' => ->(line) { parse_iframe_stream(line) }
       }
+    end
+
+    def parse_independent_segments(line)
+      parse_independent_segments
     end
 
     def parse_line(line)
@@ -169,6 +174,14 @@ module M3u8
       end
       playlist.items << item
       self.open = false
+    end
+
+    def universal_tags
+      {
+        '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
+          playlist.independent_segments = true
+        end
+      }
     end
   end
 end

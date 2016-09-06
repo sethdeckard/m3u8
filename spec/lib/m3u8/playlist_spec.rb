@@ -1,6 +1,33 @@
 require 'spec_helper'
 
 describe M3u8::Playlist do
+  let(:playlist) { described_class.new }
+
+  describe '#new' do
+    it 'initializes with defaults' do
+      expect(playlist.version).to be_nil
+      expect(playlist.cache).to be_nil
+      expect(playlist.target).to be 10
+      expect(playlist.sequence).to be 0
+      expect(playlist.type).to be_nil
+      expect(playlist.iframes_only).to be false
+      expect(playlist.independent_segments).to be false
+    end
+
+    it 'initializes from hash' do
+      options = { version: 7, cache: false, target: 12, sequence: 1,
+                  type: 'VOD', independent_segments: true }
+      playlist = M3u8::Playlist.new(options)
+      expect(playlist.version).to be 7
+      expect(playlist.cache).to be false
+      expect(playlist.target).to be 12
+      expect(playlist.sequence).to be 1
+      expect(playlist.type).to eq('VOD')
+      expect(playlist.iframes_only).to be false
+      expect(playlist.independent_segments).to be true
+    end
+  end
+
   it 'should generate codecs string' do
     options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
     codecs = M3u8::Playlist.codecs options
@@ -11,10 +38,11 @@ describe M3u8::Playlist do
     options = { uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
-    playlist = M3u8::Playlist.new
-    playlist.items.push item
+    playlist = M3u8::Playlist.new(independent_segments: true)
+    playlist.items << item
 
-    output = "#EXTM3U\n" +
+    output = "#EXTM3U\n" \
+             "#EXT-X-INDEPENDENT-SEGMENTS\n" +
              %(#EXT-X-STREAM-INF:CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n"
     expect(playlist.to_s).to eq output
@@ -23,7 +51,7 @@ describe M3u8::Playlist do
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
@@ -35,7 +63,7 @@ describe M3u8::Playlist do
                 audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
     playlist = M3u8::Playlist.new
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" \
              '#EXT-X-STREAM-INF:PROGRAM-ID=2,RESOLUTION=1920x1080,' +
@@ -48,12 +76,12 @@ describe M3u8::Playlist do
     options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
-    playlist.items.push item
+    playlist.items << item
     options = { program_id: '2', uri: 'playlist_url', bandwidth: 50_000,
                 width: 1920, height: 1080, profile: 'high', level: 4.1,
                 audio_codec: 'aac-lc' }
     item = M3u8::PlaylistItem.new options
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" +
              %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
@@ -65,14 +93,12 @@ describe M3u8::Playlist do
 
   it 'should render playlist' do
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
-    item =  M3u8::SegmentItem.new options
+    item =  M3u8::SegmentItem.new(options)
     playlist = M3u8::Playlist.new
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" \
-      "#EXT-X-VERSION:3\n" \
       "#EXT-X-MEDIA-SEQUENCE:0\n" \
-      "#EXT-X-ALLOW-CACHE:YES\n" \
       "#EXT-X-TARGETDURATION:10\n" \
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
@@ -80,13 +106,11 @@ describe M3u8::Playlist do
     expect(playlist.to_s).to eq output
 
     options = { duration: 11.261233, segment: '1080-7mbps00001.ts' }
-    item =  M3u8::SegmentItem.new options
-    playlist.items.push item
+    item =  M3u8::SegmentItem.new(options)
+    playlist.items << item
 
     output = "#EXTM3U\n" \
-      "#EXT-X-VERSION:3\n" \
       "#EXT-X-MEDIA-SEQUENCE:0\n" \
-      "#EXT-X-ALLOW-CACHE:YES\n" \
       "#EXT-X-TARGETDURATION:10\n" \
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
@@ -95,16 +119,16 @@ describe M3u8::Playlist do
       "#EXT-X-ENDLIST\n"
     expect(playlist.to_s).to eq output
 
-    options = { version: 1, cache: false, target: 12, sequence: 1,
+    options = { version: 7, cache: false, target: 12, sequence: 1,
                 type: 'VOD' }
     playlist = M3u8::Playlist.new options
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
     item =  M3u8::SegmentItem.new options
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" \
       "#EXT-X-PLAYLIST-TYPE:VOD\n" \
-      "#EXT-X-VERSION:1\n" \
+      "#EXT-X-VERSION:7\n" \
       "#EXT-X-MEDIA-SEQUENCE:1\n" \
       "#EXT-X-ALLOW-CACHE:NO\n" \
       "#EXT-X-TARGETDURATION:12\n" \
@@ -121,7 +145,7 @@ describe M3u8::Playlist do
     options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
-    playlist.items.push item
+    playlist.items << item
     playlist.write test_io
 
     output = "#EXTM3U\n" +
@@ -146,7 +170,7 @@ describe M3u8::Playlist do
     options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
     item = M3u8::PlaylistItem.new options
-    playlist.items.push item
+    playlist.items << item
 
     expect(playlist.master?).to be true
   end
@@ -157,11 +181,11 @@ describe M3u8::Playlist do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
              bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
-    playlist.items.push item
+    playlist.items << item
 
     hash = { duration: 10.991, segment: 'test.ts' }
     item = M3u8::SegmentItem.new(hash)
-    playlist.items.push item
+    playlist.items << item
 
     message = 'Playlist is invalid.'
     io = StringIO.new
@@ -176,32 +200,20 @@ describe M3u8::Playlist do
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
              bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
-    playlist.items.push item
+    playlist.items << item
     expect(playlist.valid?).to be true
 
     hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
              bandwidth: 540, uri: 'test.url' }
     item = M3u8::PlaylistItem.new(hash)
-    playlist.items.push item
+    playlist.items << item
     expect(playlist.valid?).to be true
 
     hash = { duration: 10.991, segment: 'test.ts' }
     item = M3u8::SegmentItem.new(hash)
-    playlist.items.push item
+    playlist.items << item
 
     expect(playlist.valid?).to be false
-  end
-
-  it 'should expose options as attributes' do
-    options = { version: 1, cache: false, target: 12, sequence: 1,
-                type: 'VOD' }
-    playlist = M3u8::Playlist.new options
-    expect(playlist.version).to be 1
-    expect(playlist.cache).to be false
-    expect(playlist.target).to be 12
-    expect(playlist.sequence).to be 1
-    expect(playlist.type).to eq('VOD')
-    expect(playlist.iframes_only).to be false
   end
 
   it 'should allow reading of playlists' do
@@ -214,13 +226,13 @@ describe M3u8::Playlist do
   it 'should return the total duration of a playlist' do
     playlist = M3u8::Playlist.new
     item = M3u8::SegmentItem.new(duration: 10.991, segment: 'test_01.ts')
-    playlist.items.push item
+    playlist.items << item
     item = M3u8::SegmentItem.new(duration: 9.891, segment: 'test_02.ts')
-    playlist.items.push item
+    playlist.items << item
     item = M3u8::SegmentItem.new(duration: 10.556, segment: 'test_03.ts')
-    playlist.items.push item
+    playlist.items << item
     item = M3u8::SegmentItem.new(duration: 8.790, segment: 'test_04.ts')
-    playlist.items.push item
+    playlist.items << item
 
     expect(playlist.duration.round(3)).to eq(40.228)
   end

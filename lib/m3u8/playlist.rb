@@ -3,7 +3,7 @@ module M3u8
   # of media segments
   class Playlist
     attr_accessor :items, :version, :cache, :target, :sequence, :type,
-                  :iframes_only
+                  :iframes_only, :independent_segments
 
     def initialize(options = {})
       assign_options options
@@ -21,8 +21,8 @@ module M3u8
     end
 
     def write(output)
-      writer = Writer.new output
-      writer.write self
+      writer = Writer.new(output)
+      writer.write(self)
     end
 
     def master?
@@ -32,7 +32,7 @@ module M3u8
 
     def to_s
       output = StringIO.open
-      write output
+      write(output)
       output.string
     end
 
@@ -52,13 +52,7 @@ module M3u8
     private
 
     def assign_options(options)
-      options = {
-        version: 3,
-        sequence: 0,
-        cache: true,
-        target: 10,
-        iframes_only: false
-      }.merge options
+      options = defaults.merge(options)
 
       self.version = options[:version]
       self.sequence = options[:sequence]
@@ -66,6 +60,16 @@ module M3u8
       self.target = options[:target]
       self.type = options[:type]
       self.iframes_only = options[:iframes_only]
+      self.independent_segments = options[:independent_segments]
+    end
+
+    def defaults
+      {
+        sequence: 0,
+        target: 10,
+        iframes_only: false,
+        independent_segments: false
+      }
     end
 
     def playlist_size

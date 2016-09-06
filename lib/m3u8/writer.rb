@@ -8,10 +8,8 @@ module M3u8
     end
 
     def write(playlist)
-      validate playlist
-
-      io.puts '#EXTM3U'
-      write_header(playlist) unless playlist.master?
+      validate(playlist)
+      write_header(playlist)
 
       playlist.items.each do |item|
         io.puts item.to_s
@@ -23,26 +21,55 @@ module M3u8
 
     private
 
+    def target_duration_format(playlist)
+      format('#EXT-X-TARGETDURATION:%d', playlist.target)
+    end
+
     def validate(playlist)
       return if playlist.valid?
-      fail PlaylistTypeError, 'Playlist is invalid.'
+      raise PlaylistTypeError, 'Playlist is invalid.'
+    end
+
+    def write_cache_tag(cache)
+      return if cache.nil?
+
+      io.puts "#EXT-X-ALLOW-CACHE:#{cache ? 'YES' : 'NO'}"
     end
 
     def write_header(playlist)
+      io.puts '#EXTM3U'
+      if playlist.master?
+        write_master_playlist_header(playlist)
+      else
+        write_media_playlist_header(playlist)
+      end
+    end
+
+    def write_independent_segments_tag(independent_segments)
+      return unless independent_segments
+
+      io.puts '#EXT-X-INDEPENDENT-SEGMENTS'
+    end
+
+    def write_master_playlist_header(playlist)
+      write_version_tag(playlist.version)
+      write_independent_segments_tag(playlist.independent_segments)
+    end
+
+    def write_media_playlist_header(playlist)
       io.puts "#EXT-X-PLAYLIST-TYPE:#{playlist.type}" unless playlist.type.nil?
-      io.puts "#EXT-X-VERSION:#{playlist.version}"
+      write_version_tag(playlist.version)
+      write_independent_segments_tag(playlist.independent_segments)
       io.puts '#EXT-X-I-FRAMES-ONLY' if playlist.iframes_only
       io.puts "#EXT-X-MEDIA-SEQUENCE:#{playlist.sequence}"
-      io.puts "#EXT-X-ALLOW-CACHE:#{cache(playlist)}"
+      write_cache_tag(playlist.cache)
       io.puts target_duration_format(playlist)
     end
 
-    def cache(playlist)
-      playlist.cache ? 'YES' : 'NO'
-    end
+    def write_version_tag(version)
+      return if version.nil?
 
-    def target_duration_format(playlist)
-      format('#EXT-X-TARGETDURATION:%d', playlist.target)
+      io.puts "#EXT-X-VERSION:#{version}"
     end
   end
 end

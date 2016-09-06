@@ -4,11 +4,13 @@ describe M3u8::Writer do
   it 'should render master playlist' do
     options = { uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
-    item = M3u8::PlaylistItem.new options
-    playlist = M3u8::Playlist.new
-    playlist.items.push item
+    item = M3u8::PlaylistItem.new(options)
+    playlist = M3u8::Playlist.new(version: 6, independent_segments: true)
+    playlist.items << item
 
-    output = "#EXTM3U\n" +
+    output = "#EXTM3U\n" \
+             "#EXT-X-VERSION:6\n" \
+             "#EXT-X-INDEPENDENT-SEGMENTS\n" +
              %(#EXT-X-STREAM-INF:CODECS="mp4a.40.34") +
              ",BANDWIDTH=6400\nplaylist_url\n"
 
@@ -19,7 +21,7 @@ describe M3u8::Writer do
 
     options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                 audio_codec: 'mp3' }
-    item = M3u8::PlaylistItem.new options
+    item = M3u8::PlaylistItem.new(options)
     playlist = M3u8::Playlist.new
     playlist.items.push item
 
@@ -80,37 +82,35 @@ describe M3u8::Writer do
 
   it 'should render playlist' do
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
-    item =  M3u8::SegmentItem.new options
-    playlist = M3u8::Playlist.new
-    playlist.items.push item
+    item =  M3u8::SegmentItem.new(options)
+    playlist = M3u8::Playlist.new(version: 7)
+    playlist.items << item
 
     output = "#EXTM3U\n" \
-      "#EXT-X-VERSION:3\n" \
+      "#EXT-X-VERSION:7\n" \
       "#EXT-X-MEDIA-SEQUENCE:0\n" \
-      "#EXT-X-ALLOW-CACHE:YES\n" \
       "#EXT-X-TARGETDURATION:10\n" \
       "#EXTINF:11.344644,\n" \
       "1080-7mbps00000.ts\n" \
       "#EXT-X-ENDLIST\n"
     io = StringIO.open
-    writer = M3u8::Writer.new io
+    writer = M3u8::Writer.new(io)
     writer.write playlist
     expect(io.string).to eq output
 
     options = { method: 'AES-128', uri: 'http://test.key',
                 iv: 'D512BBF', key_format: 'identity',
                 key_format_versions: '1/3' }
-    item = M3u8::KeyItem.new options
-    playlist.items.push item
+    item = M3u8::KeyItem.new(options)
+    playlist.items << item
 
     options = { duration: 11.261233, segment: '1080-7mbps00001.ts' }
     item =  M3u8::SegmentItem.new options
-    playlist.items.push item
+    playlist.items << item
 
     output = "#EXTM3U\n" \
-             "#EXT-X-VERSION:3\n" \
+             "#EXT-X-VERSION:7\n" \
              "#EXT-X-MEDIA-SEQUENCE:0\n" \
-             "#EXT-X-ALLOW-CACHE:YES\n" \
              "#EXT-X-TARGETDURATION:10\n" \
              "#EXTINF:11.344644,\n" \
              "1080-7mbps00000.ts\n" +
@@ -120,16 +120,16 @@ describe M3u8::Writer do
              "1080-7mbps00001.ts\n" \
              "#EXT-X-ENDLIST\n"
     io = StringIO.open
-    writer = M3u8::Writer.new io
+    writer = M3u8::Writer.new(io)
     writer.write playlist
     expect(io.string).to eq output
 
     options = { version: 4, cache: false, target: 12, sequence: 1,
                 type: 'EVENT', iframes_only: true }
-    playlist = M3u8::Playlist.new options
+    playlist = M3u8::Playlist.new(options)
     options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
-    item =  M3u8::SegmentItem.new options
-    playlist.items.push item
+    item =  M3u8::SegmentItem.new(options)
+    playlist.items << item
 
     output = "#EXTM3U\n" \
       "#EXT-X-PLAYLIST-TYPE:EVENT\n" \

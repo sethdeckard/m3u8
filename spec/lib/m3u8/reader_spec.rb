@@ -7,6 +7,8 @@ describe M3u8::Reader do
     playlist = reader.read file
     expect(playlist.master?).to be true
 
+    expect(playlist.independent_segments).to be true
+
     item = playlist.items[0]
     expect(item).to be_a(M3u8::SessionKeyItem)
     expect(item.method).to eq('AES-128')
