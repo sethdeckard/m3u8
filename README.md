@@ -167,8 +167,6 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * EXT-X-SESSION-KEY
 
 ### TODO:
-* EXT-X-DISCONTINUITY-SEQUENCE
-* EXT-X-INDEPENDENT-SEGMENTS
 * EXT-X-START
 
 ## Roadmap 
