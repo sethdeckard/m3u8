@@ -1,3 +1,5 @@
+ - Added support for EXT-X-INDEPENDENT-SEGMENTS tag. Changes playlist defaults.
+
 0.6.9 (4/24/2016) - Merged pull request #17 from [ghn](https://github.com/ghn). Removes return when parsing next line in playlist.
 
 ***
