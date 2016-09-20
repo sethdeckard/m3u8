@@ -13,8 +13,18 @@ describe do
 
   it 'should parse yes/no string' do
     value = 'YES'
-    expect(test_class.parse_yes_no value).to be true
+    expect(test_class.parse_yes_no(value)).to be true
     value = 'NO'
-    expect(test_class.parse_yes_no value).to be false
+    expect(test_class.parse_yes_no(value)).to be false
+  end
+
+  describe '#to_yes_no' do
+    it 'converts true to YES' do
+      expect(test_class.to_yes_no(true)).to eq('YES')
+    end
+
+    it 'converts false to NO' do
+      expect(test_class.to_yes_no(false)).to eq('NO')
+    end
   end
 end
