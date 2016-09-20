@@ -16,5 +16,18 @@ module M3u8
       precise = attributes['PRECISE']
       @precise = parse_yes_no(precise) unless precise.nil?
     end
+
+    def to_s
+      attributes = ["TIME-OFFSET=#{time_offset}",
+                    precise_format].compact.join(',')
+      "#EXT-X-START:#{attributes}"
+    end
+
+    private
+
+    def precise_format
+      return if precise.nil?
+      "PRECISE=#{to_yes_no(precise)}"
+    end
   end
 end
