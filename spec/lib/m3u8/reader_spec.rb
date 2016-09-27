@@ -239,10 +239,10 @@ describe M3u8::Reader do
 
   it 'should parse master playlist from uri' do
     file = File.open 'spec/fixtures/master.m3u8'
-    stub_request(:get, "example.com/fixtures/master.m3u8").
+    stub_request(:get, 'example.com/fixtures/master.m3u8').
       to_return(body: file.read)
 
-    uri = open "http://example.com/fixtures/master.m3u8"
+    uri = open 'http://example.com/fixtures/master.m3u8'
     
     reader = M3u8::Reader.new
     playlist = reader.read uri

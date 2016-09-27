@@ -136,7 +136,7 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 
 ```ruby
 require 'open-uri'
-uri = open "http://example.com/fixtures/master.m3u8"
+uri = open 'http://example.com/fixtures/master.m3u8'
 playlist = M3u8::Playlist.read(uri)
 ```
 
