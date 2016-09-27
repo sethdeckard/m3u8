@@ -132,6 +132,14 @@ playlist.items.unshift(item)
 
 M3u8::Reader is the class handles parsing if you want more control over the process.
     
+### From uri
+
+```ruby
+require 'open-uri'
+uri = open "http://example.com/fixtures/master.m3u8"
+playlist = M3u8::Playlist.read(uri)
+```
+
 ## Features
 * Distinction between segment and master playlists is handled automatically (no need to use a different class).
 * Automatically generates the audio/video codec string based on names and options you are familiar with.

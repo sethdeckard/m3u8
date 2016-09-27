@@ -1,6 +1,7 @@
 require 'm3u8'
 require 'simplecov'
 require 'coveralls'
+require 'webmock/rspec'
 
 SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
   SimpleCov::Formatter::HTMLFormatter,

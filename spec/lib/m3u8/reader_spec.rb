@@ -1,5 +1,7 @@
 require 'spec_helper'
 
+require 'open-uri'
+
 describe M3u8::Reader do
   it 'should parse master playlist' do
     file = File.open 'spec/fixtures/master.m3u8'
@@ -233,5 +235,53 @@ describe M3u8::Reader do
     item_date_time = playlist.items.first.program_date_time
     expect(item_date_time).to be_a M3u8::TimeItem
     expect(item_date_time.time).to eq Time.iso8601('2016-04-11T15:24:31Z')
+  end
+
+  it 'should parse master playlist from uri' do
+    file = File.open 'spec/fixtures/master.m3u8'
+    stub_request(:get, "example.com/fixtures/master.m3u8").
+      to_return(body: file.read)
+
+    uri = open "http://example.com/fixtures/master.m3u8"
+    
+    reader = M3u8::Reader.new
+    playlist = reader.read uri
+    expect(playlist.master?).to be true
+
+    expect(playlist.independent_segments).to be true
+
+    item = playlist.items[0]
+    expect(item).to be_a(M3u8::SessionKeyItem)
+    expect(item.method).to eq('AES-128')
+    expect(item.uri).to eq('https://priv.example.com/key.php?r=52')
+
+    item = playlist.items[1]
+    expect(item).to be_a(M3u8::PlaylistItem)
+    expect(item.uri).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
+    expect(item.program_id).to eq('1')
+    expect(item.width).to eq(1920)
+    expect(item.height).to eq(1080)
+    expect(item.resolution).to eq('1920x1080')
+    expect(item.codecs).to eq('avc1.640028,mp4a.40.2')
+    expect(item.bandwidth).to eq(5_042_000)
+    expect(item.iframe).to be false
+    expect(item.average_bandwidth).to be_nil
+
+    item = playlist.items[6]
+    expect(item).to be_a(M3u8::PlaylistItem)
+    expect(item.uri).to eq('hls/64k/64k.m3u8')
+    expect(item.program_id).to eq('1')
+    expect(item.width).to be_nil
+    expect(item.height).to be_nil
+    expect(item.resolution).to be_nil
+    expect(item.codecs).to eq('mp4a.40.2')
+    expect(item.bandwidth).to eq(6400)
+    expect(item.iframe).to be false
+    expect(item.average_bandwidth).to be_nil
+
+    expect(playlist.items.size).to eq(7)
+
+    item = playlist.items.last
+    expect(item.resolution).to be_nil
   end
 end
