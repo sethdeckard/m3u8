@@ -145,7 +145,7 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * Supports session data in master playlists.
 * Supports keys for encrypted media segments (EXT-X-KEY, EXT-SESSION-KEY).
 
-## HLS Spec Status (version 17)
+## HLS Spec Status (version 20)
 ### Implemented:
 * EXTM3U
 * EXT-X-VERSION
@@ -165,9 +165,10 @@ M3u8::Reader is the class handles parsing if you want more control over the proc
 * EXT-X-I-FRAME-STREAM-INF
 * EXT-X-SESSION-DATA
 * EXT-X-SESSION-KEY
+* EXT-X-START
 
 ### TODO:
-* EXT-X-START
+* EXT-X-DATERANGE
 
 ## Roadmap 
 * Add the last remaining tags for latest version of the spec.
