@@ -1,4 +1,4 @@
- - Added support for EXT-X-INDEPENDENT-SEGMENTS tag. Changes playlist defaults.
+0.7.0 (2/3/2017) - Added support for EXT-X-INDEPENDENT-SEGMENTS and EXT-X-START tags. Minor version bumped due to changes of default values for new playlists.
 
 0.6.9 (4/24/2016) - Merged pull request #17 from [ghn](https://github.com/ghn). Removes return when parsing next line in playlist.
 
