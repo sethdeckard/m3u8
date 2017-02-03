@@ -15,6 +15,10 @@ describe M3u8::Reader do
     expect(item.uri).to eq('https://priv.example.com/key.php?r=52')
 
     item = playlist.items[1]
+    expect(item).to be_a(M3u8::PlaybackStart)
+    expect(item.time_offset).to eq(20.2)
+
+    item = playlist.items[2]
     expect(item).to be_a(M3u8::PlaylistItem)
     expect(item.uri).to eq('hls/1080-7mbps/1080-7mbps.m3u8')
     expect(item.program_id).to eq('1')
@@ -26,7 +30,7 @@ describe M3u8::Reader do
     expect(item.iframe).to be false
     expect(item.average_bandwidth).to be_nil
 
-    item = playlist.items[6]
+    item = playlist.items[7]
     expect(item).to be_a(M3u8::PlaylistItem)
     expect(item.uri).to eq('hls/64k/64k.m3u8')
     expect(item.program_id).to eq('1')
@@ -38,7 +42,7 @@ describe M3u8::Reader do
     expect(item.iframe).to be false
     expect(item.average_bandwidth).to be_nil
 
-    expect(playlist.items.size).to eq(7)
+    expect(playlist.items.size).to eq(8)
 
     item = playlist.items.last
     expect(item.resolution).to be_nil
@@ -176,12 +180,12 @@ describe M3u8::Reader do
     reader = M3u8::Reader.new
     playlist = reader.read file
 
-    expect(playlist.items.size).to eq(7)
+    expect(playlist.items.size).to eq(8)
 
     file = File.open 'spec/fixtures/master.m3u8'
     playlist = reader.read file
 
-    expect(playlist.items.size).to eq(7)
+    expect(playlist.items.size).to eq(8)
   end
 
   it 'should parse playlist with session data' do

@@ -54,6 +54,14 @@ module M3u8
       }
     end
 
+    def universal_tags
+      { '#EXT-X-START' => ->(line) { parse_start(line) },
+        '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
+          playlist.independent_segments = true
+        end
+      }
+    end
+
     def parse_independent_segments(line)
       parse_independent_segments
     end
@@ -156,6 +164,12 @@ module M3u8
       playlist.items << item
     end
 
+    def parse_start(line)
+      item = M3u8::PlaybackStart.new
+      item.parse(line)
+      playlist.items << item
+    end
+
     def parse_time(line)
       if open
         item.program_date_time = M3u8::TimeItem.parse(line)
@@ -174,14 +188,6 @@ module M3u8
       end
       playlist.items << item
       self.open = false
-    end
-
-    def universal_tags
-      {
-        '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
-          playlist.independent_segments = true
-        end
-      }
     end
   end
 end
