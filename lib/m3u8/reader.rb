@@ -62,10 +62,6 @@ module M3u8
       }
     end
 
-    def parse_independent_segments(line)
-      parse_independent_segments
-    end
-
     def parse_line(line)
       return if match_tag(line)
       parse_next_line(line) if !item.nil? && open
