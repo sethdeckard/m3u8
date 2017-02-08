@@ -4,7 +4,7 @@ module M3u8
     include M3u8
     attr_accessor :id, :class_name, :start_date, :end_date, :duration,
                   :planned_duration, :scte35_cmd, :scte35_out, :scte35_in,
-                  :end_on_next
+                  :end_on_next, :client_attributes
 
     def parse(text)
       attributes = parse_attributes(text)
@@ -18,6 +18,13 @@ module M3u8
       @scte35_out = attributes['SCTE35-OUT']
       @scte35_in = attributes['SCTE35-IN']
       @end_on_next = attributes.key?('END-ON-NEXT') ? true : false
+      @client_attributes = parse_client_attributes(attributes)
+    end
+
+    private
+
+    def parse_client_attributes(attributes)
+      attributes.select { |key| key.start_with?('X-') }
     end
   end
 end
