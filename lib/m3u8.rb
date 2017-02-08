@@ -12,8 +12,12 @@ module M3u8
   end
 
   def parse_attributes(line)
-    array = line.delete("\n").scan(/([A-z-]+)\s*=\s*("[^"]*"|[^,]*)/)
+    array = line.delete("\n").scan(/([A-z0-9-]+)\s*=\s*("[^"]*"|[^,]*)/)
     Hash[array.map { |key, value| [key, value.delete('"')] }]
+  end
+
+  def parse_float(value)
+    value.nil? ? nil : value.to_f
   end
 
   def parse_yes_no(value)
