@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # MediaItem represents a set of EXT-X-MEDIA attributes
   class MediaItem

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
@@ -177,18 +178,17 @@ module M3u8
 
     def audio_codec
       return if @audio_codec.nil?
-      return 'mp4a.40.2' if @audio_codec.downcase == 'aac-lc'
-      return 'mp4a.40.5' if @audio_codec.downcase == 'he-aac'
-      return 'mp4a.40.34' if @audio_codec.downcase == 'mp3'
+      return 'mp4a.40.2' if @audio_codec.casecmp('aac-lc').zero?
+      return 'mp4a.40.5' if @audio_codec.casecmp('he-aac').zero?
+      return 'mp4a.40.34' if @audio_codec.casecmp('mp3').zero?
     end
 
     def video_codec(profile, level)
       return if profile.nil? || level.nil?
 
-      profile.downcase!
-      return baseline_codec_string(level) if profile == 'baseline'
-      return main_codec_string(level) if profile == 'main'
-      return high_codec_string(level) if profile == 'high'
+      return baseline_codec_string(level) if profile.casecmp('baseline').zero?
+      return main_codec_string(level) if profile.casecmp('main').zero?
+      return high_codec_string(level) if profile.casecmp('high').zero?
     end
 
     def baseline_codec_string(level)

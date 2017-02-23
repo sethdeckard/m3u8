@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # TimeItem represents EXT-X-PROGRAM-DATE-TIME
   class TimeItem

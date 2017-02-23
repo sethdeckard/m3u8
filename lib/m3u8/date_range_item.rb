@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # DateRangeItem represents a #EXT-X-DATERANGE tag
   class DateRangeItem

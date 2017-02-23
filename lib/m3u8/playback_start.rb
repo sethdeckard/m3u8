@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # PlaybackStart represents a #EXT-X-START tag and attributes
   class PlaybackStart

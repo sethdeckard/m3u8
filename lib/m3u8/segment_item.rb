@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # SegmentItem represents EXTINF attributes with the URI that follows,
   # optionally allowing an EXT-X-BYTERANGE tag to be set.

@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'm3u8'
 require 'simplecov'
 require 'coveralls'
