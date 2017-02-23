@@ -6,6 +6,12 @@ module M3u8
                   :planned_duration, :scte35_cmd, :scte35_out, :scte35_in,
                   :end_on_next, :client_attributes
 
+    def initialize(options = {})
+      options.each do |key, value|
+        instance_variable_set("@#{key}", value)
+      end
+    end
+
     def parse(text)
       attributes = parse_attributes(text)
       @id = attributes['ID']

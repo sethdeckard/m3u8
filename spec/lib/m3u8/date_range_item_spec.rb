@@ -1,6 +1,34 @@
 require 'spec_helper'
 
 describe M3u8::DateRangeItem do
+  describe '#new' do
+    it 'should assign attributes via option hash' do
+      options = { id: 'test_id', class_name: 'test_class',
+                  start_date: '2014-03-05T11:15:00Z',
+                  end_date: '2014-03-05T11:16:00Z', duration: 60.1,
+                  planned_duration: 59.993,
+                  scte35_out: '0xFC002F0000000000FF0',
+                  scte35_in: '0xFC002F0000000000FF1',
+                  scte35_cmd: '0xFC002F0000000000FF2', end_on_next: true,
+                  client_attributes: { 'X-CUSTOM' => 45.3 } }
+      item = described_class.new(options)
+
+      expect(item.id).to eq('test_id')
+      expect(item.class_name).to eq('test_class')
+      expect(item.start_date).to eq('2014-03-05T11:15:00Z')
+      expect(item.end_date).to eq('2014-03-05T11:16:00Z')
+      expect(item.duration).to eq(60.1)
+      expect(item.planned_duration).to eq(59.993)
+      expect(item.scte35_out).to eq('0xFC002F0000000000FF0')
+      expect(item.scte35_in).to eq('0xFC002F0000000000FF1')
+      expect(item.scte35_cmd).to eq('0xFC002F0000000000FF2')
+      expect(item.end_on_next).to be true
+      expect(item.client_attributes.empty?).to be false
+      puts item.client_attributes
+      expect(item.client_attributes['X-CUSTOM']).to eq(45.3)
+    end
+  end
+
   describe '#parse' do
     it 'should parse m3u8 tag into instance' do
       item = described_class.new
