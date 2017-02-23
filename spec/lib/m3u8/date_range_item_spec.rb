@@ -24,7 +24,6 @@ describe M3u8::DateRangeItem do
       expect(item.scte35_cmd).to eq('0xFC002F0000000000FF2')
       expect(item.end_on_next).to be true
       expect(item.client_attributes.empty?).to be false
-      puts item.client_attributes
       expect(item.client_attributes['X-CUSTOM']).to eq(45.3)
     end
   end
@@ -81,6 +80,44 @@ describe M3u8::DateRangeItem do
       item.parse(line)
 
       expect(item.client_attributes['X-CUSTOM-VALUE']).to eq('test_value')
+    end
+  end
+
+  describe '#to_s' do
+    it 'should render m3u8 tag' do
+      options = { id: 'test_id', class_name: 'test_class',
+                  start_date: '2014-03-05T11:15:00Z',
+                  end_date: '2014-03-05T11:16:00Z', duration: 60.1,
+                  planned_duration: 59.993,
+                  scte35_out: '0xFC002F0000000000FF0',
+                  scte35_in: '0xFC002F0000000000FF1',
+                  scte35_cmd: '0xFC002F0000000000FF2', end_on_next: true,
+                  client_attributes: { 'X-CUSTOM' => 45.3,
+                                       'X-CUSTOM-TEXT' => 'test_value' } }
+      item = described_class.new(options)
+
+      expected = '#EXT-X-DATERANGE:ID="test_id",CLASS="test_class",' \
+      'START-DATE="2014-03-05T11:15:00Z",' \
+      'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
+      'PLANNED-DURATION=59.993,' \
+      'X-CUSTOM=45.3,' \
+      'X-CUSTOM-TEXT="test_value",' \
+      'SCTE35-CMD=0xFC002F0000000000FF2,' \
+      'SCTE35-OUT=0xFC002F0000000000FF0,' \
+      'SCTE35-IN=0xFC002F0000000000FF1,' \
+      'END-ON-NEXT=YES'
+
+      expect(item.to_s).to eq(expected)
+    end
+
+    it 'should ignore optional attributes' do
+      options = { id: 'test_id', start_date: '2014-03-05T11:15:00Z' }
+      item = described_class.new(options)
+
+      expected = '#EXT-X-DATERANGE:ID="test_id",' \
+      'START-DATE="2014-03-05T11:15:00Z"'
+
+      expect(item.to_s).to eq(expected)
     end
   end
 end
