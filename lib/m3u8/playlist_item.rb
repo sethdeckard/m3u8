@@ -37,17 +37,11 @@ module M3u8
     def codecs
       return @codecs unless @codecs.nil?
 
-      video_codec = video_codec profile, level
+      video = video_codec(profile, level)
+      return audio_codec if video.nil?
+      return video if audio_codec.nil?
 
-      if video_codec.nil?
-        return audio_codec
-      else
-        if audio_codec.nil?
-          return video_codec
-        else
-          return "#{video_codec},#{audio_codec}"
-        end
-      end
+      "#{video},#{audio_codec}"
     end
 
     def to_s
@@ -91,11 +85,11 @@ module M3u8
       return if frame_rate.nil?
 
       value = BigDecimal(frame_rate)
-      value if value > 0
+      value if value.positive?
     end
 
     def validate
-      fail MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
+      raise MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
     end
 
     def m3u8_format
