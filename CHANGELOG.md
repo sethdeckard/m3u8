@@ -1,4 +1,4 @@
-master - Added support for the EXT-X-DATERANGE tag. Minor refactoring of existing classes.
+0.7.1 (2/23/2017) - Added support for the EXT-X-DATERANGE tag. Minor refactoring of existing classes.
 
 ***
 
