@@ -240,5 +240,20 @@ describe M3u8::Reader do
       expect(item_date_time).to be_a(M3u8::TimeItem)
       expect(item_date_time.time).to eq(Time.iso8601('2016-04-11T15:24:31Z'))
     end
+
+    context 'playlist with daterange' do
+      it 'parses playlist' do
+        file = File.open('spec/fixtures/date_range_scte35.m3u8')
+        reader = M3u8::Reader.new
+        playlist = reader.read(file)
+        expect(playlist.items.count).to eq(5)
+
+        item = playlist.items[0]
+        expect(item).to be_a(M3u8::DateRangeItem)
+
+        item = playlist.items[4]
+        expect(item).to be_a(M3u8::DateRangeItem)
+      end
+    end
   end
 end

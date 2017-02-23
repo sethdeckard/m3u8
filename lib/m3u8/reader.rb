@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 module M3u8
   # Reader provides parsing of m3u8 playlists
   class Reader
@@ -27,17 +28,20 @@ module M3u8
     end
 
     def media_segment_tags
-      { '#EXTINF' => ->(line) { parse_segment(line) },
+      {
+        '#EXTINF' => ->(line) { parse_segment(line) },
         '#EXT-X-DISCONTINUITY' => ->(line) { parse_discontinuity(line) },
         '#EXT-X-BYTERANGE' => ->(line) { parse_byterange(line) },
         '#EXT-X-KEY' => ->(line) { parse_key(line) },
         '#EXT-X-MAP' => ->(line) { parse_map(line) },
-        '#EXT-X-PROGRAM-DATE-TIME' => ->(line) { parse_time(line) }
+        '#EXT-X-PROGRAM-DATE-TIME' => ->(line) { parse_time(line) },
+        '#EXT-X-DATERANGE' => ->(line) { parse_date_range(line) }
       }
     end
 
     def media_playlist_tags
-      { '#EXT-X-MEDIA-SEQUENCE' => ->(line) { parse_sequence(line) },
+      {
+        '#EXT-X-MEDIA-SEQUENCE' => ->(line) { parse_sequence(line) },
         '#EXT-X-ALLOW-CACHE' => ->(line) { parse_cache(line) },
         '#EXT-X-TARGETDURATION' => ->(line) { parse_target(line) },
         '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
@@ -46,7 +50,8 @@ module M3u8
     end
 
     def master_playlist_tags
-      { '#EXT-X-MEDIA' => ->(line) { parse_media(line) },
+      {
+        '#EXT-X-MEDIA' => ->(line) { parse_media(line) },
         '#EXT-X-SESSION-DATA' => ->(line) { parse_session_data(line) },
         '#EXT-X-SESSION-KEY' => ->(line) { parse_session_key(line) },
         '#EXT-X-STREAM-INF' => ->(line) { parse_stream(line) },
@@ -55,7 +60,8 @@ module M3u8
     end
 
     def universal_tags
-      { '#EXT-X-START' => ->(line) { parse_start(line) },
+      {
+        '#EXT-X-START' => ->(line) { parse_start(line) },
         '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
           playlist.independent_segments = true
         end
@@ -173,6 +179,12 @@ module M3u8
         self.open = false
         playlist.items << M3u8::TimeItem.parse(line)
       end
+    end
+
+    def parse_date_range(line)
+      item = M3u8::DateRangeItem.new
+      item.parse(line)
+      playlist.items << item
     end
 
     def parse_next_line(line)
