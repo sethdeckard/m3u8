@@ -85,7 +85,7 @@ module M3u8
       return if frame_rate.nil?
 
       value = BigDecimal(frame_rate)
-      value if value.positive?
+      value if value > 0
     end
 
     def validate
