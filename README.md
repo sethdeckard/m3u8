@@ -6,7 +6,13 @@
 [![security](https://hakiri.io/github/sethdeckard/m3u8/master.svg)](https://hakiri.io/github/sethdeckard/m3u8/master)
 # m3u8
 
-m3u8 provides generation and parsing of m3u8 playlists used the [HTTP Live Streaming](https://developer.apple.com/library/ios/documentation/networkinginternet/conceptual/streamingmediaguide/Introduction/Introduction.html#//apple_ref/doc/uid/TP40008332-CH1-SW1) (HLS) specification created by Apple. This is useful if you wish to generate m3u8 playlists on the fly in your web application (to integrate authentication, do something custom,  etc) while of course serving up the actual MPEG transport stream files (.ts) from a CDN. You could also use m3u8 to generate playlist files as part of an encoding pipeline. You can also parse existing playlists, add content to them and generate a new output.
+m3u8 provides easy generation and parsing of m3u8 playlists defined in the [HTTP Live Streaming (HLS)](https://tools.ietf.org/html/draft-pantos-http-live-streaming-20) Internet Draft published by Apple.
+
+* The library completely implements version 20 of the HLS Internet Draft.
+* Provides parsing of an m3u8 playlist into an object model from any File, StringIO, or string.
+* Provides ability to write playlist to a File or StringIO or expose as string via to_s.
+* Distinction between a master and media playlist is handled automatically (single Playlist class).
+* Optionally, the library can automatically generate the audio/video codecs string used in the CODEC attribute based on specified H.264, AAC, or MP3 options (such as Profile/Level).
 
 ## Installation
 
@@ -86,23 +92,8 @@ options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
 item = M3u8::PlaylistItem.new(options)
 ```
 
-Just get the codec string for custom use:
 
-```ruby
-options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
-codecs = M3u8::Playlist.codecs(options)
-# => "avc1.66.30,mp4a.40.2"
-```  
-      
-Values for audio_codec (codec name): aac-lc, he-aac, mp3
-    
-Possible values for profile (H.264 Profile): baseline, main, high.
-    
-Possible values for level (H.264 Level): 3.0, 3.1, 4.0, 4.1. 
-
-Not all Levels and Profiles can be combined, consult H.264 documentation
-
-## Parsing Usage
+## Usage (parsing playlists)
 
 ```ruby
 file = File.open 'spec/fixtures/master.m3u8'
@@ -131,49 +122,26 @@ playlist.items.unshift(item)
 ```
 
 M3u8::Reader is the class handles parsing if you want more control over the process.
-    
-## Features
-* Distinction between segment and master playlists is handled automatically (no need to use a different class).
-* Automatically generates the audio/video codec string based on names and options you are familiar with.
-* Provides validation of input when adding playlists or segments.
-* Allows all options to be configured on a playlist (caching, version, etc.)
-* Can write playlist to an IO object (StringIO/File, etc) or access string via to_s.
-* Can read playlists into a model (Playlist and Items) from an IO object.
-* Any tag or attribute supported by the object model is supported both parsing and generation of m3u8 playlists.
-* Supports I-frames (Intra frames) and byte ranges in Segments.
-* Supports subtitles, closed captions, alternate audio and video, and comments.
-* Supports session data in master playlists.
-* Supports keys for encrypted media segments (EXT-X-KEY, EXT-SESSION-KEY).
 
-## HLS Spec Status (version 20)
-### Implemented:
-* EXTM3U
-* EXT-X-VERSION
-* EXTINF  
-* EXT-X-BYTERANGE
-* EXT-X-DISCONTINUITY
-* EXT-X-KEY
-* EXT-X-MAP
-* EXT-X-PROGRAM-DATE-TIME
-* EXT-X-TARGETDURATION
-* EXT-X-MEDIA-SEQUENCE
-* EXT-X-ENDLIST
-* EXT-X-PLAYLIST-TYPE
-* EXT-X-I-FRAMES-ONLY
-* EXT-X-MEDIA
-* EXT-X-STREAM-INF
-* EXT-X-I-FRAME-STREAM-INF
-* EXT-X-SESSION-DATA
-* EXT-X-SESSION-KEY
-* EXT-X-START
+## Usage (misc)
+Generate the codec string based on audio and video codec options without dealing a playlist instance:
 
-### TODO:
-* EXT-X-DATERANGE
+```ruby
+options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
+codecs = M3u8::Playlist.codecs(options)
+# => "avc1.66.30,mp4a.40.2"
+```  
+      
+* Values for audio_codec (codec name): aac-lc, he-aac, mp3   
+* Values for profile (H.264 Profile): baseline, main, high.
+* Values for level (H.264 Level): 3.0, 3.1, 4.0, 4.1. 
+
+Not all Levels and Profiles can be combined and validation is not currently implemented, consult H.264 documentation for further details.
+
 
 ## Roadmap 
-* Add the last remaining tags for latest version of the spec.
-* Validation of all attributes and their values to match the rules defined in the spec.
-* Support for different versions of spec, defaulting to latest.
+* Implement validation of all tags, attributes, and values per HLS I-D.
+* Perhaps support for different versions of HLS I-D, defaulting to latest.
 
 ## Contributing
 
