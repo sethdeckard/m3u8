@@ -1,3 +1,5 @@
+master - Improvements for writing playlists: Allow playlist to be initalized as master, expose write_header on Writer
+
 0.7.1 (2/23/2017) - Added support for the EXT-X-DATERANGE tag. Minor refactoring of existing classes.
 
 ***
