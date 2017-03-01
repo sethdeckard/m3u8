@@ -7,18 +7,18 @@ module M3u8
                   :iframes_only, :independent_segments
 
     def initialize(options = {})
-      assign_options options
-      self.items = []
+      assign_options(options)
+      @items = []
     end
 
     def self.codecs(options = {})
-      item = PlaylistItem.new options
+      item = PlaylistItem.new(options)
       item.codecs
     end
 
     def self.read(input)
       reader = Reader.new
-      reader.read input
+      reader.read(input)
     end
 
     def write(output)
@@ -27,7 +27,8 @@ module M3u8
     end
 
     def master?
-      return false if playlist_size == 0 && segment_size == 0
+      return @master unless @master.nil?
+      return false if playlist_size.zero? && segment_size.zero?
       playlist_size > 0
     end
 
@@ -55,13 +56,14 @@ module M3u8
     def assign_options(options)
       options = defaults.merge(options)
 
-      self.version = options[:version]
-      self.sequence = options[:sequence]
-      self.cache = options[:cache]
-      self.target = options[:target]
-      self.type = options[:type]
-      self.iframes_only = options[:iframes_only]
-      self.independent_segments = options[:independent_segments]
+      @version = options[:version]
+      @sequence = options[:sequence]
+      @cache = options[:cache]
+      @target = options[:target]
+      @type = options[:type]
+      @iframes_only = options[:iframes_only]
+      @independent_segments = options[:independent_segments]
+      @master = options[:master]
     end
 
     def defaults
