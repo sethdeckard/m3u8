@@ -176,4 +176,46 @@ describe M3u8::Writer do
         .to raise_error(M3u8::PlaylistTypeError, message)
     end
   end
+
+  describe '#write_header' do
+    context 'master playlist' do
+      it 'should write header only' do
+        playlist = M3u8::Playlist.new(version: 6, independent_segments: true)
+        options = { uri: 'playlist_url', bandwidth: 6400,
+                    audio_codec: 'mp3' }
+        item = M3u8::PlaylistItem.new(options)
+        playlist.items << item
+        expect(playlist.master?).to be true
+
+        output = "#EXTM3U\n" \
+                 "#EXT-X-VERSION:6\n" \
+                 "#EXT-X-INDEPENDENT-SEGMENTS\n"
+
+        io = StringIO.open
+        writer = M3u8::Writer.new(io)
+        writer.write_header(playlist)
+        expect(io.string).to eq(output)
+      end
+    end
+
+    context 'media playlist' do
+      it 'should write header only' do
+        playlist = M3u8::Playlist.new(version: 7)
+        options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
+        item =  M3u8::SegmentItem.new(options)
+        playlist.items << item
+
+        io = StringIO.open
+        writer = M3u8::Writer.new(io)
+        writer.write_header(playlist)
+
+        expected = "#EXTM3U\n" \
+          "#EXT-X-VERSION:7\n" \
+          "#EXT-X-MEDIA-SEQUENCE:0\n" \
+          "#EXT-X-TARGETDURATION:10\n"
+
+        expect(io.string).to eq(expected)
+      end
+    end
+  end
 end

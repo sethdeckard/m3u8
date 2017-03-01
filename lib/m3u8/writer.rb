@@ -5,7 +5,7 @@ module M3u8
     attr_accessor :io
 
     def initialize(io)
-      self.io = io
+      @io = io
     end
 
     def write(playlist)
@@ -18,6 +18,15 @@ module M3u8
 
       return if playlist.master?
       io.puts '#EXT-X-ENDLIST'
+    end
+
+    def write_header(playlist)
+      io.puts '#EXTM3U'
+      if playlist.master?
+        write_master_playlist_header(playlist)
+      else
+        write_media_playlist_header(playlist)
+      end
     end
 
     private
@@ -35,15 +44,6 @@ module M3u8
       return if cache.nil?
 
       io.puts "#EXT-X-ALLOW-CACHE:#{cache ? 'YES' : 'NO'}"
-    end
-
-    def write_header(playlist)
-      io.puts '#EXTM3U'
-      if playlist.master?
-        write_master_playlist_header(playlist)
-      else
-        write_media_playlist_header(playlist)
-      end
     end
 
     def write_independent_segments_tag(independent_segments)
