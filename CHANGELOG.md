@@ -1,10 +1,12 @@
-master - Improvements for writing playlists: Allow playlist to be initalized as master, expose write_header on Writer
-
-0.7.1 (2/23/2017) - Added support for the EXT-X-DATERANGE tag. Minor refactoring of existing classes.
+master - Improvements for writing playlists: Allow playlist to be initalized as master, expose `write_header`/`write_footer` on `Writer` class. Added support for the `#EXT-X-DISCONTINUITY-SEQUENCE` tag.
 
 ***
 
-0.7.0 (2/3/2017) - Added support for EXT-X-INDEPENDENT-SEGMENTS and EXT-X-START tags. Minor version bumped due to changes of default values for new playlists.
+0.7.1 (2/23/2017) - Added support for the `#EXT-X-DATERANGE` tag. Minor refactoring of existing classes.
+
+***
+
+0.7.0 (2/3/2017) - Added support for `#EXT-X-INDEPENDENT-SEGMENTS` and `#EXT-X-START` tags. Minor version bumped due to changes of default values for new playlists.
 
 ***
 
