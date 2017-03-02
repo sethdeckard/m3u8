@@ -10,6 +10,7 @@ describe M3u8::Playlist do
       expect(playlist.cache).to be_nil
       expect(playlist.target).to eq(10)
       expect(playlist.sequence).to eq(0)
+      expect(playlist.discontinuity_sequence).to be_nil
       expect(playlist.type).to be_nil
       expect(playlist.iframes_only).to be false
       expect(playlist.independent_segments).to be false
@@ -17,12 +18,14 @@ describe M3u8::Playlist do
 
     it 'initializes from hash' do
       options = { version: 7, cache: false, target: 12, sequence: 1,
-                  type: 'VOD', independent_segments: true }
-      playlist = M3u8::Playlist.new(options)
+                  discontinuity_sequence: 2, type: 'VOD',
+                  independent_segments: true }
+      playlist = described_class.new(options)
       expect(playlist.version).to eq(7)
       expect(playlist.cache).to be false
       expect(playlist.target).to eq(12)
       expect(playlist.sequence).to eq(1)
+      expect(playlist.discontinuity_sequence).to eq(2)
       expect(playlist.type).to eq('VOD')
       expect(playlist.iframes_only).to be false
       expect(playlist.independent_segments).to be true

@@ -3,8 +3,9 @@ module M3u8
   # Playlist represents an m3u8 playlist, it can be a master playlist or a set
   # of media segments
   class Playlist
-    attr_accessor :items, :version, :cache, :target, :sequence, :type,
-                  :iframes_only, :independent_segments
+    attr_accessor :items, :version, :cache, :target, :sequence,
+                  :discontinuity_sequence, :type, :iframes_only,
+                  :independent_segments
 
     def initialize(options = {})
       assign_options(options)
@@ -58,6 +59,7 @@ module M3u8
 
       @version = options[:version]
       @sequence = options[:sequence]
+      @discontinuity_sequence = options[:discontinuity_sequence]
       @cache = options[:cache]
       @target = options[:target]
       @type = options[:type]
