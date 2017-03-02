@@ -14,7 +14,7 @@ module M3u8
     def self.parse(text)
       time = text.gsub('#EXT-X-PROGRAM-DATE-TIME:', '')
       options = { time: Time.parse(time) }
-      TimeItem.new options
+      TimeItem.new(options)
     end
 
     def to_s
