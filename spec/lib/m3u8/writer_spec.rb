@@ -156,6 +156,30 @@ describe M3u8::Writer do
     end
   end
 
+  describe '#write_footer' do
+    context 'when playlist is a master playlist' do
+      it 'does nothing' do
+        io = StringIO.open
+        writer = described_class.new(io)
+        playlist = M3u8::Playlist.new(master: true)
+        writer.write_footer(playlist)
+
+        expect(io.string).to be_empty
+      end
+    end
+
+    context 'when playlist is a media playlist' do
+      it 'writes end list tag' do
+        io = StringIO.open
+        writer = described_class.new(io)
+        playlist = M3u8::Playlist.new(master: false)
+        writer.write_footer(playlist)
+
+        expect(io.string).to eq("#EXT-X-ENDLIST\n")
+      end
+    end
+  end
+
   describe '#write_header' do
     context 'master playlist' do
       it 'writes header content only' do

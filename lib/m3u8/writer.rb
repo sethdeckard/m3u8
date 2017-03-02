@@ -16,6 +16,10 @@ module M3u8
         io.puts item.to_s
       end
 
+      write_footer(playlist)
+    end
+
+    def write_footer(playlist)
       return if playlist.master?
       io.puts '#EXT-X-ENDLIST'
     end
