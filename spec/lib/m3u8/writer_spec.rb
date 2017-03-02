@@ -113,7 +113,8 @@ describe M3u8::Writer do
 
       it 'renders playlist' do
         options = { version: 4, cache: false, target: 6.2, sequence: 1,
-                    type: 'EVENT', iframes_only: true }
+                    discontinuity_sequence: 10, type: 'EVENT',
+                    iframes_only: true }
         playlist = M3u8::Playlist.new(options)
         options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
         item =  M3u8::SegmentItem.new(options)
@@ -124,6 +125,7 @@ describe M3u8::Writer do
           "#EXT-X-VERSION:4\n" \
           "#EXT-X-I-FRAMES-ONLY\n" \
           "#EXT-X-MEDIA-SEQUENCE:1\n" \
+          "#EXT-X-DISCONTINUITY-SEQUENCE:10\n" \
           "#EXT-X-ALLOW-CACHE:NO\n" \
           "#EXT-X-TARGETDURATION:6\n" \
           "#EXTINF:11.344644,\n" \

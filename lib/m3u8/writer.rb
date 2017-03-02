@@ -50,6 +50,12 @@ module M3u8
       io.puts "#EXT-X-ALLOW-CACHE:#{cache ? 'YES' : 'NO'}"
     end
 
+    def write_discontinuity_sequence_tag(sequence)
+      return if sequence.nil?
+
+      io.puts "#EXT-X-DISCONTINUITY-SEQUENCE:#{sequence}"
+    end
+
     def write_independent_segments_tag(independent_segments)
       return unless independent_segments
 
@@ -67,6 +73,7 @@ module M3u8
       write_independent_segments_tag(playlist.independent_segments)
       io.puts '#EXT-X-I-FRAMES-ONLY' if playlist.iframes_only
       io.puts "#EXT-X-MEDIA-SEQUENCE:#{playlist.sequence}"
+      write_discontinuity_sequence_tag(playlist.discontinuity_sequence)
       write_cache_tag(playlist.cache)
       io.puts target_duration_format(playlist)
     end
