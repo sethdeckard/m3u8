@@ -12,11 +12,11 @@ module M3u8
     end
 
     def self.parse(text)
-      attributes = parse_attributes text
+      attributes = parse_attributes(text)
       range_value = attributes['BYTERANGE']
       range = ByteRange.parse(range_value) unless range_value.nil?
       options = { uri: attributes['URI'], byterange: range }
-      MapItem.new options
+      MapItem.new(options)
     end
 
     def to_s
