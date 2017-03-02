@@ -3,7 +3,7 @@ require 'spec_helper'
 
 describe M3u8::Writer do
   describe '#write' do
-    context 'master playlist' do
+    context 'when playlist is a master playlist' do
       it 'renders playlist' do
         playlist = M3u8::Playlist.new
         options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
@@ -36,7 +36,7 @@ describe M3u8::Writer do
       end
     end
 
-    context 'master playlist single stream' do
+    context 'when playlist is a master playlist with single stream' do
       it 'renders playlist' do
         options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
                     audio_codec: 'mp3' }
@@ -55,7 +55,7 @@ describe M3u8::Writer do
       end
     end
 
-    context 'master playlist with header options' do
+    context 'when playlist is a master playlist with header options' do
       it 'renders playlist' do
         options = { uri: 'playlist_url', bandwidth: 6400,
                     audio_codec: 'mp3' }
@@ -76,7 +76,7 @@ describe M3u8::Writer do
       end
     end
 
-    context 'media playlist' do
+    context 'when playlist is a media playlist' do
       it 'renders playlist with keys' do
         options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
         item =  M3u8::SegmentItem.new(options)
@@ -181,7 +181,7 @@ describe M3u8::Writer do
   end
 
   describe '#write_header' do
-    context 'master playlist' do
+    context 'when playlist is a master playlist' do
       it 'writes header content only' do
         playlist = M3u8::Playlist.new(version: 6, independent_segments: true)
         options = { uri: 'playlist_url', bandwidth: 6400,
@@ -201,7 +201,7 @@ describe M3u8::Writer do
       end
     end
 
-    context 'media playlist' do
+    context 'when playlist is a media playlist' do
       it 'writes header content only' do
         playlist = M3u8::Playlist.new(version: 7)
         options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
