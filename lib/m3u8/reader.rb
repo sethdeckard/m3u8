@@ -42,6 +42,9 @@ module M3u8
     def media_playlist_tags
       {
         '#EXT-X-MEDIA-SEQUENCE' => ->(line) { parse_sequence(line) },
+        '#EXT-X-DISCONTINUITY-SEQUENCE' => lambda do |line|
+          parse_discontinuity_sequence(line)
+        end,
         '#EXT-X-ALLOW-CACHE' => ->(line) { parse_cache(line) },
         '#EXT-X-TARGETDURATION' => ->(line) { parse_target(line) },
         '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
@@ -74,7 +77,10 @@ module M3u8
     end
 
     def match_tag(line)
-      tag = @tags.select { |key| line.start_with? key }
+      tag = @tags.select do |key|
+        line.start_with?(key) && !line.start_with?("#{key}-")
+      end
+
       return unless tag.values.first
       tag.values.first.call(line)
       true
@@ -123,6 +129,11 @@ module M3u8
 
       self.item = M3u8::DiscontinuityItem.new
       playlist.items << item
+    end
+
+    def parse_discontinuity_sequence(line)
+      value = line.gsub('#EXT-X-DISCONTINUITY-SEQUENCE:', '').strip
+      playlist.discontinuity_sequence = Integer(value)
     end
 
     def parse_key(line)

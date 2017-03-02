@@ -3,12 +3,12 @@ require 'spec_helper'
 
 describe M3u8::Reader do
   describe '#read' do
-    it 'should parse master playlist' do
+    it 'parses master playlist' do
       file = File.open('spec/fixtures/master.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
       expect(playlist.master?).to be true
-
+      expect(playlist.discontinuity_sequence).to be_nil
       expect(playlist.independent_segments).to be true
 
       item = playlist.items[0]
@@ -65,13 +65,14 @@ describe M3u8::Reader do
       expect(item.uri).to eq('low/iframe.m3u8')
     end
 
-    it 'should parse segment playlist' do
+    it 'parses media playlist' do
       file = File.open('spec/fixtures/playlist.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
       expect(playlist.master?).to be false
       expect(playlist.version).to eq(4)
       expect(playlist.sequence).to eq(1)
+      expect(playlist.discontinuity_sequence).to eq(8)
       expect(playlist.cache).to be false
       expect(playlist.target).to eq(12)
       expect(playlist.type).to eq('VOD')
