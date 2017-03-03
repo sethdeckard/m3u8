@@ -1,4 +1,4 @@
-master - Improvements for writing playlists: Allow playlist to be initalized as master, expose `write_header`/`write_footer` on `Writer` class. Added support for the `#EXT-X-DISCONTINUITY-SEQUENCE` tag.
+master - Improvements for writing playlists: Allow playlist to be initalized as master, expose `write_header`/`write_footer` on `Writer` class. Added support for the `#EXT-X-DISCONTINUITY-SEQUENCE` tag. Added missing attributes to `MediaItem`: `INSTREAM-ID`, `CHARACTERISTICS`, `CHANNELS`, Added missing `HDCP-LEVEL` attribute to `PlaylistItem`.
 
 ***
 
