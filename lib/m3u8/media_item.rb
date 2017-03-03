@@ -4,7 +4,8 @@ module M3u8
   class MediaItem
     extend M3u8
     attr_accessor :type, :group_id, :language, :assoc_language, :name,
-                  :autoselect, :default, :uri, :forced
+                  :autoselect, :default, :uri, :forced, :instream_id,
+                  :characteristics, :channels
 
     def initialize(params = {})
       params.each do |key, value|
@@ -13,7 +14,7 @@ module M3u8
     end
 
     def self.parse(text)
-      attributes = parse_attributes text
+      attributes = parse_attributes(text)
       options = { type: attributes['TYPE'], group_id: attributes['GROUP-ID'],
                   language: attributes['LANGUAGE'],
                   assoc_language: attributes['ASSOC-LANGUAGE'],
@@ -21,24 +22,33 @@ module M3u8
                   autoselect: parse_yes_no(attributes['AUTOSELECT']),
                   default: parse_yes_no(attributes['DEFAULT']),
                   forced: parse_yes_no(attributes['FORCED']),
-                  uri: attributes['URI'] }
-      MediaItem.new options
+                  uri: attributes['URI'],
+                  instream_id: attributes['INSTREAM-ID'],
+                  characteristics: attributes['CHARACTERISTICS'],
+                  channels: attributes['CHANNELS'] }
+      MediaItem.new(options)
     end
 
     def to_s
-      attributes = [type_format,
-                    group_id_format,
-                    language_format,
-                    assoc_language_format,
-                    name_format,
-                    autoselect_format,
-                    default_format,
-                    uri_format,
-                    forced_format].compact.join(',')
-      "#EXT-X-MEDIA:#{attributes}"
+      "#EXT-X-MEDIA:#{formatted_attributes.join(',')}"
     end
 
     private
+
+    def formatted_attributes
+      [type_format,
+       group_id_format,
+       language_format,
+       assoc_language_format,
+       name_format,
+       autoselect_format,
+       default_format,
+       uri_format,
+       forced_format,
+       instream_id_format,
+       characteristics_format,
+       channels_format].compact
+    end
 
     def type_format
       "TYPE=#{type}"
@@ -80,6 +90,21 @@ module M3u8
     def forced_format
       return if forced.nil?
       "FORCED=#{to_yes_no forced}"
+    end
+
+    def instream_id_format
+      return if instream_id.nil?
+      %(INSTREAM-ID="#{instream_id}")
+    end
+
+    def characteristics_format
+      return if characteristics.nil?
+      %(CHARACTERISTICS="#{characteristics}")
+    end
+
+    def channels_format
+      return if channels.nil?
+      %(CHANNELS="#{channels}")
     end
 
     def to_yes_no(boolean)
