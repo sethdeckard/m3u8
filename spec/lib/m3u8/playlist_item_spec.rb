@@ -2,27 +2,58 @@
 require 'spec_helper'
 
 describe M3u8::PlaylistItem do
-  it 'should initialize with hash' do
-    hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bandwidth: 540, uri: 'test.url' }
-    item = M3u8::PlaylistItem.new(hash)
-    expect(item.program_id).to eq 1
-    expect(item.width).to eq 1920
-    expect(item.height).to eq 1080
-    expect(item.resolution).to eq '1920x1080'
-    expect(item.codecs).to eq 'avc'
-    expect(item.bandwidth).to eq 540
-    expect(item.uri).to eq 'test.url'
-    expect(item.iframe).to be false
+  describe '.new' do
+    it 'assigns attributes from options' do
+      options = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
+                  bandwidth: 540, audio_codec: 'mp3', level: '2',
+                  profile: 'baseline', video: 'test_video', audio: 'test_a',
+                  uri: 'test.url', average_bandwidth: 500, subtitles: 'subs',
+                  closed_captions: 'cc', iframe: true, frame_rate: 24.6,
+                  name: 'test_name', hdcp_level: 'TYPE-0' }
+      item = described_class.new(options)
+
+      expect(item.program_id).to eq(1)
+      expect(item.width).to eq(1920)
+      expect(item.height).to eq(1080)
+      expect(item.resolution).to eq('1920x1080')
+      expect(item.codecs).to eq('avc')
+      expect(item.bandwidth).to eq(540)
+      expect(item.audio_codec).to eq('mp3')
+      expect(item.level).to eq('2')
+      expect(item.profile).to eq('baseline')
+      expect(item.video).to eq('test_video')
+      expect(item.audio).to eq('test_a')
+      expect(item.uri).to eq('test.url')
+      expect(item.average_bandwidth).to eq(500)
+      expect(item.subtitles).to eq('subs')
+      expect(item.closed_captions).to eq('cc')
+      expect(item.iframe).to be true
+      expect(item.frame_rate).to eq(24.6)
+      expect(item.name).to eq('test_name')
+      expect(item.hdcp_level).to eq('TYPE-0')
+    end
   end
 
-  describe 'parse' do
-    it 'should parse m3u8 text into instance' do
+  describe '.parse' do
+    it 'returns new instance from parsed tag' do
+      tag = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+            %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
+            %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
+            %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",) +
+            %(NAME="1080p",HDCP-LEVEL=TYPE-0)
+      expect_any_instance_of(described_class).to receive(:parse).with(tag)
+      item = described_class.parse(tag)
+      expect(item).to be_a(described_class)
+    end
+  end
+
+  describe '#parse' do
+    it 'assigns values from parsed tag' do
       input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
               %(PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,) +
               %(AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",) +
               %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",) +
-              %(NAME="1080p")
+              %(NAME="1080p",HDCP-LEVEL=TYPE-0)
       item = M3u8::PlaylistItem.parse(input)
       expect(item.program_id).to eq '1'
       expect(item.codecs).to eq 'avc'
@@ -37,70 +68,72 @@ describe M3u8::PlaylistItem do
       expect(item.closed_captions).to eq 'caps'
       expect(item.uri).to eq 'test.url'
       expect(item.name).to eq '1080p'
-    end
-
-    it 'should parse m3u8 into current instance' do
-      input = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-              %(PROGRAM-ID=1,AUDIO="test",VIDEO="test2",) +
-              %(SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",) +
-              %(NAME="SD")
-      item = M3u8::PlaylistItem.new
-      item.parse(input)
-      expect(item.program_id).to eq '1'
-      expect(item.codecs).to eq 'avc'
-      expect(item.bandwidth).to eq 540
-      expect(item.average_bandwidth).to be_nil
-      expect(item.width).to be_nil
-      expect(item.height).to be_nil
-      expect(item.audio).to eq 'test'
-      expect(item.video).to eq 'test2'
-      expect(item.subtitles).to eq 'subs'
-      expect(item.closed_captions).to eq 'caps'
-      expect(item.uri).to eq 'test.url'
-      expect(item.name).to eq 'SD'
+      expect(item.iframe).to be false
+      expect(item.hdcp_level).to eq('TYPE-0')
     end
   end
 
-  it 'should provide m3u8 format representation' do
-    hash = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-             bandwidth: 540, uri: 'test.url', closed_captions: 'NONE' }
-    item = M3u8::PlaylistItem.new(hash)
-    output = item.to_s
-    expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
-               %(CODECS="avc",BANDWIDTH=540,CLOSED-CAPTIONS=NONE\ntest.url)
-    expect(output).to eq expected
+  describe '#to_s' do
+    context 'when codecs is missing' do
+      it 'raises error' do
+        params = { bandwidth: 540, uri: 'test.url' }
+        item = M3u8::PlaylistItem.new params
+        message = 'Audio or video codec info should be provided.'
+        expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)
+      end
+    end
 
-    hash = { program_id: 1, codecs: 'avc', bandwidth: 540,
-             uri: 'test.url' }
-    item = M3u8::PlaylistItem.new(hash)
-    output = item.to_s
-    expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,' +
-               %(CODECS="avc",BANDWIDTH=540\ntest.url)
-    expect(output).to eq expected
+    context 'when only required attributes are present' do
+      it 'returns tag' do
+        options = { codecs: 'avc', bandwidth: 540,
+                    uri: 'test.url' }
+        item = described_class.new(options)
+        expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540) +
+                   "\ntest.url"
+        expect(item.to_s).to eq(expected)
+      end
+    end
 
-    hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', audio: 'test',
-             video: 'test2', average_bandwidth: 500, subtitles: 'subs',
-             frame_rate: 30, closed_captions: 'caps', name: 'SD' }
-    item = M3u8::PlaylistItem.new(hash)
-    output = item.to_s
-    expected = %(#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-               %(AVERAGE-BANDWIDTH=500,FRAME-RATE=30.000,) +
-               %(AUDIO="test",VIDEO="test2",SUBTITLES="subs",) +
-               %(CLOSED-CAPTIONS="caps",NAME="SD"\ntest.url)
-    expect(output).to eq expected
+    context 'when all attributes are present' do
+      it 'returns tag' do
+        options = { codecs: 'avc', bandwidth: 540, uri: 'test.url',
+                    audio: 'test', video: 'test2', average_bandwidth: 500,
+                    subtitles: 'subs', frame_rate: 30, closed_captions: 'caps',
+                    name: 'SD', hdcp_level: 'TYPE-0', program_id: '1' }
+        item = described_class.new(options)
+        expected = %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="avc",BANDWIDTH=540,) +
+                   %(AVERAGE-BANDWIDTH=500,FRAME-RATE=30.000,) +
+                   'HDCP-LEVEL=TYPE-0,' +
+                   %(AUDIO="test",VIDEO="test2",SUBTITLES="subs",) +
+                   %(CLOSED-CAPTIONS="caps",NAME="SD"\ntest.url)
+        expect(item.to_s).to eq(expected)
+      end
+    end
+
+    context 'when closed captions is NONE' do
+      it 'returns tag' do
+        options = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
+                    bandwidth: 540, uri: 'test.url', closed_captions: 'NONE' }
+        item = described_class.new(options)
+        expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
+                   %(CODECS="avc",BANDWIDTH=540,CLOSED-CAPTIONS=NONE\ntest.url)
+        expect(item.to_s).to eq(expected)
+      end
+    end
+
+    context 'when iframe is enabled' do
+      it 'returns EXT-X-I-FRAME-STREAM-INF tag' do
+        options = { codecs: 'avc', bandwidth: 540, uri: 'test.url',
+                    iframe: true, video: 'test2', average_bandwidth: 550 }
+        item = described_class.new(options)
+        expected = %(#EXT-X-I-FRAME-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
+                   %(AVERAGE-BANDWIDTH=550,VIDEO="test2",URI="test.url")
+        expect(item.to_s).to eq(expected)
+      end
+    end
   end
 
-  it 'should provided m3u8 format with I-Frame option' do
-    hash = { codecs: 'avc', bandwidth: 540, uri: 'test.url', iframe: true,
-             video: 'test2', average_bandwidth: 550 }
-    item = M3u8::PlaylistItem.new(hash)
-    output = item.to_s
-    expected = %(#EXT-X-I-FRAME-STREAM-INF:CODECS="avc",BANDWIDTH=540,) +
-               %(AVERAGE-BANDWIDTH=550,VIDEO="test2",URI="test.url")
-    expect(output).to eq expected
-  end
-
-  it 'should generate codecs string' do
+  it 'generates codecs string' do
     item = M3u8::PlaylistItem.new
     expect(item.codecs).to be_nil
 
@@ -179,12 +212,5 @@ describe M3u8::PlaylistItem do
     options = { profile: 'high', level: 4.1 }
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.640029'
-  end
-
-  it 'should raise error if codecs are missing' do
-    params = { program_id: 1, bandwidth: 540, uri: 'test.url' }
-    item = M3u8::PlaylistItem.new params
-    message = 'Audio or video codec info should be provided.'
-    expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)
   end
 end

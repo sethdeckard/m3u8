@@ -7,7 +7,7 @@ module M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
-                  :frame_rate, :name
+                  :frame_rate, :name, :hdcp_level
     MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
@@ -37,11 +37,11 @@ module M3u8
     def codecs
       return @codecs unless @codecs.nil?
 
-      video = video_codec(profile, level)
-      return audio_codec if video.nil?
-      return video if audio_codec.nil?
+      video_code = video_codec(profile, level)
+      return audio_codec_code if video_code.nil?
+      return video_code if audio_codec_code.nil?
 
-      "#{video},#{audio_codec}"
+      "#{video_code},#{audio_codec_code}"
     end
 
     def to_s
@@ -65,7 +65,7 @@ module M3u8
         video: attributes['VIDEO'], audio: attributes['AUDIO'],
         uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
         closed_captions: attributes['CLOSED-CAPTIONS'],
-        name: attributes['NAME'] }
+        name: attributes['NAME'], hdcp_level: attributes['HDCP-LEVEL'] }
     end
 
     def parse_average_bandwidth(value)
@@ -105,6 +105,7 @@ module M3u8
        bandwidth_format,
        average_bandwidth_format,
        frame_rate_format,
+       hdcp_level_format,
        audio_format,
        video_format,
        subtitles_format,
@@ -125,6 +126,11 @@ module M3u8
     def frame_rate_format
       return if frame_rate.nil?
       "FRAME-RATE=#{format('%.3f', frame_rate)}"
+    end
+
+    def hdcp_level_format
+      return if hdcp_level.nil?
+      "HDCP-LEVEL=#{hdcp_level}"
     end
 
     def codecs_format
@@ -170,7 +176,7 @@ module M3u8
       %(NAME="#{name}")
     end
 
-    def audio_codec
+    def audio_codec_code
       return if @audio_codec.nil?
       return 'mp4a.40.2' if @audio_codec.casecmp('aac-lc').zero?
       return 'mp4a.40.5' if @audio_codec.casecmp('he-aac').zero?
