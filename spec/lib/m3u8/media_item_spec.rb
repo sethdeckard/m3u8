@@ -2,7 +2,7 @@
 require 'spec_helper'
 
 describe M3u8::MediaItem do
-  describe '#new' do
+  describe '.new' do
     it 'assigns attributes from options' do
       options = { type: 'AUDIO', group_id: 'audio-lo', language: 'fre',
                   assoc_language: 'spoken', name: 'Francais', autoselect: true,
