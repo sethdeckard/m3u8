@@ -110,6 +110,43 @@ describe M3u8::Playlist do
     end
   end
 
+  describe '#live?' do
+    context 'when playlist is a master playlist' do
+      it 'returns false' do
+        options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
+                    audio_codec: 'mp3' }
+        item = M3u8::PlaylistItem.new(options)
+        playlist.items << item
+
+        expect(playlist.live).to be false
+      end
+    end
+
+    context 'when playlist is a media playlist and set as live' do
+      it 'returns true' do
+        playlist = described_class.new(live: true)
+        item = M3u8::SegmentItem.new(duration: 10.991, segment: 'test_01.ts')
+        playlist.items << item
+        expect(playlist.live?).to be true
+      end
+    end
+
+    context 'when a new playlist is set as not live' do
+      it 'returns false' do
+        playlist = described_class.new(live: false)
+        expect(playlist.live).to be false
+      end
+    end
+
+    context 'when playlist is a new playlist' do
+      it 'returns false' do
+        expect(playlist.live?).to be false
+      end
+    end
+
+
+  end
+
   describe '#to_s' do
     it 'returns master playlist text' do
       options = { program_id: '1', uri: 'playlist_url', bandwidth: 6400,
