@@ -143,8 +143,6 @@ describe M3u8::Playlist do
         expect(playlist.live?).to be false
       end
     end
-
-
   end
 
   describe '#to_s' do

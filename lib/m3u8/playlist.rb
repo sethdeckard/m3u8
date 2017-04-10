@@ -72,7 +72,6 @@ module M3u8
       @independent_segments = options[:independent_segments]
       @master = options[:master]
       @live = options[:live]
-
     end
 
     def defaults
