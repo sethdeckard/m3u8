@@ -20,7 +20,7 @@ module M3u8
     end
 
     def write_footer(playlist)
-      return if playlist.master?
+      return if playlist.live? || playlist.master?
       io.puts '#EXT-X-ENDLIST'
     end
 

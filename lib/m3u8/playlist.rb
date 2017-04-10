@@ -5,7 +5,7 @@ module M3u8
   class Playlist
     attr_accessor :items, :version, :cache, :target, :sequence,
                   :discontinuity_sequence, :type, :iframes_only,
-                  :independent_segments
+                  :independent_segments, :live
 
     def initialize(options = {})
       assign_options(options)
@@ -25,6 +25,11 @@ module M3u8
     def write(output)
       writer = Writer.new(output)
       writer.write(self)
+    end
+
+    def live?
+      return false if master?
+      @live
     end
 
     def master?
@@ -66,6 +71,7 @@ module M3u8
       @iframes_only = options[:iframes_only]
       @independent_segments = options[:independent_segments]
       @master = options[:master]
+      @live = options[:live]
     end
 
     def defaults
@@ -73,7 +79,8 @@ module M3u8
         sequence: 0,
         target: 10,
         iframes_only: false,
-        independent_segments: false
+        independent_segments: false,
+        live: false
       }
     end
 
