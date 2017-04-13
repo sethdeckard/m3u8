@@ -2,6 +2,8 @@
 require 'spec_helper'
 
 describe M3u8::Reader do
+  let(:reader) { described_class.new }
+
   describe '#read' do
     it 'parses master playlist' do
       file = File.open('spec/fixtures/master.m3u8')
@@ -253,6 +255,15 @@ describe M3u8::Reader do
 
       item = playlist.items[4]
       expect(item).to be_a(M3u8::DateRangeItem)
+    end
+
+    context 'when playlist source is invalid' do
+      it 'raises error with message' do
+        message = 'Playlist must start with a #EXTM3U tag, line read ' \
+          'contained the value: /path/to/file'
+        expect { reader.read('/path/to/file') }
+          .to raise_error(M3u8::InvalidPlaylistError, message)
+      end
     end
   end
 end

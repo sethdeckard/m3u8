@@ -14,8 +14,9 @@ module M3u8
     end
 
     def read(input)
-      self.playlist = Playlist.new
-      input.each_line do |line|
+      @playlist = Playlist.new
+      input.each_line.with_index do |line, index|
+        validate_file_format(line) if index.zero?
         parse_line(line)
       end
       playlist
@@ -207,6 +208,13 @@ module M3u8
       end
       playlist.items << item
       self.open = false
+    end
+
+    def validate_file_format(line)
+      return if line.rstrip == '#EXTM3U'
+      message = 'Playlist must start with a #EXTM3U tag, line read ' \
+                "contained the value: #{line}"
+      raise InvalidPlaylistError, message
     end
   end
 end
