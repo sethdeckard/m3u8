@@ -50,7 +50,7 @@ describe M3u8::Reader do
       expect(item.resolution).to be_nil
     end
 
-    it 'should parse master playlist with I-Frames' do
+    it 'parses master playlist with I-Frames' do
       file = File.open('spec/fixtures/master_iframes.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -89,7 +89,7 @@ describe M3u8::Reader do
       expect(playlist.items.size).to eq(140)
     end
 
-    it 'should parse I-Frame playlist' do
+    it 'parses I-Frame playlist' do
       file = File.open('spec/fixtures/iframes.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -109,7 +109,7 @@ describe M3u8::Reader do
       expect(item.byterange.start).to be_nil
     end
 
-    it 'should parse segment playlist with comments' do
+    it 'parses segment playlist with comments' do
       file = File.open('spec/fixtures/playlist_with_comments.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -131,7 +131,7 @@ describe M3u8::Reader do
       expect(playlist.items.size).to eq(139)
     end
 
-    it 'should parse variant playlist with audio options and groups' do
+    it 'parses variant playlist with audio options and groups' do
       file = File.open('spec/fixtures/variant_audio.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -152,7 +152,7 @@ describe M3u8::Reader do
       expect(item.forced).to be true
     end
 
-    it 'should parse variant playlist with camera angles' do
+    it 'parses variant playlist with camera angles' do
       file = File.open('spec/fixtures/variant_angles.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -178,7 +178,7 @@ describe M3u8::Reader do
       expect(item.subtitles).to eq('subs')
     end
 
-    it 'should process multiple reads as separate playlists' do
+    it 'processes multiple reads as separate playlists' do
       file = File.open('spec/fixtures/master.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -191,7 +191,7 @@ describe M3u8::Reader do
       expect(playlist.items.size).to eq(8)
     end
 
-    it 'should parse playlist with session data' do
+    it 'parses playlist with session data' do
       file = File.open('spec/fixtures/session_data.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -204,7 +204,7 @@ describe M3u8::Reader do
       expect(item.uri).to eq('lyrics.json')
     end
 
-    it 'should parse encrypted playlist' do
+    it 'parses encrypted playlist' do
       file = File.open('spec/fixtures/encrypted.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -217,7 +217,7 @@ describe M3u8::Reader do
       expect(item.uri).to eq('https://priv.example.com/key.php?r=52')
     end
 
-    it 'should parse map (media intialization section) playlists' do
+    it 'parses map (media intialization section) playlists' do
       file = File.open('spec/fixtures/map_playlist.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -231,7 +231,7 @@ describe M3u8::Reader do
       expect(item.byterange.start).to eq(600)
     end
 
-    it 'should read segment with timestamp' do
+    it 'reads segment with timestamp' do
       file = File.open('spec/fixtures/timestamp_playlist.m3u8')
       reader = M3u8::Reader.new
       playlist = reader.read(file)
@@ -242,19 +242,17 @@ describe M3u8::Reader do
       expect(item_date_time.time).to eq(Time.iso8601('2016-04-11T15:24:31Z'))
     end
 
-    context 'playlist with daterange' do
-      it 'parses playlist' do
-        file = File.open('spec/fixtures/date_range_scte35.m3u8')
-        reader = M3u8::Reader.new
-        playlist = reader.read(file)
-        expect(playlist.items.count).to eq(5)
+    it 'parses playlist with daterange' do
+      file = File.open('spec/fixtures/date_range_scte35.m3u8')
+      reader = M3u8::Reader.new
+      playlist = reader.read(file)
+      expect(playlist.items.count).to eq(5)
 
-        item = playlist.items[0]
-        expect(item).to be_a(M3u8::DateRangeItem)
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::DateRangeItem)
 
-        item = playlist.items[4]
-        expect(item).to be_a(M3u8::DateRangeItem)
-      end
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::DateRangeItem)
     end
   end
 end
