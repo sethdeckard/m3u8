@@ -1,4 +1,9 @@
-master - Improvements for writing playlists: Allow playlist to be initalized as master, expose `write_header`/`write_footer` on `Writer` class. Added support for the `#EXT-X-DISCONTINUITY-SEQUENCE` tag. Added missing attributes to `MediaItem`: `INSTREAM-ID`, `CHARACTERISTICS`, `CHANNELS`, Added missing `HDCP-LEVEL` attribute to `PlaylistItem`.
+**0.8.0 (4/13/2017)**
+
+* Added several improvements for writing playlists: Allow playlist to be initalized as master, expose `write_header`/`write_footer` on `Writer` class. 
+* Added support for the `#EXT-X-DISCONTINUITY-SEQUENCE` tag. Added missing attributes to `MediaItem`: `INSTREAM-ID`, `CHARACTERISTICS`, `CHANNELS`, Added missing `HDCP-LEVEL` attribute to `PlaylistItem`. 
+* Fixed issue [#20](https://github.com/sethdeckard/m3u8/issues/20). 
+* Merged pull request #21 from [rmberg](https://github.com/rmberg), adding support for live playlists to `Writer`.
 
 ***
 
