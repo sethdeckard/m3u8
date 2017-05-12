@@ -75,11 +75,74 @@ describe M3u8::PlaylistItem do
 
   describe '#to_s' do
     context 'when codecs is missing' do
-      it 'raises error' do
+      it 'does not specify CODECS' do
         params = { bandwidth: 540, uri: 'test.url' }
         item = M3u8::PlaylistItem.new params
-        message = 'Audio or video codec info should be provided.'
-        expect { item.to_s }.to raise_error(M3u8::MissingCodecError, message)
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when level is not recognized' do
+      it 'does not specify CODECS' do
+        params = { bandwidth: 540, uri: 'test.url', level: 9001 }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when profile is not recognized' do
+      it 'does not specify CODECS' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'best' }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when profile and level are not recognized' do
+      it 'does not specify CODECS' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'best', level: 9001 }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when profile and level are not recognized and audio codec is recognized' do
+      it 'does not specify CODECS' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'best', level: 9001, audio_codec: 'aac-lc' }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when profile and level are recognized and audio codec is not recognized' do
+      it 'does not specify CODECS' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1, audio_codec: 'fuzzy' }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).not_to include('CODECS')
+      end
+    end
+
+    context 'when profile and level are not set and audio codec is recognized' do
+      it 'specifies CODECS with audio codec' do
+        params = { bandwidth: 540, uri: 'test.url', audio_codec: 'aac-lc' }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).to include('CODECS="mp4a.40.2"')
+      end
+    end
+
+    context 'when profile and level are recognized and audio codec is not set' do
+      it 'specifies CODECS with video codec' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1 }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).to include('CODECS="avc1.640029"')
+      end
+    end
+
+    context 'when profile and level are recognized and audio codec is recognized' do
+      it 'specifies CODECS with video codec and audio_codec' do
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1, audio_codec: 'aac-lc' }
+        item = M3u8::PlaylistItem.new params
+        expect(item.to_s).to include('CODECS="avc1.640029,mp4a.40.2"')
       end
     end
 
