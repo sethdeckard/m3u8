@@ -100,7 +100,8 @@ describe M3u8::PlaylistItem do
 
     context 'when profile and level are not recognized' do
       it 'does not specify CODECS' do
-        params = { bandwidth: 540, uri: 'test.url', profile: 'best', level: 9001 }
+        params = { bandwidth: 540, uri: 'test.url', profile: 'best',
+                   level: 9001 }
         item = M3u8::PlaylistItem.new params
         expect(item.to_s).not_to include('CODECS')
       end
@@ -108,7 +109,8 @@ describe M3u8::PlaylistItem do
 
     context 'when profile and level are not recognized and audio codec is recognized' do
       it 'does not specify CODECS' do
-        params = { bandwidth: 540, uri: 'test.url', profile: 'best', level: 9001, audio_codec: 'aac-lc' }
+        params = { bandwidth: 540, uri: 'test.url', profile: 'best',
+                   level: 9001, audio_codec: 'aac-lc' }
         item = M3u8::PlaylistItem.new params
         expect(item.to_s).not_to include('CODECS')
       end
@@ -116,7 +118,8 @@ describe M3u8::PlaylistItem do
 
     context 'when profile and level are recognized and audio codec is not recognized' do
       it 'does not specify CODECS' do
-        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1, audio_codec: 'fuzzy' }
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high',
+                   level: 4.1, audio_codec: 'fuzzy' }
         item = M3u8::PlaylistItem.new params
         expect(item.to_s).not_to include('CODECS')
       end
@@ -132,7 +135,8 @@ describe M3u8::PlaylistItem do
 
     context 'when profile and level are recognized and audio codec is not set' do
       it 'specifies CODECS with video codec' do
-        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1 }
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high',
+                   level: 4.1 }
         item = M3u8::PlaylistItem.new params
         expect(item.to_s).to include('CODECS="avc1.640029"')
       end
@@ -140,7 +144,8 @@ describe M3u8::PlaylistItem do
 
     context 'when profile and level are recognized and audio codec is recognized' do
       it 'specifies CODECS with video codec and audio_codec' do
-        params = { bandwidth: 540, uri: 'test.url', profile: 'high', level: 4.1, audio_codec: 'aac-lc' }
+        params = { bandwidth: 540, uri: 'test.url', profile: 'high',
+                   level: 4.1, audio_codec: 'aac-lc' }
         item = M3u8::PlaylistItem.new params
         expect(item.to_s).to include('CODECS="avc1.640029,mp4a.40.2"')
       end
@@ -164,8 +169,8 @@ describe M3u8::PlaylistItem do
                     subtitles: 'subs', frame_rate: 30, closed_captions: 'caps',
                     name: 'SD', hdcp_level: 'TYPE-0', program_id: '1' }
         item = described_class.new(options)
-        expected = %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="avc",BANDWIDTH=540,) +
-                   %(AVERAGE-BANDWIDTH=500,FRAME-RATE=30.000,) +
+        expected = %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="avc",) +
+                   'BANDWIDTH=540,AVERAGE-BANDWIDTH=500,FRAME-RATE=30.000,' \
                    'HDCP-LEVEL=TYPE-0,' +
                    %(AUDIO="test",VIDEO="test2",SUBTITLES="subs",) +
                    %(CLOSED-CAPTIONS="caps",NAME="SD"\ntest.url)
