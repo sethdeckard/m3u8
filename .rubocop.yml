@@ -2,5 +2,8 @@ AllCops:
   Exclude:
     - 'spec/spec_helper.rb'
     - 'm3u8.gemspec'
+Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
 Style/StringLiterals:
   EnforcedStyle: single_quotes
