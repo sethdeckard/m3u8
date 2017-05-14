@@ -38,17 +38,18 @@ module M3u8
 
       video_codec_string = video_codec(profile, level)
 
-      # profile and/or level were specified but not recognized, do not specify any codecs
+      # profile and/or level were specified but not recognized,
+      # do not specify any codecs
       return nil if !(profile.nil? && level.nil?) && video_codec_string.nil?
 
       audio_codec_string = audio_codec_code
 
-      # audio codec was specified but not recognized, do not specify any codecs
+      # audio codec was specified but not recognized,
+      # do not specify any codecs
       return nil if !@audio_codec.nil? && audio_codec_string.nil?
 
       codec_strings = [video_codec_string, audio_codec_string].compact
-
-      return codec_strings.empty? ? nil : codec_strings.join(',')
+      codec_strings.empty? ? nil : codec_strings.join(',')
     end
 
     def to_s
