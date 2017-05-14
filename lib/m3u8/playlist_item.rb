@@ -8,7 +8,6 @@ module M3u8
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
                   :frame_rate, :name, :hdcp_level
-    MISSING_CODEC_MESSAGE = 'Audio or video codec info should be provided.'
 
     def initialize(params = {})
       self.iframe = false
@@ -37,16 +36,22 @@ module M3u8
     def codecs
       return @codecs unless @codecs.nil?
 
-      video_code = video_codec(profile, level)
-      return audio_codec_code if video_code.nil?
-      return video_code if audio_codec_code.nil?
+      video_codec_string = video_codec(profile, level)
 
-      "#{video_code},#{audio_codec_code}"
+      # profile and/or level were specified but not recognized, do not specify any codecs
+      return nil if !(profile.nil? && level.nil?) && video_codec_string.nil?
+
+      audio_codec_string = audio_codec_code
+
+      # audio codec was specified but not recognized, do not specify any codecs
+      return nil if !@audio_codec.nil? && audio_codec_string.nil?
+
+      codec_strings = [video_codec_string, audio_codec_string].compact
+
+      return codec_strings.empty? ? nil : codec_strings.join(',')
     end
 
     def to_s
-      validate
-
       m3u8_format
     end
 
@@ -86,10 +91,6 @@ module M3u8
 
       value = BigDecimal(frame_rate)
       value if value > 0
-    end
-
-    def validate
-      raise MissingCodecError, MISSING_CODEC_MESSAGE if codecs.nil?
     end
 
     def m3u8_format
@@ -134,6 +135,7 @@ module M3u8
     end
 
     def codecs_format
+      return if codecs.nil?
       %(CODECS="#{codecs}")
     end
 
