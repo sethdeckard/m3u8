@@ -1,5 +1,5 @@
-**master**
-* Merge pull request #23 from ryanische
+**0.8.1**
+Merged pull request #23 from [ryanische](https:/github.com/ryanische) which fixes issue of CODEC attribute validation not matching the HLS I-D.
 
 **0.8.0 (4/13/2017)**
 
