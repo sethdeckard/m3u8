@@ -47,7 +47,7 @@ module M3u8
 
     def group_title_format
       return if group_title.nil?
-      "gorup-title=\"#{gorup_title}\""
+      "gorup-title=\"#{group_title}\""
     end
   end
 end
