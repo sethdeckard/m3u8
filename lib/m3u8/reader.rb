@@ -150,7 +150,13 @@ module M3u8
     def parse_segment(line)
       self.item = M3u8::SegmentItem.new
       values = line.gsub('#EXTINF:', '').tr("\n", ',').split(',')
-      item.duration = values[0].to_f
+      iptv_values = values[0].split(' ')
+      item.duration = iptv_values[0].to_f
+      iptv_values[1..].each do |value|
+        m = value.split('=')[0].gsub('-', '_')
+        v = value.split('=')[1].gsub('\"', '')
+        item.m = v
+      end
       item.comment = values[1] unless values[1].nil?
 
       self.master = false
