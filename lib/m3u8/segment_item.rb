@@ -13,7 +13,7 @@ module M3u8
 
     def to_s
       date = "#{program_date_time}\n" unless program_date_time.nil?
-      "#EXTINF:#{duration} #{iptv_attributes},#{comment}#{byterange_format}\n" +
+      "#EXTINF:#{duration} #{iptv_attributes},#{comment}#{byterange_format}\n" \
         "#{date}#{segment}"
     end
 
