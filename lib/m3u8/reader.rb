@@ -152,9 +152,9 @@ module M3u8
       values = line.gsub('#EXTINF:', '').tr("\n", ',').split(',')
       item.duration = values[0].to_f
       values[0].scan(/[a-zA-Z0-9]+-[a-zA-Z0-9]+="[^"]+"/).each do |value|
-          m = value.split('=')[0].gsub('-', '_') + '='
-          v = value.split('=')[1].gsub('"', '')
-          item.public_send(m,v) if item.class.method_defined? m
+        m = value.split('=')[0].tr('-', '_') + '='
+        v = value.split('=')[1].delete('"', '')
+        item.public_send(m, v) if item.class.method_defined? m
       end
       item.comment = values[1] unless values[1].nil?
 
