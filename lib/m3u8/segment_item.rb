@@ -4,8 +4,8 @@ module M3u8
   # optionally allowing an EXT-X-BYTERANGE tag to be set.
   class SegmentItem
     include M3u8
-    attr_accessor :duration, :segment, :comment, :program_date_time, :byterange, 
-                  :tvg_id, :tvg_name, :tvg_logo, :group_title
+    attr_accessor :duration, :segment, :comment, :program_date_time,
+                  :byterange, :tvg_id, :tvg_name, :tvg_logo, :group_title
 
     def initialize(params = {})
       intialize_with_byterange(params)
@@ -13,7 +13,8 @@ module M3u8
 
     def to_s
       date = "#{program_date_time}\n" unless program_date_time.nil?
-      "#EXTINF:#{duration} #{iptv_attributes},#{comment}#{byterange_format}\n#{date}#{segment}"
+      "#EXTINF:#{duration} #{iptv_attributes},#{comment}#{byterange_format}\n" +
+        "#{date}#{segment}"
     end
 
     private
