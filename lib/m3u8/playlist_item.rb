@@ -207,9 +207,10 @@ module M3u8
     end
 
     def high_codec_string(level)
-      return 'avc1.64001f' if level == 3.1
-      return 'avc1.640028' if level == 4.0
-      return 'avc1.640029' if level == 4.1
+      return nil unless [3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2].include?(level)
+
+      level_hex_string = level.to_s.sub('.', '').to_i.to_s(16)
+      return "avc1.6400#{level_hex_string}"
     end
   end
 end
