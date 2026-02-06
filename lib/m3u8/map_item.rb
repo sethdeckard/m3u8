@@ -1,10 +1,12 @@
 # frozen_string_literal: true
+
 module M3u8
   # MapItem represents a EXT-X-MAP tag which specifies how to obtain the Media
   # Initialization Section
   class MapItem
     extend M3u8
     include M3u8
+
     attr_accessor :uri, :byterange
 
     def initialize(params = {})
@@ -27,6 +29,7 @@ module M3u8
 
     def byterange_format
       return if byterange.nil?
+
       %(,BYTERANGE="#{byterange}")
     end
   end

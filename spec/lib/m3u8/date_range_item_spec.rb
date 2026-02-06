@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe M3u8::DateRangeItem do
@@ -33,12 +34,12 @@ describe M3u8::DateRangeItem do
     it 'should parse m3u8 tag into instance' do
       item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",CLASS="test_class"' \
-      'START-DATE="2014-03-05T11:15:00Z",' \
-      'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
-      'PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF0,' \
-      'SCTE35-IN=0xFC002F0000000000FF1,' \
-      'SCTE35-CMD=0xFC002F0000000000FF2,' \
-      'END-ON-NEXT=YES'
+             'START-DATE="2014-03-05T11:15:00Z",' \
+             'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
+             'PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF0,' \
+             'SCTE35-IN=0xFC002F0000000000FF1,' \
+             'SCTE35-CMD=0xFC002F0000000000FF2,' \
+             'END-ON-NEXT=YES'
       item.parse(line)
 
       expect(item.id).to eq('splice-6FFFFFF0')
@@ -57,7 +58,7 @@ describe M3u8::DateRangeItem do
     it 'should ignore optional attributes' do
       item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",' \
-      'START-DATE="2014-03-05T11:15:00Z"'
+             'START-DATE="2014-03-05T11:15:00Z"'
       item.parse(line)
 
       expect(item.id).to eq('splice-6FFFFFF0')
@@ -76,8 +77,8 @@ describe M3u8::DateRangeItem do
     it 'should parse client-defined attributes' do
       item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",' \
-      'START-DATE="2014-03-05T11:15:00Z",' \
-      'X-CUSTOM-VALUE="test_value",'
+             'START-DATE="2014-03-05T11:15:00Z",' \
+             'X-CUSTOM-VALUE="test_value",'
       item.parse(line)
 
       expect(item.client_attributes['X-CUSTOM-VALUE']).to eq('test_value')
@@ -98,15 +99,15 @@ describe M3u8::DateRangeItem do
       item = described_class.new(options)
 
       expected = '#EXT-X-DATERANGE:ID="test_id",CLASS="test_class",' \
-      'START-DATE="2014-03-05T11:15:00Z",' \
-      'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
-      'PLANNED-DURATION=59.993,' \
-      'X-CUSTOM=45.3,' \
-      'X-CUSTOM-TEXT="test_value",' \
-      'SCTE35-CMD=0xFC002F0000000000FF2,' \
-      'SCTE35-OUT=0xFC002F0000000000FF0,' \
-      'SCTE35-IN=0xFC002F0000000000FF1,' \
-      'END-ON-NEXT=YES'
+                 'START-DATE="2014-03-05T11:15:00Z",' \
+                 'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
+                 'PLANNED-DURATION=59.993,' \
+                 'X-CUSTOM=45.3,' \
+                 'X-CUSTOM-TEXT="test_value",' \
+                 'SCTE35-CMD=0xFC002F0000000000FF2,' \
+                 'SCTE35-OUT=0xFC002F0000000000FF0,' \
+                 'SCTE35-IN=0xFC002F0000000000FF1,' \
+                 'END-ON-NEXT=YES'
 
       expect(item.to_s).to eq(expected)
     end
@@ -116,7 +117,7 @@ describe M3u8::DateRangeItem do
       item = described_class.new(options)
 
       expected = '#EXT-X-DATERANGE:ID="test_id",' \
-      'START-DATE="2014-03-05T11:15:00Z"'
+                 'START-DATE="2014-03-05T11:15:00Z"'
 
       expect(item.to_s).to eq(expected)
     end

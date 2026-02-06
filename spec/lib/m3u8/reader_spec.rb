@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe M3u8::Reader do
@@ -260,7 +261,7 @@ describe M3u8::Reader do
     context 'when playlist source is invalid' do
       it 'raises error with message' do
         message = 'Playlist must start with a #EXTM3U tag, line read ' \
-          'contained the value: /path/to/file'
+                  'contained the value: /path/to/file'
         expect { reader.read('/path/to/file') }
           .to raise_error(M3u8::InvalidPlaylistError, message)
       end

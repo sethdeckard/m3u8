@@ -1,9 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/m3u8.svg)](http://badge.fury.io/rb/m3u8)
-[![Build Status](https://travis-ci.org/sethdeckard/m3u8.svg?branch=master)](https://travis-ci.org/sethdeckard/m3u8)
-[![Coverage Status](https://coveralls.io/repos/github/sethdeckard/m3u8/badge.svg?branch=master)](https://coveralls.io/github/sethdeckard/m3u8?branch=master)
-[![Code Climate](https://codeclimate.com/github/sethdeckard/m3u8/badges/gpa.svg)](https://codeclimate.com/github/sethdeckard/m3u8)
-[![Dependency Status](https://gemnasium.com/sethdeckard/m3u8.svg)](https://gemnasium.com/sethdeckard/m3u8)
-[![security](https://hakiri.io/github/sethdeckard/m3u8/master.svg)](https://hakiri.io/github/sethdeckard/m3u8/master)
+[![CI](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml/badge.svg)](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml)
 # m3u8
 
 m3u8 provides easy generation and parsing of m3u8 playlists defined in the [HTTP Live Streaming (HLS)](https://tools.ietf.org/html/draft-pantos-http-live-streaming-20) Internet Draft published by Apple.

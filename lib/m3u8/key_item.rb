@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module M3u8
   # KeyItem represents a set of EXT-X-KEY attributes
   class KeyItem

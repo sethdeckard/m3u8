@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+
 module M3u8
   # SessionDataItem represents a set of EXT-X-SESSION-DATA attributes
   class SessionDataItem
     extend M3u8
+
     attr_accessor :data_id, :value, :uri, :language
 
     def initialize(params = {})

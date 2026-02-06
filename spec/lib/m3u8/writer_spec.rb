@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe M3u8::Writer do
@@ -44,9 +45,7 @@ describe M3u8::Writer do
         playlist = M3u8::Playlist.new
         playlist.items << item
 
-        expected = "#EXTM3U\n" +
-                   %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34") +
-                   ",BANDWIDTH=6400\nplaylist_url\n"
+        expected = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=\"mp4a.40.34\",BANDWIDTH=6400\nplaylist_url\n"
 
         io = StringIO.open
         writer = described_class.new(io)
@@ -93,9 +92,9 @@ describe M3u8::Writer do
         writer.write(M3u8::Playlist.new)
 
         expected = "#EXTM3U\n" \
-          "#EXT-X-MEDIA-SEQUENCE:0\n" \
-          "#EXT-X-TARGETDURATION:10\n" \
-          "#EXT-X-ENDLIST\n"
+                   "#EXT-X-MEDIA-SEQUENCE:0\n" \
+                   "#EXT-X-TARGETDURATION:10\n" \
+                   "#EXT-X-ENDLIST\n"
         expect(io.string).to eq(expected)
       end
     end
@@ -111,16 +110,16 @@ describe M3u8::Writer do
         playlist.items << item
 
         expected = "#EXTM3U\n" \
-          "#EXT-X-PLAYLIST-TYPE:EVENT\n" \
-          "#EXT-X-VERSION:4\n" \
-          "#EXT-X-I-FRAMES-ONLY\n" \
-          "#EXT-X-MEDIA-SEQUENCE:1\n" \
-          "#EXT-X-DISCONTINUITY-SEQUENCE:10\n" \
-          "#EXT-X-ALLOW-CACHE:NO\n" \
-          "#EXT-X-TARGETDURATION:6\n" \
-          "#EXTINF:11.344644,\n" \
-          "1080-7mbps00000.ts\n" \
-          "#EXT-X-ENDLIST\n"
+                   "#EXT-X-PLAYLIST-TYPE:EVENT\n" \
+                   "#EXT-X-VERSION:4\n" \
+                   "#EXT-X-I-FRAMES-ONLY\n" \
+                   "#EXT-X-MEDIA-SEQUENCE:1\n" \
+                   "#EXT-X-DISCONTINUITY-SEQUENCE:10\n" \
+                   "#EXT-X-ALLOW-CACHE:NO\n" \
+                   "#EXT-X-TARGETDURATION:6\n" \
+                   "#EXTINF:11.344644,\n" \
+                   "1080-7mbps00000.ts\n" \
+                   "#EXT-X-ENDLIST\n"
 
         io = StringIO.open
         writer = described_class.new(io)
@@ -220,8 +219,8 @@ describe M3u8::Writer do
         expect(playlist.master?).to be true
 
         expected = "#EXTM3U\n" \
-                 "#EXT-X-VERSION:6\n" \
-                 "#EXT-X-INDEPENDENT-SEGMENTS\n"
+                   "#EXT-X-VERSION:6\n" \
+                   "#EXT-X-INDEPENDENT-SEGMENTS\n"
 
         io = StringIO.open
         writer = described_class.new(io)
@@ -242,9 +241,9 @@ describe M3u8::Writer do
         writer.write_header(playlist)
 
         expected = "#EXTM3U\n" \
-          "#EXT-X-VERSION:7\n" \
-          "#EXT-X-MEDIA-SEQUENCE:0\n" \
-          "#EXT-X-TARGETDURATION:10\n"
+                   "#EXT-X-VERSION:7\n" \
+                   "#EXT-X-MEDIA-SEQUENCE:0\n" \
+                   "#EXT-X-TARGETDURATION:10\n"
 
         expect(io.string).to eq(expected)
       end

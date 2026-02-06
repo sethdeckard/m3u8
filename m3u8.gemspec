@@ -12,17 +12,18 @@ Gem::Specification.new do |spec|
   spec.description   = %q{Generate and parse m3u8 playlists for HTTP Live Streaming (HLS).}
   spec.homepage      = 'https://github.com/sethdeckard/m3u8'
   spec.license       = 'MIT'
+  spec.required_ruby_version = '>= 3.0'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '>=3.0'
-  spec.add_development_dependency 'coveralls'
   spec.add_development_dependency 'guard'
   spec.add_development_dependency 'guard-rspec'
+  spec.add_development_dependency 'rubocop'
+  spec.add_development_dependency 'rubocop-rake'
   spec.add_development_dependency 'simplecov'
 end

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module M3u8
   # Writer provides generation of text output of playlists in m3u8 format
   class Writer
@@ -21,6 +22,7 @@ module M3u8
 
     def write_footer(playlist)
       return if playlist.live? || playlist.master?
+
       io.puts '#EXT-X-ENDLIST'
     end
 
@@ -41,6 +43,7 @@ module M3u8
 
     def validate(playlist)
       return if playlist.valid?
+
       raise PlaylistTypeError, 'Playlist is invalid.'
     end
 
