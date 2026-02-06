@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+
 module M3u8
   # Reader provides parsing of m3u8 playlists
   class Reader
     include M3u8
+
     attr_accessor :playlist, :item, :open, :master, :tags
 
     def initialize(*)
@@ -74,6 +76,7 @@ module M3u8
 
     def parse_line(line)
       return if match_tag(line)
+
       parse_next_line(line) if !item.nil? && open
     end
 
@@ -83,6 +86,7 @@ module M3u8
       end
 
       return unless tag.values.first
+
       tag.values.first.call(line)
       true
     end
@@ -212,6 +216,7 @@ module M3u8
 
     def validate_file_format(line)
       return if line.rstrip == '#EXTM3U'
+
       message = 'Playlist must start with a #EXTM3U tag, line read ' \
                 "contained the value: #{line}"
       raise InvalidPlaylistError, message

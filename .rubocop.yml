@@ -1,9 +1,38 @@
 AllCops:
+  TargetRubyVersion: 3.0
+  NewCops: enable
+  SuggestExtensions: false
   Exclude:
     - 'spec/spec_helper.rb'
     - 'm3u8.gemspec'
+    - 'vendor/**/*'
 Metrics/BlockLength:
+  Exclude:
+    - 'spec/**/*'
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - 'spec/**/*'
+Metrics/AbcSize:
+  Max: 25
+  Exclude:
+    - 'spec/**/*'
+Metrics/ClassLength:
+  Enabled: false
+Metrics/CyclomaticComplexity:
+  Enabled: false
+Layout/LineLength:
+  Max: 120
   Exclude:
     - 'spec/**/*'
 Style/StringLiterals:
   EnforcedStyle: single_quotes
+Style/StringConcatenation:
+  Exclude:
+    - 'spec/**/*'
+Lint/FloatComparison:
+  Enabled: false
+Lint/DuplicateMethods:
+  Enabled: false
+Naming/PredicateMethod:
+  Enabled: false

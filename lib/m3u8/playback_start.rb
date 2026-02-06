@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+
 module M3u8
   # PlaybackStart represents a #EXT-X-START tag and attributes
   class PlaybackStart
     include M3u8
+
     attr_accessor :time_offset, :precise
 
     def initialize(options = {})
@@ -28,6 +30,7 @@ module M3u8
 
     def precise_format
       return if precise.nil?
+
       "PRECISE=#{to_yes_no(precise)}"
     end
   end

@@ -1,8 +1,10 @@
 # frozen_string_literal: true
+
 module M3u8
   # MediaItem represents a set of EXT-X-MEDIA attributes
   class MediaItem
     extend M3u8
+
     attr_accessor :type, :group_id, :language, :assoc_language, :name,
                   :autoselect, :default, :uri, :forced, :instream_id,
                   :characteristics, :channels
@@ -60,11 +62,13 @@ module M3u8
 
     def language_format
       return if language.nil?
+
       %(LANGUAGE="#{language}")
     end
 
     def assoc_language_format
       return if assoc_language.nil?
+
       %(ASSOC-LANGUAGE="#{assoc_language}")
     end
 
@@ -74,36 +78,43 @@ module M3u8
 
     def autoselect_format
       return if autoselect.nil?
+
       "AUTOSELECT=#{to_yes_no autoselect}"
     end
 
     def default_format
       return if default.nil?
+
       "DEFAULT=#{to_yes_no default}"
     end
 
     def uri_format
       return if uri.nil?
+
       %(URI="#{uri}")
     end
 
     def forced_format
       return if forced.nil?
+
       "FORCED=#{to_yes_no forced}"
     end
 
     def instream_id_format
       return if instream_id.nil?
+
       %(INSTREAM-ID="#{instream_id}")
     end
 
     def characteristics_format
       return if characteristics.nil?
+
       %(CHARACTERISTICS="#{characteristics}")
     end
 
     def channels_format
       return if channels.nil?
+
       %(CHANNELS="#{channels}")
     end
 

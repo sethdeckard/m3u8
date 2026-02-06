@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module M3u8
   # Encapsulates logic common to encryption key tags
   module Encryptable

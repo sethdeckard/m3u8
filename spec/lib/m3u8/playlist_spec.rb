@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'spec_helper'
 
 describe M3u8::Playlist do
@@ -177,13 +178,13 @@ describe M3u8::Playlist do
       playlist.items << item
 
       expected = "#EXTM3U\n" \
-        "#EXT-X-MEDIA-SEQUENCE:0\n" \
-        "#EXT-X-TARGETDURATION:10\n" \
-        "#EXTINF:11.344644,\n" \
-        "1080-7mbps00000.ts\n" \
-        "#EXTINF:11.261233,\n" \
-        "1080-7mbps00001.ts\n" \
-        "#EXT-X-ENDLIST\n"
+                 "#EXT-X-MEDIA-SEQUENCE:0\n" \
+                 "#EXT-X-TARGETDURATION:10\n" \
+                 "#EXTINF:11.344644,\n" \
+                 "1080-7mbps00000.ts\n" \
+                 "#EXTINF:11.261233,\n" \
+                 "1080-7mbps00001.ts\n" \
+                 "#EXT-X-ENDLIST\n"
       expect(playlist.to_s).to eq(expected)
     end
   end
@@ -233,9 +234,7 @@ describe M3u8::Playlist do
 
         io = StringIO.new
         playlist.write(io)
-        expected = "#EXTM3U\n" +
-                   %(#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS="mp4a.40.34",) +
-                   "BANDWIDTH=6400\nplaylist_url\n"
+        expected = "#EXTM3U\n#EXT-X-STREAM-INF:PROGRAM-ID=1,CODECS=\"mp4a.40.34\",BANDWIDTH=6400\nplaylist_url\n"
         expect(io.string).to eq(expected)
       end
     end

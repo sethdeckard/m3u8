@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module M3u8
   # Playlist represents an m3u8 playlist, it can be a master playlist or a set
   # of media segments
@@ -29,13 +30,15 @@ module M3u8
 
     def live?
       return false if master?
+
       @live
     end
 
     def master?
       return @master unless @master.nil?
       return false if playlist_size.zero? && segment_size.zero?
-      playlist_size > 0
+
+      playlist_size.positive?
     end
 
     def to_s
@@ -45,7 +48,8 @@ module M3u8
     end
 
     def valid?
-      return false if playlist_size > 0 && segment_size > 0
+      return false if playlist_size.positive? && segment_size.positive?
+
       true
     end
 

@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 module M3u8
   # ByteRange represents sub range of a resource
   class ByteRange
@@ -26,6 +27,7 @@ module M3u8
 
     def start_format
       return if start.nil?
+
       "@#{start}"
     end
   end
