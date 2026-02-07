@@ -333,4 +333,65 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new options
     expect(item.codecs).to eq 'avc1.640033'
   end
+
+  it 'generates HEVC codec strings' do
+    options = { profile: 'hevc-main', level: 3.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.1.6.L93.B0'
+
+    options = { profile: 'hevc-main', level: 4.0 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.1.6.L120.B0'
+
+    options = { profile: 'hevc-main', level: 5.0 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.1.6.L150.B0'
+
+    options = { profile: 'hevc-main', level: 5.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.1.6.L153.B0'
+
+    options = { profile: 'hevc-main-10', level: 4.0 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.2.4.L120.B0'
+
+    options = { profile: 'hevc-main-10', level: 5.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'hvc1.2.4.L153.B0'
+  end
+
+  it 'generates AV1 codec strings' do
+    options = { profile: 'av1-main', level: 4.0 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'av01.0.08M.08'
+
+    options = { profile: 'av1-main', level: 5.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'av01.0.13M.08'
+
+    options = { profile: 'av1-high', level: 4.0 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'av01.1.08H.10'
+
+    options = { profile: 'av1-high', level: 5.1 }
+    item = M3u8::PlaylistItem.new options
+    expect(item.codecs).to eq 'av01.1.13H.10'
+  end
+
+  it 'generates modern audio codec strings' do
+    item = M3u8::PlaylistItem.new audio_codec: 'ac-3'
+    expect(item.codecs).to eq 'ac-3'
+
+    item = M3u8::PlaylistItem.new audio_codec: 'ec-3'
+    expect(item.codecs).to eq 'ec-3'
+
+    item = M3u8::PlaylistItem.new audio_codec: 'e-ac-3'
+    expect(item.codecs).to eq 'ec-3'
+
+    item = M3u8::PlaylistItem.new audio_codec: 'flac'
+    expect(item.codecs).to eq 'fLaC'
+
+    item = M3u8::PlaylistItem.new audio_codec: 'opus'
+    expect(item.codecs).to eq 'Opus'
+  end
 end

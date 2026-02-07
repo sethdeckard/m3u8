@@ -44,6 +44,18 @@ describe M3u8::Playlist do
       codecs = described_class.codecs(options)
       expect(codecs).to eq('avc1.66.30,mp4a.40.2')
     end
+
+    it 'generates HEVC codecs string' do
+      options = { profile: 'hevc-main', level: 4.0, audio_codec: 'ac-3' }
+      codecs = described_class.codecs(options)
+      expect(codecs).to eq('hvc1.1.6.L120.B0,ac-3')
+    end
+
+    it 'generates AV1 codecs string' do
+      options = { profile: 'av1-main', level: 5.0, audio_codec: 'opus' }
+      codecs = described_class.codecs(options)
+      expect(codecs).to eq('av01.0.12M.08,Opus')
+    end
   end
 
   describe '.read' do

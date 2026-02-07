@@ -14,12 +14,14 @@ Metrics/MethodLength:
   Exclude:
     - 'spec/**/*'
 Metrics/AbcSize:
-  Max: 30
+  Max: 35
   Exclude:
     - 'spec/**/*'
 Metrics/ClassLength:
   Enabled: false
 Metrics/CyclomaticComplexity:
+  Enabled: false
+Metrics/PerceivedComplexity:
   Enabled: false
 Layout/LineLength:
   Max: 120

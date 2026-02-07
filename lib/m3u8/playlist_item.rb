@@ -254,8 +254,12 @@ module M3u8
       return if @audio_codec.nil?
       return 'mp4a.40.2' if @audio_codec.casecmp('aac-lc').zero?
       return 'mp4a.40.5' if @audio_codec.casecmp('he-aac').zero?
+      return 'mp4a.40.34' if @audio_codec.casecmp('mp3').zero?
+      return 'ac-3' if @audio_codec.casecmp('ac-3').zero?
+      return 'ec-3' if %w[ec-3 e-ac-3].any? { |c| @audio_codec.casecmp(c).zero? }
+      return 'fLaC' if @audio_codec.casecmp('flac').zero?
 
-      'mp4a.40.34' if @audio_codec.casecmp('mp3').zero?
+      'Opus' if @audio_codec.casecmp('opus').zero?
     end
 
     def video_codec(profile, level)
@@ -263,8 +267,10 @@ module M3u8
 
       return baseline_codec_string(level) if profile.casecmp('baseline').zero?
       return main_codec_string(level) if profile.casecmp('main').zero?
+      return high_codec_string(level) if profile.casecmp('high').zero?
+      return hevc_codec_string(level) if profile.start_with?('hevc-')
 
-      high_codec_string(level) if profile.casecmp('high').zero?
+      av1_codec_string(level) if profile.start_with?('av1-')
     end
 
     def baseline_codec_string(level)
@@ -286,6 +292,30 @@ module M3u8
 
       level_hex_string = level.to_s.sub('.', '').to_i.to_s(16)
       "avc1.6400#{level_hex_string}"
+    end
+
+    def hevc_codec_string(level)
+      return 'hvc1.1.6.L93.B0' if profile == 'hevc-main' && level == 3.1
+      return 'hvc1.1.6.L120.B0' if profile == 'hevc-main' && level == 4.0
+      return 'hvc1.1.6.L150.B0' if profile == 'hevc-main' && level == 5.0
+      return 'hvc1.1.6.L153.B0' if profile == 'hevc-main' && level == 5.1
+      return 'hvc1.2.4.L93.B0' if profile == 'hevc-main-10' && level == 3.1
+      return 'hvc1.2.4.L120.B0' if profile == 'hevc-main-10' && level == 4.0
+      return 'hvc1.2.4.L150.B0' if profile == 'hevc-main-10' && level == 5.0
+
+      'hvc1.2.4.L153.B0' if profile == 'hevc-main-10' && level == 5.1
+    end
+
+    def av1_codec_string(level)
+      return 'av01.0.04M.08' if profile == 'av1-main' && level == 3.1
+      return 'av01.0.08M.08' if profile == 'av1-main' && level == 4.0
+      return 'av01.0.12M.08' if profile == 'av1-main' && level == 5.0
+      return 'av01.0.13M.08' if profile == 'av1-main' && level == 5.1
+      return 'av01.1.04H.10' if profile == 'av1-high' && level == 3.1
+      return 'av01.1.08H.10' if profile == 'av1-high' && level == 4.0
+      return 'av01.1.12H.10' if profile == 'av1-high' && level == 5.0
+
+      'av01.1.13H.10' if profile == 'av1-high' && level == 5.1
     end
   end
 end
