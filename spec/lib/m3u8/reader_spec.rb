@@ -258,6 +258,28 @@ describe M3u8::Reader do
       expect(item).to be_a(M3u8::DateRangeItem)
     end
 
+    it 'parses playlist with content steering and defines' do
+      file = File.open('spec/fixtures/content_steering.m3u8')
+      reader = M3u8::Reader.new
+      playlist = reader.read(file)
+      expect(playlist.master?).to be true
+      expect(playlist.items.size).to eq(5)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::DefineItem)
+      expect(item.name).to eq('base_url')
+      expect(item.value).to eq('https://example.com')
+
+      item = playlist.items[1]
+      expect(item).to be_a(M3u8::DefineItem)
+      expect(item.import).to eq('token')
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::ContentSteeringItem)
+      expect(item.server_uri).to eq('https://example.com/steering')
+      expect(item.pathway_id).to eq('CDN-A')
+    end
+
     it 'parses playlist with gap and bitrate tags' do
       file = File.open('spec/fixtures/gap_playlist.m3u8')
       reader = M3u8::Reader.new

@@ -63,7 +63,8 @@ module M3u8
         '#EXT-X-SESSION-DATA' => ->(line) { parse_session_data(line) },
         '#EXT-X-SESSION-KEY' => ->(line) { parse_session_key(line) },
         '#EXT-X-STREAM-INF' => ->(line) { parse_stream(line) },
-        '#EXT-X-I-FRAME-STREAM-INF' => ->(line) { parse_iframe_stream(line) }
+        '#EXT-X-I-FRAME-STREAM-INF' => ->(line) { parse_iframe_stream(line) },
+        '#EXT-X-CONTENT-STEERING' => ->(line) { parse_content_steering(line) }
       }
     end
 
@@ -72,7 +73,8 @@ module M3u8
         '#EXT-X-START' => ->(line) { parse_start(line) },
         '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
           playlist.independent_segments = true
-        end
+        end,
+        '#EXT-X-DEFINE' => ->(line) { parse_define(line) }
       }
     end
 
@@ -203,6 +205,14 @@ module M3u8
       item = M3u8::DateRangeItem.new
       item.parse(line)
       playlist.items << item
+    end
+
+    def parse_define(line)
+      playlist.items << M3u8::DefineItem.parse(line)
+    end
+
+    def parse_content_steering(line)
+      playlist.items << M3u8::ContentSteeringItem.parse(line)
     end
 
     def parse_gap(*)
