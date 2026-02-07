@@ -54,4 +54,16 @@ describe M3u8::SegmentItem do
     expected = "#EXTINF:10.991,anything\n#EXT-X-BYTERANGE:4500\ntest.ts"
     expect(output).to eq expected
   end
+
+  it 'wraps raw Time in program_date_time as TimeItem' do
+    time = Time.iso8601('2020-11-25T20:27:00Z')
+    hash = { duration: 10, segment: 'segment.aac',
+             program_date_time: time }
+    item = M3u8::SegmentItem.new(hash)
+    output = item.to_s
+    expected = "#EXTINF:10,\n" \
+               "#EXT-X-PROGRAM-DATE-TIME:2020-11-25T20:27:00Z\n" \
+               'segment.aac'
+    expect(output).to eq expected
+  end
 end
