@@ -165,6 +165,45 @@ describe M3u8::Writer do
       end
     end
 
+    context 'when playlist is an LL-HLS media playlist' do
+      it 'writes server control and part inf in header' do
+        server_control = M3u8::ServerControlItem.new(
+          can_skip_until: 24.0, part_hold_back: 1.0,
+          can_block_reload: true
+        )
+        part_inf = M3u8::PartInfItem.new(part_target: 0.5)
+        playlist = M3u8::Playlist.new(
+          version: 9, target: 4, sequence: 100,
+          server_control: server_control, part_inf: part_inf,
+          live: true
+        )
+        item = M3u8::SegmentItem.new(duration: 4.0,
+                                     segment: 'seg100.mp4')
+        playlist.items << item
+
+        part = M3u8::PartItem.new(duration: 0.5,
+                                  uri: 'seg101.0.mp4',
+                                  independent: true)
+        playlist.items << part
+
+        io = StringIO.open
+        writer = described_class.new(io)
+        writer.write(playlist)
+
+        expect(io.string).to include(
+          '#EXT-X-SERVER-CONTROL:CAN-SKIP-UNTIL=24.0,' \
+          'PART-HOLD-BACK=1.0,CAN-BLOCK-RELOAD=YES'
+        )
+        expect(io.string).to include(
+          '#EXT-X-PART-INF:PART-TARGET=0.5'
+        )
+        expect(io.string).to include(
+          '#EXT-X-PART:DURATION=0.5,URI="seg101.0.mp4",INDEPENDENT=YES'
+        )
+        expect(io.string).not_to include('#EXT-X-ENDLIST')
+      end
+    end
+
     it 'raises error if item types are mixed' do
       playlist = M3u8::Playlist.new
       options = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',

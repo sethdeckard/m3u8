@@ -308,6 +308,56 @@ describe M3u8::Reader do
       expect(item.pathway_id).to eq('CDN-A')
     end
 
+    it 'parses LL-HLS playlist' do
+      file = File.open('spec/fixtures/ll_hls_playlist.m3u8')
+      reader = M3u8::Reader.new
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.version).to eq(9)
+
+      expect(playlist.server_control).to be_a(M3u8::ServerControlItem)
+      expect(playlist.server_control.can_skip_until).to eq(24.0)
+      expect(playlist.server_control.can_block_reload).to be true
+      expect(playlist.server_control.part_hold_back).to eq(1.0)
+
+      expect(playlist.part_inf).to be_a(M3u8::PartInfItem)
+      expect(playlist.part_inf.part_target).to eq(0.5)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::SkipItem)
+      expect(item.skipped_segments).to eq(5)
+
+      item = playlist.items[1]
+      expect(item).to be_a(M3u8::MapItem)
+
+      item = playlist.items[3]
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.duration).to eq(0.5)
+      expect(item.uri).to eq('segment101.0.mp4')
+      expect(item.independent).to be true
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.independent).to be false
+
+      item = playlist.items[8]
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.uri).to eq('segment102.0.mp4')
+
+      item = playlist.items[9]
+      expect(item).to be_a(M3u8::PreloadHintItem)
+      expect(item.type).to eq('PART')
+      expect(item.uri).to eq('segment102.1.mp4')
+
+      item = playlist.items[10]
+      expect(item).to be_a(M3u8::RenditionReportItem)
+      expect(item.uri).to eq('../720p/stream.m3u8')
+      expect(item.last_msn).to eq(101)
+      expect(item.last_part).to eq(3)
+
+      expect(playlist.items.size).to eq(12)
+    end
+
     it 'parses playlist with gap and bitrate tags' do
       file = File.open('spec/fixtures/gap_playlist.m3u8')
       reader = M3u8::Reader.new
