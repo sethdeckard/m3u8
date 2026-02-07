@@ -552,6 +552,24 @@ describe M3u8::Reader do
       expect(report.last_msn).to eq(101)
     end
 
+    it 'parses playlist with \\r line endings' do
+      text = "#EXTM3U\r" \
+             "#EXT-X-VERSION:4\r" \
+             "#EXT-X-TARGETDURATION:10\r" \
+             "#EXT-X-MEDIA-SEQUENCE:0\r" \
+             "#EXTINF:10.0,\r" \
+             "segment0.ts\r" \
+             "#EXT-X-ENDLIST\r"
+      playlist = reader.read(text)
+      expect(playlist.master?).to be false
+      expect(playlist.version).to eq(4)
+      expect(playlist.items.size).to eq(1)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::SegmentItem)
+      expect(item.segment).to eq('segment0.ts')
+    end
+
     context 'when playlist source is invalid' do
       it 'raises error with message' do
         message = 'Playlist must start with a #EXTM3U tag, line read ' \
