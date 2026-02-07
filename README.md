@@ -75,6 +75,25 @@ item = M3u8::DefineItem.new(name: 'base', value: 'https://example.com')
 playlist.items << item
 ```
 
+Add a session-level encryption key (master playlists):
+
+```ruby
+item = M3u8::SessionKeyItem.new(
+  method: 'AES-128', uri: 'https://example.com/key.bin'
+)
+playlist.items << item
+```
+
+Add session-level data (master playlists):
+
+```ruby
+item = M3u8::SessionDataItem.new(
+  data_id: 'com.example.title', value: 'My Video',
+  language: 'en'
+)
+playlist.items << item
+```
+
 Create a standard playlist and add MPEG-TS segments via SegmentItem:
 
 ```ruby
@@ -82,6 +101,65 @@ options = { version: 1, cache: false, target: 12, sequence: 1 }
 playlist = M3u8::Playlist.new(options)
 
 item = M3u8::SegmentItem.new(duration: 11, segment: 'test.ts')
+playlist.items << item
+```
+
+### Media segment tags
+
+Add an encryption key for subsequent segments:
+
+```ruby
+item = M3u8::KeyItem.new(
+  method: 'AES-128',
+  uri: 'https://example.com/key.bin',
+  iv: '0x1234567890abcdef1234567890abcdef'
+)
+playlist.items << item
+```
+
+Specify an initialization segment (e.g. fMP4 header):
+
+```ruby
+item = M3u8::MapItem.new(
+  uri: 'init.mp4', byterange: { length: 812, start: 0 }
+)
+playlist.items << item
+```
+
+Insert a timed metadata date range:
+
+```ruby
+item = M3u8::DateRangeItem.new(
+  id: 'ad-break-1', start_date: '2024-06-01T12:00:00Z',
+  planned_duration: 30.0,
+  client_attributes: { 'X-AD-ID' => '"foo"' }
+)
+playlist.items << item
+```
+
+Signal an encoding discontinuity:
+
+```ruby
+playlist.items << M3u8::DiscontinuityItem.new
+```
+
+Attach a program date/time to the next segment:
+
+```ruby
+item = M3u8::TimeItem.new(time: Time.iso8601('2024-06-01T12:00:00Z'))
+playlist.items << item
+```
+
+Mark a gap in segment availability:
+
+```ruby
+playlist.items << M3u8::GapItem.new
+```
+
+Add a bitrate hint for upcoming segments:
+
+```ruby
+item = M3u8::BitrateItem.new(bitrate: 1500)
 playlist.items << item
 ```
 
@@ -153,11 +231,37 @@ playlist.master?
 # => true
 ```
 
-Access items in playlist:
+Query playlist properties:
+
+```ruby
+playlist.master?
+# => true (contains variant streams)
+playlist.live?
+# => false (master playlists are never live)
+```
+
+For media playlists, `duration` returns total segment duration:
+
+```ruby
+media = M3u8::Playlist.read(
+  File.open('spec/fixtures/event_playlist.m3u8')
+)
+media.live?
+# => false
+media.duration
+# => 17.0 (sum of all segment durations)
+```
+
+Access items and their attributes:
 
 ```ruby
 playlist.items.first
 #  => #<M3u8::PlaylistItem ...>
+
+media.segments.first.duration
+# => 6.0
+media.segments.first.segment
+# => "segment0.mp4"
 ```
 
 Convenience methods filter items by type:
@@ -232,6 +336,7 @@ codecs = M3u8::Playlist.codecs(options)
 * `EXT-X-PLAYLIST-TYPE`
 * `EXT-X-I-FRAMES-ONLY`
 * `EXT-X-ALLOW-CACHE`
+* `EXT-X-ENDLIST`
 
 ### Media segment tags
 * `EXTINF`
