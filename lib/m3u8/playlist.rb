@@ -6,7 +6,8 @@ module M3u8
   class Playlist
     attr_accessor :items, :version, :cache, :target, :sequence,
                   :discontinuity_sequence, :type, :iframes_only,
-                  :independent_segments, :live
+                  :independent_segments, :live, :part_inf,
+                  :server_control
 
     def initialize(options = {})
       assign_options(options)
@@ -76,6 +77,8 @@ module M3u8
       @independent_segments = options[:independent_segments]
       @master = options[:master]
       @live = options[:live]
+      @part_inf = options[:part_inf]
+      @server_control = options[:server_control]
     end
 
     def defaults

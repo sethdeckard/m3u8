@@ -40,7 +40,8 @@ module M3u8
         '#EXT-X-PROGRAM-DATE-TIME' => ->(line) { parse_time(line) },
         '#EXT-X-DATERANGE' => ->(line) { parse_date_range(line) },
         '#EXT-X-GAP' => ->(_line) { parse_gap },
-        '#EXT-X-BITRATE' => ->(line) { parse_bitrate(line) }
+        '#EXT-X-BITRATE' => ->(line) { parse_bitrate(line) },
+        '#EXT-X-PART' => ->(line) { parse_part(line) }
       }
     end
 
@@ -53,7 +54,12 @@ module M3u8
         '#EXT-X-ALLOW-CACHE' => ->(line) { parse_cache(line) },
         '#EXT-X-TARGETDURATION' => ->(line) { parse_target(line) },
         '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
-        '#EXT-X-PLAYLIST-TYPE' => ->(line) { parse_playlist_type(line) }
+        '#EXT-X-PLAYLIST-TYPE' => ->(line) { parse_playlist_type(line) },
+        '#EXT-X-PART-INF' => ->(line) { parse_part_inf(line) },
+        '#EXT-X-SERVER-CONTROL' => ->(line) { parse_server_control(line) },
+        '#EXT-X-SKIP' => ->(line) { parse_skip(line) },
+        '#EXT-X-PRELOAD-HINT' => ->(line) { parse_preload_hint(line) },
+        '#EXT-X-RENDITION-REPORT' => ->(line) { parse_rendition_report(line) }
       }
     end
 
@@ -213,6 +219,31 @@ module M3u8
 
     def parse_content_steering(line)
       playlist.items << M3u8::ContentSteeringItem.parse(line)
+    end
+
+    def parse_part(line)
+      self.open = false
+      playlist.items << M3u8::PartItem.parse(line)
+    end
+
+    def parse_part_inf(line)
+      playlist.part_inf = M3u8::PartInfItem.parse(line)
+    end
+
+    def parse_server_control(line)
+      playlist.server_control = M3u8::ServerControlItem.parse(line)
+    end
+
+    def parse_skip(line)
+      playlist.items << M3u8::SkipItem.parse(line)
+    end
+
+    def parse_preload_hint(line)
+      playlist.items << M3u8::PreloadHintItem.parse(line)
+    end
+
+    def parse_rendition_report(line)
+      playlist.items << M3u8::RenditionReportItem.parse(line)
     end
 
     def parse_gap(*)

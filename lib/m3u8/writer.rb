@@ -79,6 +79,20 @@ module M3u8
       write_discontinuity_sequence_tag(playlist.discontinuity_sequence)
       write_cache_tag(playlist.cache)
       io.puts target_duration_format(playlist)
+      write_server_control_tag(playlist.server_control)
+      write_part_inf_tag(playlist.part_inf)
+    end
+
+    def write_server_control_tag(server_control)
+      return if server_control.nil?
+
+      io.puts server_control.to_s
+    end
+
+    def write_part_inf_tag(part_inf)
+      return if part_inf.nil?
+
+      io.puts part_inf.to_s
     end
 
     def write_version_tag(version)
