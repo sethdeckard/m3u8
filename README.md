@@ -2,9 +2,9 @@
 [![CI](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml/badge.svg)](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml)
 # m3u8
 
-m3u8 provides easy generation and parsing of m3u8 playlists defined in the [HTTP Live Streaming (HLS)](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis) Internet Draft published by Apple.
+m3u8 provides easy generation and parsing of m3u8 playlists defined in [RFC 8216 HTTP Live Streaming](https://www.rfc-editor.org/rfc/rfc8216) and its proposed successor [draft-pantos-hls-rfc8216bis](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis).
 
-* Full coverage of [draft-pantos-hls-rfc8216bis-19](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-19) (Protocol Version 13), including Low-Latency HLS and Content Steering.
+* Full coverage of [RFC 8216](https://www.rfc-editor.org/rfc/rfc8216) and [draft-pantos-hls-rfc8216bis-19](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-19) (Protocol Version 13), including Low-Latency HLS and Content Steering.
 * Provides parsing of an m3u8 playlist into an object model from any File, StringIO, or string.
 * Provides ability to write playlist to a File or StringIO or expose as string via to_s.
 * Distinction between a master and media playlist is handled automatically (single Playlist class).
