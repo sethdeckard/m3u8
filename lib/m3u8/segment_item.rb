@@ -13,8 +13,19 @@ module M3u8
     end
 
     def to_s
-      date = "#{program_date_time}\n" unless program_date_time.nil?
-      "#EXTINF:#{duration},#{comment}#{byterange_format}\n#{date}#{segment}"
+      "#EXTINF:#{duration},#{comment}#{byterange_format}" \
+        "\n#{date_format}#{segment}"
+    end
+
+    def date_format
+      return if program_date_time.nil?
+
+      pdt = if program_date_time.is_a?(TimeItem)
+              program_date_time
+            else
+              TimeItem.new(time: program_date_time)
+            end
+      "#{pdt}\n"
     end
 
     private
