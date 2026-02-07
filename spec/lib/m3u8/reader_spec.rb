@@ -79,6 +79,7 @@ describe M3u8::Reader do
       expect(playlist.cache).to be false
       expect(playlist.target).to eq(12)
       expect(playlist.type).to eq('VOD')
+      expect(playlist.live?).to be false
 
       item = playlist.items[0]
       expect(item).to be_a(M3u8::SegmentItem)
@@ -313,6 +314,7 @@ describe M3u8::Reader do
       reader = M3u8::Reader.new
       playlist = reader.read(file)
       expect(playlist.master?).to be false
+      expect(playlist.live?).to be true
       expect(playlist.version).to eq(9)
 
       expect(playlist.server_control).to be_a(M3u8::ServerControlItem)
@@ -378,6 +380,176 @@ describe M3u8::Reader do
       item = playlist.items[4]
       expect(item).to be_a(M3u8::BitrateItem)
       expect(item.bitrate).to eq(256)
+    end
+
+    it 'parses event playlist with byterange and map change' do
+      file = File.open('spec/fixtures/event_playlist.m3u8')
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.live?).to be false
+      expect(playlist.type).to eq('EVENT')
+      expect(playlist.version).to eq(7)
+      expect(playlist.independent_segments).to be true
+      expect(playlist.items.size).to eq(6)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::MapItem)
+      expect(item.uri).to eq('init.mp4')
+      expect(item.byterange).to be_nil
+
+      item = playlist.items[1]
+      expect(item).to be_a(M3u8::SegmentItem)
+      expect(item.duration).to eq(6.0)
+      expect(item.byterange.length).to eq(75_232)
+      expect(item.byterange.start).to eq(0)
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::SegmentItem)
+      expect(item.byterange.length).to eq(82_112)
+      expect(item.byterange.start).to eq(75_232)
+
+      item = playlist.items[3]
+      expect(item).to be_a(M3u8::DiscontinuityItem)
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::MapItem)
+      expect(item.uri).to eq('init2.mp4')
+    end
+
+    it 'parses daterange playlist' do
+      file = File.open('spec/fixtures/daterange_playlist.m3u8')
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.items.size).to eq(6)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::DateRangeItem)
+      expect(item.id).to eq('ad-1')
+      expect(item.class_name).to eq('com.example.ad')
+      expect(item.start_date).to eq('2024-01-01T00:00:00Z')
+      expect(item.end_date).to eq('2024-01-01T00:00:30Z')
+      expect(item.duration).to eq(30.0)
+      expect(item.client_attributes['X-AD-ID']).to eq('ad-123')
+      expect(item.client_attributes['X-AD-URL'])
+        .to eq('https://example.com/ad')
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::DateRangeItem)
+      expect(item.id).to eq('ad-2')
+      expect(item.planned_duration).to eq(15.0)
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::DateRangeItem)
+      expect(item.id).to eq('ch-1')
+      expect(item.end_on_next).to be true
+    end
+
+    it 'parses full master playlist' do
+      file = File.open('spec/fixtures/master_full.m3u8')
+      playlist = reader.read(file)
+      expect(playlist.master?).to be true
+      expect(playlist.version).to eq(13)
+      expect(playlist.independent_segments).to be true
+      expect(playlist.items.size).to eq(9)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::DefineItem)
+      expect(item.queryparam).to eq('token')
+
+      item = playlist.items[1]
+      expect(item).to be_a(M3u8::PlaybackStart)
+      expect(item.time_offset).to eq(10.5)
+      expect(item.precise).to be true
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::SessionKeyItem)
+      expect(item.method).to eq('SAMPLE-AES')
+      expect(item.key_format)
+        .to eq('com.apple.streamingkeydelivery')
+
+      item = playlist.items[3]
+      expect(item).to be_a(M3u8::SessionDataItem)
+      expect(item.data_id).to eq('com.example.title')
+      expect(item.language).to eq('en')
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::ContentSteeringItem)
+      expect(item.server_uri)
+        .to eq('https://example.com/steering')
+
+      item = playlist.items[5]
+      expect(item).to be_a(M3u8::MediaItem)
+      expect(item.type).to eq('AUDIO')
+      expect(item.language).to eq('en')
+
+      item = playlist.items[7]
+      expect(item).to be_a(M3u8::PlaylistItem)
+      expect(item.bandwidth).to eq(5_000_000)
+      expect(item.average_bandwidth).to eq(4_500_000)
+    end
+
+    it 'parses encrypted playlist with discontinuities' do
+      file = File.open('spec/fixtures/encrypted_discontinuity.m3u8')
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.live?).to be false
+      expect(playlist.items.size).to eq(8)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::KeyItem)
+      expect(item.method).to eq('AES-128')
+      expect(item.uri).to eq('https://example.com/key1.bin')
+      expect(item.iv)
+        .to eq('0x00000000000000000000000000000001')
+
+      item = playlist.items[3]
+      expect(item).to be_a(M3u8::DiscontinuityItem)
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::KeyItem)
+      expect(item.uri).to eq('https://example.com/key2.bin')
+
+      item = playlist.items[6]
+      expect(item).to be_a(M3u8::KeyItem)
+      expect(item.method).to eq('NONE')
+    end
+
+    it 'parses advanced LL-HLS playlist' do
+      file = File.open('spec/fixtures/ll_hls_advanced.m3u8')
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.live?).to be true
+      expect(playlist.version).to eq(9)
+
+      sc = playlist.server_control
+      expect(sc.can_skip_until).to eq(24.0)
+      expect(sc.can_skip_dateranges).to be true
+      expect(sc.hold_back).to eq(12.0)
+      expect(sc.part_hold_back).to eq(1.0)
+
+      skip = playlist.items[0]
+      expect(skip).to be_a(M3u8::SkipItem)
+      expect(skip.skipped_segments).to eq(10)
+      expect(skip.recently_removed_dateranges).to eq('dr-1')
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.independent).to be true
+
+      item = playlist.items[5]
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.byterange.length).to eq(1024)
+      expect(item.byterange.start).to eq(0)
+      expect(item.gap).to be true
+
+      hint = playlist.items[8]
+      expect(hint).to be_a(M3u8::PreloadHintItem)
+      expect(hint.type).to eq('MAP')
+      expect(hint.uri).to eq('init2.mp4')
+
+      report = playlist.items[9]
+      expect(report).to be_a(M3u8::RenditionReportItem)
+      expect(report.last_msn).to eq(101)
     end
 
     context 'when playlist source is invalid' do
