@@ -38,7 +38,9 @@ module M3u8
         '#EXT-X-KEY' => ->(line) { parse_key(line) },
         '#EXT-X-MAP' => ->(line) { parse_map(line) },
         '#EXT-X-PROGRAM-DATE-TIME' => ->(line) { parse_time(line) },
-        '#EXT-X-DATERANGE' => ->(line) { parse_date_range(line) }
+        '#EXT-X-DATERANGE' => ->(line) { parse_date_range(line) },
+        '#EXT-X-GAP' => ->(_line) { parse_gap },
+        '#EXT-X-BITRATE' => ->(line) { parse_bitrate(line) }
       }
     end
 
@@ -201,6 +203,16 @@ module M3u8
       item = M3u8::DateRangeItem.new
       item.parse(line)
       playlist.items << item
+    end
+
+    def parse_gap(*)
+      self.open = false
+      playlist.items << M3u8::GapItem.new
+    end
+
+    def parse_bitrate(line)
+      self.open = false
+      playlist.items << M3u8::BitrateItem.parse(line)
     end
 
     def parse_next_line(line)
