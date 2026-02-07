@@ -2,13 +2,17 @@
 [![CI](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml/badge.svg)](https://github.com/sethdeckard/m3u8/actions/workflows/ci.yml)
 # m3u8
 
-m3u8 provides easy generation and parsing of m3u8 playlists defined in the [HTTP Live Streaming (HLS)](https://tools.ietf.org/html/draft-pantos-http-live-streaming-20) Internet Draft published by Apple.
+m3u8 provides easy generation and parsing of m3u8 playlists defined in the [HTTP Live Streaming (HLS)](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis) Internet Draft published by Apple.
 
-* The library completely implements version 20 of the HLS Internet Draft.
+* Full coverage of [draft-pantos-hls-rfc8216bis-19](https://datatracker.ietf.org/doc/html/draft-pantos-hls-rfc8216bis-19) (Protocol Version 13), including Low-Latency HLS and Content Steering.
 * Provides parsing of an m3u8 playlist into an object model from any File, StringIO, or string.
 * Provides ability to write playlist to a File or StringIO or expose as string via to_s.
 * Distinction between a master and media playlist is handled automatically (single Playlist class).
-* Optionally, the library can automatically generate the audio/video codecs string used in the CODEC attribute based on specified H.264, AAC, or MP3 options (such as Profile/Level).
+* Automatic generation of codec strings for H.264, HEVC, AV1, AAC, AC-3, E-AC-3, FLAC, Opus, and MP3.
+
+## Requirements
+
+Ruby 3.0+
 
 ## Installation
 
@@ -27,7 +31,7 @@ Or install it yourself as:
     $ gem install m3u8
 
 ## Usage (creating playlists)
-    
+
 Create a master playlist and add child playlists for adaptive bitrate streaming:
 
 ```ruby
@@ -42,8 +46,8 @@ options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
             audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
 item = M3u8::PlaylistItem.new(options)
 playlist.items << item
-```    
- 
+```
+
 Add alternate audio, camera angles, closed captions and subtitles by creating MediaItem instances and adding them to the Playlist:
 
 ```ruby
@@ -53,8 +57,25 @@ hash = { type: 'AUDIO', group_id: 'audio-lo', language: 'fre',
 item = M3u8::MediaItem.new(hash)
 playlist.items << item
 ```
-  
-Create a standard playlist and add MPEG-TS segments via SegmentItem. You can also specify options for this type of playlist, however these options are ignored if playlist becomes a master playlist (anything but segments added):
+
+Add Content Steering for dynamic CDN pathway selection:
+
+```ruby
+item = M3u8::ContentSteeringItem.new(
+  server_uri: 'https://example.com/steering',
+  pathway_id: 'CDN-A'
+)
+playlist.items << item
+```
+
+Add variable definitions:
+
+```ruby
+item = M3u8::DefineItem.new(name: 'base', value: 'https://example.com')
+playlist.items << item
+```
+
+Create a standard playlist and add MPEG-TS segments via SegmentItem:
 
 ```ruby
 options = { version: 1, cache: false, target: 12, sequence: 1 }
@@ -63,7 +84,42 @@ playlist = M3u8::Playlist.new(options)
 item = M3u8::SegmentItem.new(duration: 11, segment: 'test.ts')
 playlist.items << item
 ```
-    
+
+### Low-Latency HLS
+
+Create an LL-HLS playlist with server control, partial segments, and preload hints:
+
+```ruby
+server_control = M3u8::ServerControlItem.new(
+  can_skip_until: 24.0, part_hold_back: 1.0,
+  can_block_reload: true
+)
+part_inf = M3u8::PartInfItem.new(part_target: 0.5)
+playlist = M3u8::Playlist.new(
+  version: 9, target: 4, sequence: 100,
+  server_control: server_control, part_inf: part_inf,
+  live: true
+)
+
+item = M3u8::SegmentItem.new(duration: 4.0, segment: 'seg100.mp4')
+playlist.items << item
+
+part = M3u8::PartItem.new(
+  duration: 0.5, uri: 'seg101.0.mp4', independent: true
+)
+playlist.items << part
+
+hint = M3u8::PreloadHintItem.new(type: 'PART', uri: 'seg101.1.mp4')
+playlist.items << hint
+
+report = M3u8::RenditionReportItem.new(
+  uri: '../alt/index.m3u8', last_msn: 101, last_part: 0
+)
+playlist.items << report
+```
+
+### Writing playlists
+
 You can pass an IO object to the write method:
 
 ```ruby
@@ -76,7 +132,7 @@ You can also access the playlist as a string:
 
 ```ruby
 playlist.to_s
-``` 
+```
 
 M3u8::Writer is the class that handles generating the playlist output.
 
@@ -87,7 +143,6 @@ options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
             bandwidth: 540, uri: 'test.url' }
 item = M3u8::PlaylistItem.new(options)
 ```
-
 
 ## Usage (parsing playlists)
 
@@ -102,42 +157,93 @@ Access items in playlist:
 
 ```ruby
 playlist.items.first
-#  => #<M3u8::PlaylistItem:0x007fa569bc7698 @program_id="1", @resolution="1920x1080", 
-#  @codecs="avc1.640028,mp4a.40.2", @bandwidth="5042000", 
-#  @playlist="hls/1080-7mbps/1080-7mbps.m3u8">
+#  => #<M3u8::PlaylistItem ...>
 ```
 
-Create a new playlist item with options:
+Parse an LL-HLS playlist:
 
 ```ruby
-options = { width: 1920, height: 1080, profile: 'high', level: 4.1,
-            audio_codec: 'aac-lc', bandwidth: 540, uri: 'test.url' }
-item = M3u8::PlaylistItem.new(options)
-#add it to the top of the playlist
-playlist.items.unshift(item)
+file = File.open 'spec/fixtures/ll_hls_playlist.m3u8'
+playlist = M3u8::Playlist.read(file)
+playlist.server_control.can_block_reload
+# => true
+playlist.part_inf.part_target
+# => 0.5
 ```
 
-M3u8::Reader is the class handles parsing if you want more control over the process.
+M3u8::Reader is the class that handles parsing if you want more control over the process.
 
-## Usage (misc)
-Generate the codec string based on audio and video codec options without dealing a playlist instance:
+## Codec string generation
+
+Generate the codec string based on audio and video codec options without dealing with a playlist instance:
 
 ```ruby
 options = { profile: 'baseline', level: 3.0, audio_codec: 'aac-lc' }
 codecs = M3u8::Playlist.codecs(options)
 # => "avc1.66.30,mp4a.40.2"
-```  
-      
-* Values for audio_codec (codec name): aac-lc, he-aac, mp3   
-* Values for profile (H.264 Profile): baseline, main, high.
-* Values for level (H.264 Level): 3.0, 3.1, 4.0, 4.1. 
+```
 
-Not all Levels and Profiles can be combined and validation is not currently implemented, consult H.264 documentation for further details.
+### Video codecs
 
+| Profile | Description |
+|---------|-------------|
+| `baseline`, `main`, `high` | H.264/AVC |
+| `hevc-main`, `hevc-main-10` | HEVC/H.265 |
+| `av1-main`, `av1-high` | AV1 |
 
-## Roadmap 
-* Implement validation of all tags, attributes, and values per HLS I-D.
-* Perhaps support for different versions of HLS I-D, defaulting to latest.
+### Audio codecs
+
+| Value | Codec |
+|-------|-------|
+| `aac-lc` | AAC-LC |
+| `he-aac` | HE-AAC |
+| `mp3` | MP3 |
+| `ac-3` | AC-3 (Dolby Digital) |
+| `ec-3`, `e-ac-3` | E-AC-3 (Dolby Digital Plus) |
+| `flac` | FLAC |
+| `opus` | Opus |
+
+## Supported tags
+
+### Master playlist tags
+* `EXT-X-STREAM-INF` / `EXT-X-I-FRAME-STREAM-INF` — including `STABLE-VARIANT-ID`, `VIDEO-RANGE`, `ALLOWED-CPC`, `PATHWAY-ID`, `REQ-VIDEO-LAYOUT`, `SUPPLEMENTAL-CODECS`, `SCORE`
+* `EXT-X-MEDIA` — including `STABLE-RENDITION-ID`, `BIT-DEPTH`, `SAMPLE-RATE`
+* `EXT-X-SESSION-DATA`
+* `EXT-X-SESSION-KEY`
+* `EXT-X-CONTENT-STEERING`
+
+### Media playlist tags
+* `EXT-X-TARGETDURATION`
+* `EXT-X-MEDIA-SEQUENCE`
+* `EXT-X-DISCONTINUITY-SEQUENCE`
+* `EXT-X-PLAYLIST-TYPE`
+* `EXT-X-I-FRAMES-ONLY`
+* `EXT-X-ALLOW-CACHE`
+
+### Media segment tags
+* `EXTINF`
+* `EXT-X-BYTERANGE`
+* `EXT-X-DISCONTINUITY`
+* `EXT-X-KEY`
+* `EXT-X-MAP`
+* `EXT-X-PROGRAM-DATE-TIME`
+* `EXT-X-DATERANGE`
+* `EXT-X-GAP`
+* `EXT-X-BITRATE`
+
+### Universal tags
+* `EXT-X-INDEPENDENT-SEGMENTS`
+* `EXT-X-START`
+* `EXT-X-DEFINE`
+* `EXT-X-VERSION`
+
+### Low-Latency HLS tags
+* `EXT-X-SERVER-CONTROL`
+* `EXT-X-PART-INF`
+* `EXT-X-PART`
+* `EXT-X-SKIP`
+* `EXT-X-PRELOAD-HINT`
+* `EXT-X-RENDITION-REPORT`
 
 ## Contributing
 
@@ -147,7 +253,6 @@ Not all Levels and Profiles can be combined and validation is not currently impl
 4. Commit your changes (`git commit -am 'Add some feature'`)
 5. Push to the branch (`git push origin my-new-feature`)
 6. Create a new Pull Request
-
 
 ## License
 MIT License - See [LICENSE.txt](https://github.com/sethdeckard/m3u8/blob/master/LICENSE.txt) for details.
