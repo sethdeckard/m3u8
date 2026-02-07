@@ -2,8 +2,9 @@
 
 ## Development Workflow
 
-- Small commits that can each be deployed independently
-- Each commit must not break production (CI/CD safe)
+- Git workflow: GitHub flow
+- Small (but logical) commits that can each be deployed independently
+- Each commit must not break CI
 - Prefer incremental changes over large feature branches
 
 ### Commit Messages
@@ -12,13 +13,15 @@
 
 **Body:** Wrap at 72 chars, explain what/why not how, blank line after subject
 
-**Leading verbs:** Add, Remove, Fix, Upgrade, Refactor, Reformat, Start, Stop, Document, Reword
+**Leading verbs:** Add, Remove, Fix, Upgrade, Refactor, Reformat, Document, Reword
 
 ## Development Standards
 
+- README updated with API changes
 - **Tests must cover all behavior** - check with `coverage/index.html` after running specs
 - RuboCop enforces 80-char line limit and other style
 
 ## Deployment
 
-Never deploy anything.
+- Kicking off PR: `ghprcw`
+- Never deploy anything
