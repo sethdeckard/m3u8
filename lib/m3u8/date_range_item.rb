@@ -75,7 +75,7 @@ module M3u8
     end
 
     def client_attributes_format
-      return if client_attributes.nil?
+      return if client_attributes.nil? || client_attributes.empty?
 
       client_attributes.map do |attribute|
         value = attribute.last
@@ -85,10 +85,11 @@ module M3u8
     end
 
     def decimal?(value)
-      return true if value =~ /\A\d+\Z/
+      val = value.to_s
+      return true if val =~ /\A\d+\Z/
 
       begin
-        true if Float(value)
+        true if Float(val)
       rescue StandardError
         false
       end

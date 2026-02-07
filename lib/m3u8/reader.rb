@@ -8,6 +8,7 @@ module M3u8
     attr_accessor :playlist, :item, :open, :master, :tags
 
     def initialize(*)
+      @has_endlist = false
       @tags = [basic_tags,
                media_segment_tags,
                media_playlist_tags,
@@ -17,10 +18,12 @@ module M3u8
 
     def read(input)
       @playlist = Playlist.new
+      @has_endlist = false
       input.each_line.with_index do |line, index|
         validate_file_format(line) if index.zero?
         parse_line(line)
       end
+      playlist.live = !@has_endlist unless master
       playlist
     end
 
@@ -59,7 +62,8 @@ module M3u8
         '#EXT-X-SERVER-CONTROL' => ->(line) { parse_server_control(line) },
         '#EXT-X-SKIP' => ->(line) { parse_skip(line) },
         '#EXT-X-PRELOAD-HINT' => ->(line) { parse_preload_hint(line) },
-        '#EXT-X-RENDITION-REPORT' => ->(line) { parse_rendition_report(line) }
+        '#EXT-X-RENDITION-REPORT' => ->(line) { parse_rendition_report(line) },
+        '#EXT-X-ENDLIST' => proc { @has_endlist = true }
       }
     end
 
