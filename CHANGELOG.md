@@ -1,3 +1,19 @@
+**1.0.0**
+
+* Full HLS spec compliance with draft-pantos-hls-rfc8216bis-19 (Protocol Version 13).
+* Added Low-Latency HLS support: `EXT-X-PART`, `EXT-X-PART-INF`, `EXT-X-SERVER-CONTROL`, `EXT-X-SKIP`, `EXT-X-PRELOAD-HINT`, `EXT-X-RENDITION-REPORT`.
+* Added HEVC/H.265 and AV1 video codec string generation.
+* Added AC-3, E-AC-3, FLAC, and Opus audio codec string generation.
+* Added new attributes to `PlaylistItem`: `STABLE-VARIANT-ID`, `VIDEO-RANGE`, `ALLOWED-CPC`, `PATHWAY-ID`, `REQ-VIDEO-LAYOUT`, `SUPPLEMENTAL-CODECS`, `SCORE`.
+* Added new attributes to `MediaItem`: `STABLE-RENDITION-ID`, `BIT-DEPTH`, `SAMPLE-RATE`.
+* Added `EXT-X-CONTENT-STEERING` tag support.
+* Added `EXT-X-DEFINE` tag support.
+* Added `EXT-X-GAP` and `EXT-X-BITRATE` tag support.
+* Upgraded CI from Travis CI to GitHub Actions.
+* Requires Ruby 3.0+.
+
+***
+
 **0.8.1**
 Merged pull request #23 from [ryanische](https:/github.com/ryanische) which fixes issue of CODEC attribute validation not matching the HLS I-D.
 
