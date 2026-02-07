@@ -9,7 +9,9 @@ module M3u8
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
-                  :frame_rate, :name, :hdcp_level
+                  :frame_rate, :name, :hdcp_level, :stable_variant_id,
+                  :video_range, :allowed_cpc, :pathway_id,
+                  :req_video_layout, :supplemental_codecs, :score
 
     def initialize(params = {})
       self.iframe = false
@@ -74,7 +76,14 @@ module M3u8
         video: attributes['VIDEO'], audio: attributes['AUDIO'],
         uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
         closed_captions: attributes['CLOSED-CAPTIONS'],
-        name: attributes['NAME'], hdcp_level: attributes['HDCP-LEVEL'] }
+        name: attributes['NAME'], hdcp_level: attributes['HDCP-LEVEL'],
+        stable_variant_id: attributes['STABLE-VARIANT-ID'],
+        video_range: attributes['VIDEO-RANGE'],
+        allowed_cpc: attributes['ALLOWED-CPC'],
+        pathway_id: attributes['PATHWAY-ID'],
+        req_video_layout: attributes['REQ-VIDEO-LAYOUT'],
+        supplemental_codecs: attributes['SUPPLEMENTAL-CODECS'],
+        score: parse_float(attributes['SCORE']) }
     end
 
     def parse_average_bandwidth(value)
@@ -107,15 +116,22 @@ module M3u8
       [program_id_format,
        resolution_format,
        codecs_format,
+       supplemental_codecs_format,
        bandwidth_format,
        average_bandwidth_format,
+       score_format,
        frame_rate_format,
        hdcp_level_format,
+       video_range_format,
+       allowed_cpc_format,
        audio_format,
        video_format,
        subtitles_format,
        closed_captions_format,
-       name_format].compact.join(',')
+       name_format,
+       stable_variant_id_format,
+       pathway_id_format,
+       req_video_layout_format].compact.join(',')
     end
 
     def program_id_format
@@ -190,6 +206,48 @@ module M3u8
       return if name.nil?
 
       %(NAME="#{name}")
+    end
+
+    def stable_variant_id_format
+      return if stable_variant_id.nil?
+
+      %(STABLE-VARIANT-ID="#{stable_variant_id}")
+    end
+
+    def video_range_format
+      return if video_range.nil?
+
+      "VIDEO-RANGE=#{video_range}"
+    end
+
+    def allowed_cpc_format
+      return if allowed_cpc.nil?
+
+      %(ALLOWED-CPC="#{allowed_cpc}")
+    end
+
+    def pathway_id_format
+      return if pathway_id.nil?
+
+      %(PATHWAY-ID="#{pathway_id}")
+    end
+
+    def req_video_layout_format
+      return if req_video_layout.nil?
+
+      %(REQ-VIDEO-LAYOUT="#{req_video_layout}")
+    end
+
+    def supplemental_codecs_format
+      return if supplemental_codecs.nil?
+
+      %(SUPPLEMENTAL-CODECS="#{supplemental_codecs}")
+    end
+
+    def score_format
+      return if score.nil?
+
+      "SCORE=#{score}"
     end
 
     def audio_codec_code
