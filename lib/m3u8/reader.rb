@@ -19,7 +19,8 @@ module M3u8
     def read(input)
       @playlist = Playlist.new
       @has_endlist = false
-      input.each_line.with_index do |line, index|
+      lines = input.is_a?(String) ? input : input.read
+      lines.split(/\r\n|\r|\n/).each_with_index do |line, index|
         validate_file_format(line) if index.zero?
         parse_line(line)
       end
@@ -106,7 +107,7 @@ module M3u8
     end
 
     def parse_playlist_type(line)
-      playlist.type = line.gsub('#EXT-X-PLAYLIST-TYPE:', '').delete!("\n")
+      playlist.type = line.gsub('#EXT-X-PLAYLIST-TYPE:', '').strip
     end
 
     def parse_version(line)
