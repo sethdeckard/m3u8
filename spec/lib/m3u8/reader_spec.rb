@@ -258,6 +258,34 @@ describe M3u8::Reader do
       expect(item).to be_a(M3u8::DateRangeItem)
     end
 
+    it 'parses master playlist with v13 attributes' do
+      file = File.open('spec/fixtures/master_v13.m3u8')
+      reader = M3u8::Reader.new
+      playlist = reader.read(file)
+      expect(playlist.master?).to be true
+      expect(playlist.version).to eq(13)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::MediaItem)
+      expect(item.stable_rendition_id).to eq('audio-en')
+      expect(item.bit_depth).to eq(16)
+      expect(item.sample_rate).to eq(44_100)
+
+      item = playlist.items[1]
+      expect(item).to be_a(M3u8::PlaylistItem)
+      expect(item.stable_variant_id).to eq('hd-1080')
+      expect(item.video_range).to eq('SDR')
+      expect(item.pathway_id).to eq('CDN-A')
+      expect(item.score).to eq(12.5)
+      expect(item.supplemental_codecs).to eq('dvh1.05.06/db4g')
+      expect(item.allowed_cpc).to eq('com.example.drm:SMART-TV/PC')
+      expect(item.req_video_layout).to eq('CH-MONO')
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::PlaylistItem)
+      expect(item.stable_variant_id).to eq('hd-720')
+    end
+
     it 'parses playlist with content steering and defines' do
       file = File.open('spec/fixtures/content_steering.m3u8')
       reader = M3u8::Reader.new

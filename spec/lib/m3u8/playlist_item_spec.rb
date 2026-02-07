@@ -33,6 +33,24 @@ describe M3u8::PlaylistItem do
       expect(item.name).to eq('test_name')
       expect(item.hdcp_level).to eq('TYPE-0')
     end
+
+    it 'assigns new v13 attributes from options' do
+      options = { bandwidth: 540, uri: 'test.url',
+                  stable_variant_id: 'hd-1080', video_range: 'SDR',
+                  allowed_cpc: 'com.example.drm:SMART-TV/PC',
+                  pathway_id: 'CDN-A',
+                  req_video_layout: 'CH-MONO',
+                  supplemental_codecs: 'dvh1.05.06/db4g',
+                  score: 12.5 }
+      item = described_class.new(options)
+      expect(item.stable_variant_id).to eq('hd-1080')
+      expect(item.video_range).to eq('SDR')
+      expect(item.allowed_cpc).to eq('com.example.drm:SMART-TV/PC')
+      expect(item.pathway_id).to eq('CDN-A')
+      expect(item.req_video_layout).to eq('CH-MONO')
+      expect(item.supplemental_codecs).to eq('dvh1.05.06/db4g')
+      expect(item.score).to eq(12.5)
+    end
   end
 
   describe '.parse' do
@@ -63,6 +81,18 @@ describe M3u8::PlaylistItem do
       expect(item.name).to eq '1080p'
       expect(item.iframe).to be false
       expect(item.hdcp_level).to eq('TYPE-0')
+    end
+
+    it 'parses v13 attributes' do
+      input = '#EXT-X-STREAM-INF:BANDWIDTH=5000000,CODECS="avc1.640028,mp4a.40.2",RESOLUTION=1920x1080,STABLE-VARIANT-ID="hd-1080",VIDEO-RANGE=SDR,ALLOWED-CPC="com.example.drm:SMART-TV/PC",PATHWAY-ID="CDN-A",SCORE=12.5,SUPPLEMENTAL-CODECS="dvh1.05.06/db4g",REQ-VIDEO-LAYOUT="CH-MONO"'
+      item = M3u8::PlaylistItem.parse(input)
+      expect(item.stable_variant_id).to eq('hd-1080')
+      expect(item.video_range).to eq('SDR')
+      expect(item.allowed_cpc).to eq('com.example.drm:SMART-TV/PC')
+      expect(item.pathway_id).to eq('CDN-A')
+      expect(item.score).to eq(12.5)
+      expect(item.supplemental_codecs).to eq('dvh1.05.06/db4g')
+      expect(item.req_video_layout).to eq('CH-MONO')
     end
   end
 
@@ -183,6 +213,27 @@ describe M3u8::PlaylistItem do
         expected = '#EXT-X-STREAM-INF:PROGRAM-ID=1,RESOLUTION=1920x1080,' +
                    %(CODECS="avc",BANDWIDTH=540,CLOSED-CAPTIONS=NONE\ntest.url)
         expect(item.to_s).to eq(expected)
+      end
+    end
+
+    context 'when v13 attributes are present' do
+      it 'returns tag with new attributes' do
+        options = { codecs: 'avc1.640028', bandwidth: 5_000_000,
+                    uri: '1080p.m3u8', stable_variant_id: 'hd-1080',
+                    video_range: 'SDR', pathway_id: 'CDN-A',
+                    score: 12.5,
+                    supplemental_codecs: 'dvh1.05.06/db4g',
+                    allowed_cpc: 'com.example.drm:SMART-TV/PC',
+                    req_video_layout: 'CH-MONO' }
+        item = described_class.new(options)
+        output = item.to_s
+        expect(output).to include('STABLE-VARIANT-ID="hd-1080"')
+        expect(output).to include('VIDEO-RANGE=SDR')
+        expect(output).to include('PATHWAY-ID="CDN-A"')
+        expect(output).to include('SCORE=12.5')
+        expect(output).to include('SUPPLEMENTAL-CODECS="dvh1.05.06/db4g"')
+        expect(output).to include('ALLOWED-CPC="com.example.drm:SMART-TV/PC"')
+        expect(output).to include('REQ-VIDEO-LAYOUT="CH-MONO"')
       end
     end
 

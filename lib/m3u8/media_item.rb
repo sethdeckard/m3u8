@@ -7,7 +7,8 @@ module M3u8
 
     attr_accessor :type, :group_id, :language, :assoc_language, :name,
                   :autoselect, :default, :uri, :forced, :instream_id,
-                  :characteristics, :channels
+                  :characteristics, :channels, :stable_rendition_id,
+                  :bit_depth, :sample_rate
 
     def initialize(params = {})
       params.each do |key, value|
@@ -27,8 +28,15 @@ module M3u8
                   uri: attributes['URI'],
                   instream_id: attributes['INSTREAM-ID'],
                   characteristics: attributes['CHARACTERISTICS'],
-                  channels: attributes['CHANNELS'] }
+                  channels: attributes['CHANNELS'],
+                  stable_rendition_id: attributes['STABLE-RENDITION-ID'],
+                  bit_depth: parse_int(attributes['BIT-DEPTH']),
+                  sample_rate: parse_int(attributes['SAMPLE-RATE']) }
       MediaItem.new(options)
+    end
+
+    def self.parse_int(value)
+      value&.to_i
     end
 
     def to_s
@@ -49,7 +57,10 @@ module M3u8
        forced_format,
        instream_id_format,
        characteristics_format,
-       channels_format].compact
+       channels_format,
+       stable_rendition_id_format,
+       bit_depth_format,
+       sample_rate_format].compact
     end
 
     def type_format
@@ -116,6 +127,24 @@ module M3u8
       return if channels.nil?
 
       %(CHANNELS="#{channels}")
+    end
+
+    def stable_rendition_id_format
+      return if stable_rendition_id.nil?
+
+      %(STABLE-RENDITION-ID="#{stable_rendition_id}")
+    end
+
+    def bit_depth_format
+      return if bit_depth.nil?
+
+      "BIT-DEPTH=#{bit_depth}"
+    end
+
+    def sample_rate_format
+      return if sample_rate.nil?
+
+      "SAMPLE-RATE=#{sample_rate}"
     end
 
     def to_yes_no(boolean)

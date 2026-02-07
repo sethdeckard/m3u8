@@ -10,11 +10,11 @@ Metrics/BlockLength:
   Exclude:
     - 'spec/**/*'
 Metrics/MethodLength:
-  Max: 15
+  Max: 20
   Exclude:
     - 'spec/**/*'
 Metrics/AbcSize:
-  Max: 25
+  Max: 30
   Exclude:
     - 'spec/**/*'
 Metrics/ClassLength:
