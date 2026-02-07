@@ -258,6 +258,28 @@ describe M3u8::Reader do
       expect(item).to be_a(M3u8::DateRangeItem)
     end
 
+    it 'parses playlist with gap and bitrate tags' do
+      file = File.open('spec/fixtures/gap_playlist.m3u8')
+      reader = M3u8::Reader.new
+      playlist = reader.read(file)
+      expect(playlist.master?).to be false
+      expect(playlist.items.size).to eq(6)
+
+      item = playlist.items[0]
+      expect(item).to be_a(M3u8::BitrateItem)
+      expect(item.bitrate).to eq(128)
+
+      item = playlist.items[2]
+      expect(item).to be_a(M3u8::GapItem)
+
+      item = playlist.items[3]
+      expect(item).to be_a(M3u8::SegmentItem)
+
+      item = playlist.items[4]
+      expect(item).to be_a(M3u8::BitrateItem)
+      expect(item.bitrate).to eq(256)
+    end
+
     context 'when playlist source is invalid' do
       it 'raises error with message' do
         message = 'Playlist must start with a #EXTM3U tag, line read ' \
