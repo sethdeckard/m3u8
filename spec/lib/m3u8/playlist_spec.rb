@@ -236,6 +236,80 @@ describe M3u8::Playlist do
     end
   end
 
+  describe '#segments' do
+    it 'returns only segment items' do
+      file = File.open('spec/fixtures/playlist.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.segments).to all be_a(M3u8::SegmentItem)
+      expect(playlist.segments.size).to eq(138)
+    end
+  end
+
+  describe '#playlists' do
+    it 'returns only playlist items' do
+      file = File.open('spec/fixtures/master.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.playlists).to all be_a(M3u8::PlaylistItem)
+      expect(playlist.playlists.size).to eq(6)
+    end
+  end
+
+  describe '#media_items' do
+    it 'returns only media items' do
+      file = File.open('spec/fixtures/variant_audio.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.media_items).to all be_a(M3u8::MediaItem)
+      expect(playlist.media_items.size).to eq(6)
+    end
+  end
+
+  describe '#keys' do
+    it 'returns only key items' do
+      file = File.open('spec/fixtures/encrypted.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.keys).to all be_a(M3u8::KeyItem)
+      expect(playlist.keys.size).to eq(2)
+    end
+  end
+
+  describe '#maps' do
+    it 'returns only map items' do
+      file = File.open('spec/fixtures/map_playlist.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.maps).to all be_a(M3u8::MapItem)
+      expect(playlist.maps.size).to eq(1)
+    end
+  end
+
+  describe '#date_ranges' do
+    it 'returns only date range items' do
+      file = File.open('spec/fixtures/daterange_playlist.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.date_ranges)
+        .to all be_a(M3u8::DateRangeItem)
+      expect(playlist.date_ranges.size).to eq(3)
+    end
+  end
+
+  describe '#parts' do
+    it 'returns only part items' do
+      file = File.open('spec/fixtures/ll_hls_playlist.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.parts).to all be_a(M3u8::PartItem)
+      expect(playlist.parts.size).to eq(5)
+    end
+  end
+
+  describe '#session_data' do
+    it 'returns only session data items' do
+      file = File.open('spec/fixtures/session_data.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.session_data)
+        .to all be_a(M3u8::SessionDataItem)
+      expect(playlist.session_data.size).to eq(3)
+    end
+  end
+
   describe '#write' do
     context 'when playlist is valid' do
       it 'returns playlist text' do

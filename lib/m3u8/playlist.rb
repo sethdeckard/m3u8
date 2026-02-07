@@ -54,12 +54,40 @@ module M3u8
       true
     end
 
+    def segments
+      items.select { |item| item.is_a?(SegmentItem) }
+    end
+
+    def playlists
+      items.select { |item| item.is_a?(PlaylistItem) }
+    end
+
+    def media_items
+      items.select { |item| item.is_a?(MediaItem) }
+    end
+
+    def keys
+      items.select { |item| item.is_a?(KeyItem) }
+    end
+
+    def maps
+      items.select { |item| item.is_a?(MapItem) }
+    end
+
+    def date_ranges
+      items.select { |item| item.is_a?(DateRangeItem) }
+    end
+
+    def parts
+      items.select { |item| item.is_a?(PartItem) }
+    end
+
+    def session_data
+      items.select { |item| item.is_a?(SessionDataItem) }
+    end
+
     def duration
-      duration = 0.0
-      items.each do |item|
-        duration += item.duration if item.is_a?(M3u8::SegmentItem)
-      end
-      duration
+      segments.sum(&:duration)
     end
 
     private
@@ -92,11 +120,11 @@ module M3u8
     end
 
     def playlist_size
-      items.count { |item| item.is_a?(PlaylistItem) }
+      playlists.size
     end
 
     def segment_size
-      items.count { |item| item.is_a?(SegmentItem) }
+      segments.size
     end
   end
 end

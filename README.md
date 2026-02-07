@@ -160,6 +160,19 @@ playlist.items.first
 #  => #<M3u8::PlaylistItem ...>
 ```
 
+Convenience methods filter items by type:
+
+```ruby
+playlist.playlists    # => [PlaylistItem, ...]
+playlist.segments     # => [SegmentItem, ...]
+playlist.media_items  # => [MediaItem, ...]
+playlist.keys         # => [KeyItem, ...]
+playlist.maps         # => [MapItem, ...]
+playlist.date_ranges  # => [DateRangeItem, ...]
+playlist.parts        # => [PartItem, ...]
+playlist.session_data # => [SessionDataItem, ...]
+```
+
 Parse an LL-HLS playlist:
 
 ```ruby

@@ -1,3 +1,9 @@
+**1.1.0**
+
+* Added convenience accessor methods to `Playlist` for filtering items by type: `segments`, `playlists`, `media_items`, `keys`, `maps`, `date_ranges`, `parts`, `session_data`.
+
+***
+
 **1.0.0**
 
 * Full HLS spec compliance with draft-pantos-hls-rfc8216bis-19 (Protocol Version 13).
