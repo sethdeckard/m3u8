@@ -1,3 +1,10 @@
+**1.3.0**
+
+* Added CLI tool (`bin/m3u8`) with `inspect` and `validate` subcommands for inspecting playlist metadata and checking validity from the command line. Supports file arguments and stdin piping.
+* Added `session_keys` convenience accessor to `Playlist`.
+
+***
+
 **1.2.0**
 
 * Added `Playlist.build` with block-based Builder DSL for concise playlist construction. Supports both `instance_eval` (clean DSL) and yielded builder (outer scope access) forms. All 19 item types have corresponding DSL methods.
