@@ -56,9 +56,26 @@ describe M3u8::CLI do
   end
 
   describe 'file input' do
-    it 'reads a playlist from a file' do
+    it 'reads a playlist from a file for inspect' do
       code = run(['inspect', 'spec/fixtures/master.m3u8'])
       expect(code).to eq(0)
+    end
+
+    it 'reads a playlist from a file for validate' do
+      code = run(['validate', 'spec/fixtures/master.m3u8'])
+      expect(code).to eq(0)
+      expect(stdout.string.strip).to eq('Valid')
+    end
+  end
+
+  describe 'parse error' do
+    it 'prints error to stderr and exits 2' do
+      stdin = StringIO.new('not a playlist')
+      code = described_class.run(
+        ['inspect'], stdin, stdout, stderr
+      )
+      expect(code).to eq(2)
+      expect(stderr.string).to include('parse error')
     end
   end
 

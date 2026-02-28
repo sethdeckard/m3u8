@@ -30,6 +30,58 @@ Or install it yourself as:
 
     $ gem install m3u8
 
+## CLI
+
+The gem includes a command-line tool for inspecting and validating playlists.
+
+### Inspect
+
+Display playlist metadata and item summary:
+
+```
+$ m3u8 inspect master.m3u8
+Type:                  Master
+Independent Segments:  Yes
+
+Variants:              6
+  1920x1080  5042000 bps  hls/1080/1080.m3u8
+  640x360    861000 bps   hls/360/360.m3u8
+Media:                 2
+Session Keys:          1
+Session Data:          0
+
+$ m3u8 inspect media.m3u8
+Type:       Media
+Version:    4
+Sequence:   1
+Target:     12
+Duration:   1371.99s
+Playlist:   VOD
+Cache:      No
+
+Segments:   138
+Keys:       0
+Maps:       0
+```
+
+Reads from stdin when no file is given:
+
+```
+$ cat playlist.m3u8 | m3u8 inspect
+```
+
+### Validate
+
+Check playlist validity (exit 0 for valid, 1 for invalid):
+
+```
+$ m3u8 validate playlist.m3u8
+Valid
+
+$ m3u8 validate bad.m3u8
+Invalid: mixed playlist and segment items
+```
+
 ## Usage (Builder DSL)
 
 `Playlist.build` provides a block-based DSL for concise playlist construction. It supports two forms:
