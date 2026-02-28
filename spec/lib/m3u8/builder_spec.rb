@@ -39,4 +39,79 @@ describe M3u8::Builder do
       expect(playlist.items[1].segment).to eq('seg2.ts')
     end
   end
+
+  describe '#playlist' do
+    it 'adds a PlaylistItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        playlist bandwidth: 540, uri: 'test.url'
+      end
+
+      expect(pl.items.size).to eq(1)
+      item = pl.items.first
+      expect(item).to be_a(M3u8::PlaylistItem)
+      expect(item.bandwidth).to eq(540)
+      expect(item.uri).to eq('test.url')
+    end
+  end
+
+  describe '#media' do
+    it 'adds a MediaItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        media type: 'AUDIO', group_id: 'audio-lo',
+              name: 'English', default: true,
+              uri: 'eng/prog_index.m3u8'
+      end
+
+      expect(pl.items.size).to eq(1)
+      item = pl.items.first
+      expect(item).to be_a(M3u8::MediaItem)
+      expect(item.type).to eq('AUDIO')
+      expect(item.group_id).to eq('audio-lo')
+      expect(item.name).to eq('English')
+    end
+  end
+
+  describe '#session_data' do
+    it 'adds a SessionDataItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        session_data data_id: 'com.example.title',
+                     value: 'My Video', language: 'en'
+      end
+
+      expect(pl.items.size).to eq(1)
+      item = pl.items.first
+      expect(item).to be_a(M3u8::SessionDataItem)
+      expect(item.data_id).to eq('com.example.title')
+      expect(item.value).to eq('My Video')
+    end
+  end
+
+  describe '#session_key' do
+    it 'adds a SessionKeyItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        session_key method: 'AES-128',
+                    uri: 'https://example.com/key.bin'
+      end
+
+      expect(pl.items.size).to eq(1)
+      item = pl.items.first
+      expect(item).to be_a(M3u8::SessionKeyItem)
+      expect(item.method).to eq('AES-128')
+    end
+  end
+
+  describe '#content_steering' do
+    it 'adds a ContentSteeringItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        content_steering server_uri: 'https://example.com/s',
+                         pathway_id: 'CDN-A'
+      end
+
+      expect(pl.items.size).to eq(1)
+      item = pl.items.first
+      expect(item).to be_a(M3u8::ContentSteeringItem)
+      expect(item.server_uri).to eq('https://example.com/s')
+      expect(item.pathway_id).to eq('CDN-A')
+    end
+  end
 end
