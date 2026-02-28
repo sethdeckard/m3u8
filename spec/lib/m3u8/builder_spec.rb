@@ -206,70 +206,123 @@ describe M3u8::Builder do
   end
 
   describe 'integration' do
-    it 'builds a complete master playlist' do
-      pl = M3u8::Playlist.build(
+    it 'produces identical output to imperative API ' \
+       'for a master playlist' do
+      imperative = M3u8::Playlist.new(
+        independent_segments: true
+      )
+      imperative.items << M3u8::PlaylistItem.new(
+        program_id: '1', bandwidth: 6400,
+        audio_codec: 'mp3', uri: 'lo/index.m3u8'
+      )
+      imperative.items << M3u8::PlaylistItem.new(
+        program_id: '2', bandwidth: 50_000,
+        width: 1920, height: 1080,
+        profile: 'high', level: 4.1,
+        audio_codec: 'aac-lc', uri: 'hi/index.m3u8'
+      )
+      imperative.items << M3u8::SessionDataItem.new(
+        data_id: 'com.test.title', value: 'Test',
+        language: 'en'
+      )
+
+      built = M3u8::Playlist.build(
         independent_segments: true
       ) do
-        playlist bandwidth: 5_042_000,
-                 codecs: 'avc1.640028,mp4a.40.2',
-                 uri: 'hls/1080/1080.m3u8',
-                 width: 1920, height: 1080
-        playlist bandwidth: 2_387_000,
-                 codecs: 'avc1.4d001f,mp4a.40.2',
-                 uri: 'hls/720/720.m3u8',
-                 width: 1280, height: 720
+        playlist program_id: '1', bandwidth: 6400,
+                 audio_codec: 'mp3', uri: 'lo/index.m3u8'
+        playlist program_id: '2', bandwidth: 50_000,
+                 width: 1920, height: 1080,
+                 profile: 'high', level: 4.1,
+                 audio_codec: 'aac-lc',
+                 uri: 'hi/index.m3u8'
+        session_data data_id: 'com.test.title',
+                     value: 'Test', language: 'en'
       end
 
-      output = pl.to_s
-      expect(output).to include(
-        '#EXT-X-INDEPENDENT-SEGMENTS'
-      )
-      expect(output).to include('RESOLUTION=1920x1080')
-      expect(output).to include('BANDWIDTH=5042000')
-      expect(output).to include(
-        'CODECS="avc1.640028,mp4a.40.2"'
-      )
-      expect(output).to include('hls/1080/1080.m3u8')
-      expect(output).to include('RESOLUTION=1280x720')
-      expect(output).to include('BANDWIDTH=2387000')
-      expect(output).to include('hls/720/720.m3u8')
+      expect(built.to_s).to eq(imperative.to_s)
     end
 
-    it 'builds a complete media playlist' do
-      pl = M3u8::Playlist.build(version: 4, target: 12,
-                                sequence: 1, cache: false,
-                                type: 'VOD') do
-        segment duration: 11.34, segment: '00000.ts'
+    it 'produces identical output to imperative API ' \
+       'for a media playlist' do
+      imperative = M3u8::Playlist.new(
+        version: 7, cache: false, target: 12,
+        sequence: 1, type: 'VOD'
+      )
+      imperative.items << M3u8::KeyItem.new(
+        method: 'AES-128', uri: 'http://test.key',
+        iv: 'D512BBF', key_format: 'identity',
+        key_format_versions: '1/3'
+      )
+      imperative.items << M3u8::SegmentItem.new(
+        duration: 11.344644, segment: '00000.ts'
+      )
+      imperative.items << M3u8::DiscontinuityItem.new
+      imperative.items << M3u8::TimeItem.new(
+        time: '2024-06-01T12:00:00Z'
+      )
+      imperative.items << M3u8::SegmentItem.new(
+        duration: 11.261233, segment: '00001.ts'
+      )
+      imperative.items << M3u8::MapItem.new(
+        uri: 'init.mp4',
+        byterange: { length: 812, start: 0 }
+      )
+      imperative.items << M3u8::SegmentItem.new(
+        duration: 7.5, segment: '00002.ts'
+      )
+
+      built = M3u8::Playlist.build(
+        version: 7, cache: false, target: 12,
+        sequence: 1, type: 'VOD'
+      ) do
+        key method: 'AES-128', uri: 'http://test.key',
+            iv: 'D512BBF', key_format: 'identity',
+            key_format_versions: '1/3'
+        segment duration: 11.344644, segment: '00000.ts'
         discontinuity
-        segment duration: 11.26, segment: '00001.ts'
+        time time: '2024-06-01T12:00:00Z'
+        segment duration: 11.261233, segment: '00001.ts'
+        map uri: 'init.mp4',
+            byterange: { length: 812, start: 0 }
+        segment duration: 7.5, segment: '00002.ts'
       end
 
-      expected = "#EXTM3U\n" \
-                 "#EXT-X-PLAYLIST-TYPE:VOD\n" \
-                 "#EXT-X-VERSION:4\n" \
-                 "#EXT-X-MEDIA-SEQUENCE:1\n" \
-                 "#EXT-X-ALLOW-CACHE:NO\n" \
-                 "#EXT-X-TARGETDURATION:12\n" \
-                 "#EXTINF:11.34,\n" \
-                 "00000.ts\n" \
-                 "#EXT-X-DISCONTINUITY\n" \
-                 "#EXTINF:11.26,\n" \
-                 "00001.ts\n" \
-                 "#EXT-X-ENDLIST\n"
-      expect(pl.to_s).to eq(expected)
+      expect(built.to_s).to eq(imperative.to_s)
     end
 
-    it 'builds an LL-HLS playlist' do
+    it 'produces identical output to imperative API ' \
+       'for an LL-HLS playlist' do
       sc = M3u8::ServerControlItem.new(
         can_skip_until: 24.0, part_hold_back: 1.0,
         can_block_reload: true
       )
       pi = M3u8::PartInfItem.new(part_target: 0.5)
-
-      pl = M3u8::Playlist.build(
+      opts = {
         version: 9, target: 4, sequence: 100,
         server_control: sc, part_inf: pi, live: true
-      ) do
+      }
+
+      imperative = M3u8::Playlist.new(opts)
+      imperative.items << M3u8::MapItem.new(
+        uri: 'init.mp4'
+      )
+      imperative.items << M3u8::SegmentItem.new(
+        duration: 4.0, segment: 'seg100.mp4'
+      )
+      imperative.items << M3u8::PartItem.new(
+        duration: 0.5, uri: 'seg101.0.mp4',
+        independent: true
+      )
+      imperative.items << M3u8::PreloadHintItem.new(
+        type: 'PART', uri: 'seg101.1.mp4'
+      )
+      imperative.items << M3u8::RenditionReportItem.new(
+        uri: '../alt/index.m3u8',
+        last_msn: 101, last_part: 0
+      )
+
+      built = M3u8::Playlist.build(opts) do
         map uri: 'init.mp4'
         segment duration: 4.0, segment: 'seg100.mp4'
         part duration: 0.5, uri: 'seg101.0.mp4',
@@ -279,22 +332,7 @@ describe M3u8::Builder do
                          last_msn: 101, last_part: 0
       end
 
-      output = pl.to_s
-      expect(output).to include('#EXT-X-SERVER-CONTROL:')
-      expect(output).to include('#EXT-X-PART-INF:')
-      expect(output).to include(
-        '#EXT-X-MAP:URI="init.mp4"'
-      )
-      expect(output).to include('#EXTINF:4.0,')
-      expect(output).to include('seg100.mp4')
-      expect(output).to include(
-        '#EXT-X-PART:DURATION=0.5'
-      )
-      expect(output).to include('#EXT-X-PRELOAD-HINT:')
-      expect(output).to include(
-        '#EXT-X-RENDITION-REPORT:'
-      )
-      expect(output).not_to include('#EXT-X-ENDLIST')
+      expect(built.to_s).to eq(imperative.to_s)
     end
   end
 end
