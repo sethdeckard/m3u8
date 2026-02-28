@@ -1,3 +1,9 @@
+**1.2.0**
+
+* Added `Playlist.build` with block-based Builder DSL for concise playlist construction. Supports both `instance_eval` (clean DSL) and yielded builder (outer scope access) forms. All 19 item types have corresponding DSL methods.
+
+***
+
 **1.1.0**
 
 * Added convenience accessor methods to `Playlist` for filtering items by type: `segments`, `playlists`, `media_items`, `keys`, `maps`, `date_ranges`, `parts`, `session_data`.
