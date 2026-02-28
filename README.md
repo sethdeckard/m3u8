@@ -30,6 +30,75 @@ Or install it yourself as:
 
     $ gem install m3u8
 
+## Usage (Builder DSL)
+
+`Playlist.build` provides a block-based DSL for concise playlist construction. It supports two forms:
+
+```ruby
+# instance_eval form (clean DSL)
+playlist = M3u8::Playlist.build(version: 4, target: 12) do
+  segment duration: 11.34, segment: '1080-7mbps00000.ts'
+  segment duration: 11.26, segment: '1080-7mbps00001.ts'
+end
+
+# yielded builder form (access outer scope)
+playlist = M3u8::Playlist.build(version: 4) do |b|
+  files.each { |f| b.segment duration: 10.0, segment: f }
+end
+```
+
+Build a master playlist:
+
+```ruby
+playlist = M3u8::Playlist.build(independent_segments: true) do
+  media type: 'AUDIO', group_id: 'audio', name: 'English',
+        default: true, uri: 'eng/index.m3u8'
+  playlist bandwidth: 5_042_000, width: 1920, height: 1080,
+           profile: 'high', level: 4.1, audio_codec: 'aac-lc',
+           uri: 'hls/1080.m3u8'
+  playlist bandwidth: 2_387_000, width: 1280, height: 720,
+           profile: 'main', level: 3.1, audio_codec: 'aac-lc',
+           uri: 'hls/720.m3u8'
+end
+```
+
+Build a media playlist:
+
+```ruby
+playlist = M3u8::Playlist.build(version: 4, target: 12,
+                                sequence: 1, type: 'VOD') do
+  key method: 'AES-128', uri: 'https://example.com/key.bin'
+  map uri: 'init.mp4'
+  segment duration: 11.34, segment: '00000.ts'
+  discontinuity
+  segment duration: 11.26, segment: '00001.ts'
+end
+```
+
+Build an LL-HLS playlist:
+
+```ruby
+sc = M3u8::ServerControlItem.new(
+  can_skip_until: 24.0, part_hold_back: 1.0,
+  can_block_reload: true
+)
+pi = M3u8::PartInfItem.new(part_target: 0.5)
+
+playlist = M3u8::Playlist.build(
+  version: 9, target: 4, sequence: 100,
+  server_control: sc, part_inf: pi, live: true
+) do
+  map uri: 'init.mp4'
+  segment duration: 4.0, segment: 'seg100.mp4'
+  part duration: 0.5, uri: 'seg101.0.mp4', independent: true
+  preload_hint type: 'PART', uri: 'seg101.1.mp4'
+  rendition_report uri: '../alt/index.m3u8',
+                   last_msn: 101, last_part: 0
+end
+```
+
+All DSL methods correspond to item classes: `segment`, `playlist`, `media`, `session_data`, `session_key`, `content_steering`, `key`, `map`, `date_range`, `discontinuity`, `gap`, `time`, `bitrate`, `part`, `preload_hint`, `rendition_report`, `skip`, `define`, `playback_start`.
+
 ## Usage (creating playlists)
 
 Create a master playlist and add child playlists for adaptive bitrate streaming:
