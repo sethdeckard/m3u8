@@ -7,9 +7,10 @@ describe M3u8::Reader do
 
   describe '#read' do
     it 'parses master playlist' do
-      file = File.open('spec/fixtures/master.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/master.m3u8')
+      )
       expect(playlist.master?).to be true
       expect(playlist.discontinuity_sequence).to be_nil
       expect(playlist.independent_segments).to be true
@@ -54,9 +55,10 @@ describe M3u8::Reader do
     end
 
     it 'parses master playlist with I-Frames' do
-      file = File.open('spec/fixtures/master_iframes.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/master_iframes.m3u8')
+      )
       expect(playlist.master?).to be true
 
       expect(playlist.items.size).to eq(7)
@@ -69,9 +71,10 @@ describe M3u8::Reader do
     end
 
     it 'parses media playlist' do
-      file = File.open('spec/fixtures/playlist.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/playlist.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.version).to eq(4)
       expect(playlist.sequence).to eq(1)
@@ -94,9 +97,10 @@ describe M3u8::Reader do
     end
 
     it 'parses I-Frame playlist' do
-      file = File.open('spec/fixtures/iframes.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/iframes.m3u8')
+      )
 
       expect(playlist.iframes_only).to be true
       expect(playlist.items.size).to eq(3)
@@ -114,9 +118,10 @@ describe M3u8::Reader do
     end
 
     it 'parses segment playlist with comments' do
-      file = File.open('spec/fixtures/playlist_with_comments.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/playlist_with_comments.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.version).to eq(4)
       expect(playlist.sequence).to eq(1)
@@ -136,9 +141,10 @@ describe M3u8::Reader do
     end
 
     it 'parses variant playlist with audio options and groups' do
-      file = File.open('spec/fixtures/variant_audio.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/variant_audio.m3u8')
+      )
 
       expect(playlist.master?).to be true
       expect(playlist.items.size).to eq(10)
@@ -157,9 +163,10 @@ describe M3u8::Reader do
     end
 
     it 'parses variant playlist with camera angles' do
-      file = File.open('spec/fixtures/variant_angles.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/variant_angles.m3u8')
+      )
 
       expect(playlist.master?).to be true
       expect(playlist.items.size).to eq(11)
@@ -183,22 +190,22 @@ describe M3u8::Reader do
     end
 
     it 'processes multiple reads as separate playlists' do
-      file = File.open('spec/fixtures/master.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      content = File.read('spec/fixtures/master.m3u8')
+      playlist = reader.read(content)
 
       expect(playlist.items.size).to eq(8)
 
-      file = File.open('spec/fixtures/master.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(content)
 
       expect(playlist.items.size).to eq(8)
     end
 
     it 'parses playlist with session data' do
-      file = File.open('spec/fixtures/session_data.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/session_data.m3u8')
+      )
 
       expect(playlist.items.size).to eq(3)
 
@@ -209,9 +216,10 @@ describe M3u8::Reader do
     end
 
     it 'parses encrypted playlist' do
-      file = File.open('spec/fixtures/encrypted.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/encrypted.m3u8')
+      )
 
       expect(playlist.items.size).to eq(6)
 
@@ -222,9 +230,10 @@ describe M3u8::Reader do
     end
 
     it 'parses map (media intialization section) playlists' do
-      file = File.open('spec/fixtures/map_playlist.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/map_playlist.m3u8')
+      )
 
       expect(playlist.items.size).to eq(1)
 
@@ -236,9 +245,10 @@ describe M3u8::Reader do
     end
 
     it 'reads segment with timestamp' do
-      file = File.open('spec/fixtures/timestamp_playlist.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/timestamp_playlist.m3u8')
+      )
       expect(playlist.items.count).to eq(6)
 
       item_date_time = playlist.items.first.program_date_time
@@ -247,9 +257,10 @@ describe M3u8::Reader do
     end
 
     it 'parses playlist with daterange' do
-      file = File.open('spec/fixtures/date_range_scte35.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/date_range_scte35.m3u8')
+      )
       expect(playlist.items.count).to eq(5)
 
       item = playlist.items[0]
@@ -260,9 +271,10 @@ describe M3u8::Reader do
     end
 
     it 'parses master playlist with v13 attributes' do
-      file = File.open('spec/fixtures/master_v13.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/master_v13.m3u8')
+      )
       expect(playlist.master?).to be true
       expect(playlist.version).to eq(13)
 
@@ -288,9 +300,10 @@ describe M3u8::Reader do
     end
 
     it 'parses playlist with content steering and defines' do
-      file = File.open('spec/fixtures/content_steering.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/content_steering.m3u8')
+      )
       expect(playlist.master?).to be true
       expect(playlist.items.size).to eq(5)
 
@@ -310,9 +323,10 @@ describe M3u8::Reader do
     end
 
     it 'parses LL-HLS playlist' do
-      file = File.open('spec/fixtures/ll_hls_playlist.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/ll_hls_playlist.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.live?).to be true
       expect(playlist.version).to eq(9)
@@ -361,9 +375,10 @@ describe M3u8::Reader do
     end
 
     it 'parses playlist with gap and bitrate tags' do
-      file = File.open('spec/fixtures/gap_playlist.m3u8')
       reader = M3u8::Reader.new
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/gap_playlist.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.items.size).to eq(6)
 
@@ -383,8 +398,9 @@ describe M3u8::Reader do
     end
 
     it 'parses event playlist with byterange and map change' do
-      file = File.open('spec/fixtures/event_playlist.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/event_playlist.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.live?).to be false
       expect(playlist.type).to eq('EVENT')
@@ -417,8 +433,9 @@ describe M3u8::Reader do
     end
 
     it 'parses daterange playlist' do
-      file = File.open('spec/fixtures/daterange_playlist.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/daterange_playlist.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.items.size).to eq(6)
 
@@ -445,8 +462,9 @@ describe M3u8::Reader do
     end
 
     it 'parses full master playlist' do
-      file = File.open('spec/fixtures/master_full.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/master_full.m3u8')
+      )
       expect(playlist.master?).to be true
       expect(playlist.version).to eq(13)
       expect(playlist.independent_segments).to be true
@@ -489,8 +507,9 @@ describe M3u8::Reader do
     end
 
     it 'parses encrypted playlist with discontinuities' do
-      file = File.open('spec/fixtures/encrypted_discontinuity.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/encrypted_discontinuity.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.live?).to be false
       expect(playlist.items.size).to eq(8)
@@ -515,8 +534,9 @@ describe M3u8::Reader do
     end
 
     it 'parses advanced LL-HLS playlist' do
-      file = File.open('spec/fixtures/ll_hls_advanced.m3u8')
-      playlist = reader.read(file)
+      playlist = reader.read(
+        File.read('spec/fixtures/ll_hls_advanced.m3u8')
+      )
       expect(playlist.master?).to be false
       expect(playlist.live?).to be true
       expect(playlist.version).to eq(9)

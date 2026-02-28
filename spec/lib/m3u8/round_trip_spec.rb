@@ -76,9 +76,7 @@ describe 'Round-trip serialization' do
       second = parse(first.to_s)
 
       expect(second.items.size).to eq(first.items.size)
-      defines = second.items.select do |i|
-        i.is_a?(M3u8::DefineItem)
-      end
+      defines = second.items.grep(M3u8::DefineItem)
       expect(defines.size).to eq(2)
 
       steering = second.items.find do |i|
@@ -106,9 +104,7 @@ describe 'Round-trip serialization' do
       second = parse(first.to_s)
 
       expect(second.items.size).to eq(first.items.size)
-      media = second.items.select do |i|
-        i.is_a?(M3u8::MediaItem)
-      end
+      media = second.items.grep(M3u8::MediaItem)
       expect(media.size).to eq(6)
       expect(media.first.group_id).to eq('audio-lo')
     end
@@ -119,9 +115,7 @@ describe 'Round-trip serialization' do
       second = parse(first.to_s)
 
       expect(second.items.size).to eq(first.items.size)
-      media = second.items.select do |i|
-        i.is_a?(M3u8::MediaItem)
-      end
+      media = second.items.grep(M3u8::MediaItem)
       expect(media.size).to eq(9)
       types = media.map(&:type).uniq.sort
       expect(types).to eq(%w[AUDIO CLOSED-CAPTIONS
