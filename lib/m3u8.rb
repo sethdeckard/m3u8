@@ -14,10 +14,8 @@ module M3u8
   end
 
   def parse_attributes(line)
-    # rubocop:disable Style/HashTransformValues
     line.delete("\n").scan(/([A-Za-z0-9-]+)\s*=\s*("[^"]*"|[^,]*)/)
         .to_h { |key, value| [key, value.delete('"')] }
-    # rubocop:enable Style/HashTransformValues
   end
 
   def parse_float(value)

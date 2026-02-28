@@ -66,39 +66,39 @@ module M3u8
     end
 
     def segments
-      items.select { |item| item.is_a?(SegmentItem) }
+      items.grep(SegmentItem)
     end
 
     def playlists
-      items.select { |item| item.is_a?(PlaylistItem) }
+      items.grep(PlaylistItem)
     end
 
     def media_items
-      items.select { |item| item.is_a?(MediaItem) }
+      items.grep(MediaItem)
     end
 
     def keys
-      items.select { |item| item.is_a?(KeyItem) }
+      items.grep(KeyItem)
     end
 
     def maps
-      items.select { |item| item.is_a?(MapItem) }
+      items.grep(MapItem)
     end
 
     def date_ranges
-      items.select { |item| item.is_a?(DateRangeItem) }
+      items.grep(DateRangeItem)
     end
 
     def parts
-      items.select { |item| item.is_a?(PartItem) }
+      items.grep(PartItem)
     end
 
     def session_data
-      items.select { |item| item.is_a?(SessionDataItem) }
+      items.grep(SessionDataItem)
     end
 
     def session_keys
-      items.select { |item| item.is_a?(SessionKeyItem) }
+      items.grep(SessionKeyItem)
     end
 
     def duration
