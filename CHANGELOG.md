@@ -1,3 +1,9 @@
+**1.3.1**
+
+* Excluded CLAUDE.md and AGENTS.md from gem package.
+
+***
+
 **1.3.0**
 
 * Added CLI tool (`bin/m3u8`) with `inspect` and `validate` subcommands for inspecting playlist metadata and checking validity from the command line. Supports file arguments and stdin piping.
