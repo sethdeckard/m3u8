@@ -282,4 +282,85 @@ describe M3u8::Builder do
       expect(item.precise).to be true
     end
   end
+
+  describe 'integration' do
+    it 'builds a complete master playlist' do
+      pl = M3u8::Playlist.build(independent_segments: true) do
+        playlist bandwidth: 5_042_000,
+                 codecs: 'avc1.640028,mp4a.40.2',
+                 uri: 'hls/1080/1080.m3u8',
+                 width: 1920, height: 1080
+        playlist bandwidth: 2_387_000,
+                 codecs: 'avc1.4d001f,mp4a.40.2',
+                 uri: 'hls/720/720.m3u8',
+                 width: 1280, height: 720
+      end
+
+      output = pl.to_s
+      expect(output).to include('#EXT-X-INDEPENDENT-SEGMENTS')
+      expect(output).to include('RESOLUTION=1920x1080')
+      expect(output).to include('BANDWIDTH=5042000')
+      expect(output).to include('CODECS="avc1.640028,mp4a.40.2"')
+      expect(output).to include('hls/1080/1080.m3u8')
+      expect(output).to include('RESOLUTION=1280x720')
+      expect(output).to include('BANDWIDTH=2387000')
+      expect(output).to include('hls/720/720.m3u8')
+    end
+
+    it 'builds a complete media playlist' do
+      pl = M3u8::Playlist.build(version: 4, target: 12,
+                                sequence: 1, cache: false,
+                                type: 'VOD') do
+        segment duration: 11.34, segment: '00000.ts'
+        discontinuity
+        segment duration: 11.26, segment: '00001.ts'
+      end
+
+      expected = "#EXTM3U\n" \
+                 "#EXT-X-PLAYLIST-TYPE:VOD\n" \
+                 "#EXT-X-VERSION:4\n" \
+                 "#EXT-X-MEDIA-SEQUENCE:1\n" \
+                 "#EXT-X-ALLOW-CACHE:NO\n" \
+                 "#EXT-X-TARGETDURATION:12\n" \
+                 "#EXTINF:11.34,\n" \
+                 "00000.ts\n" \
+                 "#EXT-X-DISCONTINUITY\n" \
+                 "#EXTINF:11.26,\n" \
+                 "00001.ts\n" \
+                 "#EXT-X-ENDLIST\n"
+      expect(pl.to_s).to eq(expected)
+    end
+
+    it 'builds an LL-HLS playlist' do
+      sc = M3u8::ServerControlItem.new(
+        can_skip_until: 24.0, part_hold_back: 1.0,
+        can_block_reload: true
+      )
+      pi = M3u8::PartInfItem.new(part_target: 0.5)
+
+      pl = M3u8::Playlist.build(
+        version: 9, target: 4, sequence: 100,
+        server_control: sc, part_inf: pi, live: true
+      ) do
+        map uri: 'init.mp4'
+        segment duration: 4.0, segment: 'seg100.mp4'
+        part duration: 0.5, uri: 'seg101.0.mp4',
+             independent: true
+        preload_hint type: 'PART', uri: 'seg101.1.mp4'
+        rendition_report uri: '../alt/index.m3u8',
+                         last_msn: 101, last_part: 0
+      end
+
+      output = pl.to_s
+      expect(output).to include('#EXT-X-SERVER-CONTROL:')
+      expect(output).to include('#EXT-X-PART-INF:')
+      expect(output).to include('#EXT-X-MAP:URI="init.mp4"')
+      expect(output).to include('#EXTINF:4.0,')
+      expect(output).to include('seg100.mp4')
+      expect(output).to include('#EXT-X-PART:DURATION=0.5')
+      expect(output).to include('#EXT-X-PRELOAD-HINT:')
+      expect(output).to include('#EXT-X-RENDITION-REPORT:')
+      expect(output).not_to include('#EXT-X-ENDLIST')
+    end
+  end
 end
