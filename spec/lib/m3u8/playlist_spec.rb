@@ -310,6 +310,16 @@ describe M3u8::Playlist do
     end
   end
 
+  describe '#session_keys' do
+    it 'returns only session key items' do
+      file = File.open('spec/fixtures/master.m3u8')
+      playlist = described_class.read(file)
+      expect(playlist.session_keys)
+        .to all be_a(M3u8::SessionKeyItem)
+      expect(playlist.session_keys.size).to eq(1)
+    end
+  end
+
   describe '#write' do
     context 'when playlist is valid' do
       it 'returns playlist text' do

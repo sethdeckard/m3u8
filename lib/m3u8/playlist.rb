@@ -97,6 +97,10 @@ module M3u8
       items.select { |item| item.is_a?(SessionDataItem) }
     end
 
+    def session_keys
+      items.select { |item| item.is_a?(SessionKeyItem) }
+    end
+
     def duration
       segments.sum(&:duration)
     end
