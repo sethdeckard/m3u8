@@ -53,4 +53,50 @@ describe M3u8::CLI::InspectCommand do
       expect(lines).to include('Maps:       1')
     end
   end
+
+  describe 'master playlist' do
+    it 'displays metadata for a master playlist' do
+      code = inspect_fixture('master.m3u8')
+      expect(code).to eq(0)
+      lines = stdout.string
+      expect(lines).to include('Type:                  Master')
+      expect(lines).to include(
+        'Independent Segments:  Yes'
+      )
+      expect(lines).to include('Variants:              6')
+      expect(lines).to include('1920x1080  5042000 bps')
+      expect(lines).to include(
+        'hls/1080-7mbps/1080-7mbps.m3u8'
+      )
+      expect(lines).to include('6400 bps')
+      expect(lines).to include('hls/64k/64k.m3u8')
+      expect(lines).to include('Media:                 0')
+      expect(lines).to include('Session Keys:          1')
+      expect(lines).to include('Session Data:          0')
+    end
+
+    it 'displays metadata for a variant audio playlist' do
+      code = inspect_fixture('variant_audio.m3u8')
+      expect(code).to eq(0)
+      lines = stdout.string
+      expect(lines).to include('Type:                  Master')
+      expect(lines).to include('Variants:              4')
+      expect(lines).to include('Media:                 6')
+      expect(lines).to include('AUDIO  audio-lo  English')
+      expect(lines).to include(
+        "AUDIO  audio-hi  Fran\xC3\xA7ais"
+      )
+      expect(lines).to include('Session Keys:          0')
+      expect(lines).to include('Session Data:          0')
+      expect(lines).not_to include('Independent Segments:')
+    end
+
+    it 'displays session data for a session data playlist' do
+      code = inspect_fixture('session_data.m3u8')
+      expect(code).to eq(0)
+      lines = stdout.string
+      expect(lines).to include('Type:       Media')
+      expect(lines).to include('Segments:   0')
+    end
+  end
 end
