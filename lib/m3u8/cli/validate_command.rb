@@ -10,7 +10,13 @@ module M3u8
       end
 
       def run
-        0
+        if @playlist.valid?
+          @stdout.puts 'Valid'
+          0
+        else
+          @stdout.puts 'Invalid: mixed playlist and segment items'
+          1
+        end
       end
     end
   end
