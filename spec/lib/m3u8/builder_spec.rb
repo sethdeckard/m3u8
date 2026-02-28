@@ -114,4 +114,92 @@ describe M3u8::Builder do
       expect(item.pathway_id).to eq('CDN-A')
     end
   end
+
+  describe '#key' do
+    it 'adds a KeyItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        key method: 'AES-128',
+            uri: 'https://example.com/key.bin'
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::KeyItem)
+      expect(item.method).to eq('AES-128')
+    end
+  end
+
+  describe '#map' do
+    it 'adds a MapItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        map uri: 'init.mp4',
+            byterange: { length: 812, start: 0 }
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::MapItem)
+      expect(item.uri).to eq('init.mp4')
+      expect(item.byterange.length).to eq(812)
+    end
+  end
+
+  describe '#date_range' do
+    it 'adds a DateRangeItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        date_range id: 'ad-break-1',
+                   start_date: '2024-06-01T12:00:00Z',
+                   planned_duration: 30.0
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::DateRangeItem)
+      expect(item.id).to eq('ad-break-1')
+      expect(item.planned_duration).to eq(30.0)
+    end
+  end
+
+  describe '#discontinuity' do
+    it 'adds a DiscontinuityItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        discontinuity
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::DiscontinuityItem)
+    end
+  end
+
+  describe '#gap' do
+    it 'adds a GapItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        gap
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::GapItem)
+    end
+  end
+
+  describe '#time' do
+    it 'adds a TimeItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        time time: '2024-06-01T12:00:00Z'
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::TimeItem)
+      expect(item.time).to eq('2024-06-01T12:00:00Z')
+    end
+  end
+
+  describe '#bitrate' do
+    it 'adds a BitrateItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        bitrate bitrate: 1500
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::BitrateItem)
+      expect(item.bitrate).to eq(1500)
+    end
+  end
 end
