@@ -3,129 +3,84 @@
 require 'spec_helper'
 
 describe M3u8::Builder do
-  describe '#segment' do
-    it 'adds a SegmentItem to the playlist' do
-      playlist = M3u8::Playlist.build do
-        segment duration: 11.34, segment: '1080-7mbps00000.ts'
-      end
+  shared_examples 'a builder method' do |method, klass, params, checks|
+    it "adds a #{klass} to the playlist" do
+      pl = M3u8::Playlist.build { send(method, **params) }
 
-      expect(playlist.items.size).to eq(1)
-      item = playlist.items.first
-      expect(item).to be_a(M3u8::SegmentItem)
-      expect(item.duration).to eq(11.34)
-      expect(item.segment).to eq('1080-7mbps00000.ts')
+      item = pl.items.first
+      expect(item).to be_a(klass)
+      checks.each do |attr, value|
+        expect(item.public_send(attr)).to eq(value)
+      end
     end
   end
 
-  describe 'Playlist.build' do
-    it 'returns a Playlist with options' do
-      playlist = M3u8::Playlist.build(version: 4, target: 12) do
-        segment duration: 11.34, segment: 'test.ts'
-      end
-
-      expect(playlist).to be_a(M3u8::Playlist)
-      expect(playlist.version).to eq(4)
-      expect(playlist.target).to eq(12)
+  shared_examples 'a zero-arg builder method' do |method, klass|
+    it "adds a #{klass} to the playlist" do
+      pl = M3u8::Playlist.build { send(method) }
+      expect(pl.items.first).to be_a(klass)
     end
+  end
 
-    it 'supports yielded builder form' do
-      files = %w[seg1.ts seg2.ts]
-      playlist = M3u8::Playlist.build(version: 4) do |b|
-        files.each { |f| b.segment duration: 10.0, segment: f }
-      end
-
-      expect(playlist.items.size).to eq(2)
-      expect(playlist.items[0].segment).to eq('seg1.ts')
-      expect(playlist.items[1].segment).to eq('seg2.ts')
-    end
+  describe '#segment' do
+    include_examples 'a builder method',
+                     :segment, M3u8::SegmentItem,
+                     { duration: 11.34,
+                       segment: '1080-7mbps00000.ts' },
+                     { duration: 11.34,
+                       segment: '1080-7mbps00000.ts' }
   end
 
   describe '#playlist' do
-    it 'adds a PlaylistItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        playlist bandwidth: 540, uri: 'test.url'
-      end
-
-      expect(pl.items.size).to eq(1)
-      item = pl.items.first
-      expect(item).to be_a(M3u8::PlaylistItem)
-      expect(item.bandwidth).to eq(540)
-      expect(item.uri).to eq('test.url')
-    end
+    include_examples 'a builder method',
+                     :playlist, M3u8::PlaylistItem,
+                     { bandwidth: 540, uri: 'test.url' },
+                     { bandwidth: 540, uri: 'test.url' }
   end
 
   describe '#media' do
-    it 'adds a MediaItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        media type: 'AUDIO', group_id: 'audio-lo',
-              name: 'English', default: true,
-              uri: 'eng/prog_index.m3u8'
-      end
-
-      expect(pl.items.size).to eq(1)
-      item = pl.items.first
-      expect(item).to be_a(M3u8::MediaItem)
-      expect(item.type).to eq('AUDIO')
-      expect(item.group_id).to eq('audio-lo')
-      expect(item.name).to eq('English')
-    end
+    include_examples 'a builder method',
+                     :media, M3u8::MediaItem,
+                     { type: 'AUDIO', group_id: 'audio-lo',
+                       name: 'English', default: true,
+                       uri: 'eng/prog_index.m3u8' },
+                     { type: 'AUDIO', group_id: 'audio-lo',
+                       name: 'English' }
   end
 
   describe '#session_data' do
-    it 'adds a SessionDataItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        session_data data_id: 'com.example.title',
-                     value: 'My Video', language: 'en'
-      end
-
-      expect(pl.items.size).to eq(1)
-      item = pl.items.first
-      expect(item).to be_a(M3u8::SessionDataItem)
-      expect(item.data_id).to eq('com.example.title')
-      expect(item.value).to eq('My Video')
-    end
+    include_examples 'a builder method',
+                     :session_data, M3u8::SessionDataItem,
+                     { data_id: 'com.example.title',
+                       value: 'My Video', language: 'en' },
+                     { data_id: 'com.example.title',
+                       value: 'My Video' }
   end
 
   describe '#session_key' do
-    it 'adds a SessionKeyItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        session_key method: 'AES-128',
-                    uri: 'https://example.com/key.bin'
-      end
-
-      expect(pl.items.size).to eq(1)
-      item = pl.items.first
-      expect(item).to be_a(M3u8::SessionKeyItem)
-      expect(item.method).to eq('AES-128')
-    end
+    include_examples 'a builder method',
+                     :session_key, M3u8::SessionKeyItem,
+                     { method: 'AES-128',
+                       uri: 'https://example.com/key.bin' },
+                     { method: 'AES-128' }
   end
 
   describe '#content_steering' do
-    it 'adds a ContentSteeringItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        content_steering server_uri: 'https://example.com/s',
-                         pathway_id: 'CDN-A'
-      end
-
-      expect(pl.items.size).to eq(1)
-      item = pl.items.first
-      expect(item).to be_a(M3u8::ContentSteeringItem)
-      expect(item.server_uri).to eq('https://example.com/s')
-      expect(item.pathway_id).to eq('CDN-A')
-    end
+    include_examples 'a builder method',
+                     :content_steering,
+                     M3u8::ContentSteeringItem,
+                     { server_uri: 'https://example.com/s',
+                       pathway_id: 'CDN-A' },
+                     { server_uri: 'https://example.com/s',
+                       pathway_id: 'CDN-A' }
   end
 
   describe '#key' do
-    it 'adds a KeyItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        key method: 'AES-128',
-            uri: 'https://example.com/key.bin'
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::KeyItem)
-      expect(item.method).to eq('AES-128')
-    end
+    include_examples 'a builder method',
+                     :key, M3u8::KeyItem,
+                     { method: 'AES-128',
+                       uri: 'https://example.com/key.bin' },
+                     { method: 'AES-128' }
   end
 
   describe '#map' do
@@ -143,149 +98,118 @@ describe M3u8::Builder do
   end
 
   describe '#date_range' do
-    it 'adds a DateRangeItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        date_range id: 'ad-break-1',
-                   start_date: '2024-06-01T12:00:00Z',
-                   planned_duration: 30.0
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::DateRangeItem)
-      expect(item.id).to eq('ad-break-1')
-      expect(item.planned_duration).to eq(30.0)
-    end
+    include_examples 'a builder method',
+                     :date_range, M3u8::DateRangeItem,
+                     { id: 'ad-break-1',
+                       start_date: '2024-06-01T12:00:00Z',
+                       planned_duration: 30.0 },
+                     { id: 'ad-break-1',
+                       planned_duration: 30.0 }
   end
 
   describe '#discontinuity' do
-    it 'adds a DiscontinuityItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        discontinuity
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::DiscontinuityItem)
-    end
+    include_examples 'a zero-arg builder method',
+                     :discontinuity, M3u8::DiscontinuityItem
   end
 
   describe '#gap' do
-    it 'adds a GapItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        gap
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::GapItem)
-    end
+    include_examples 'a zero-arg builder method',
+                     :gap, M3u8::GapItem
   end
 
   describe '#time' do
-    it 'adds a TimeItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        time time: '2024-06-01T12:00:00Z'
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::TimeItem)
-      expect(item.time).to eq('2024-06-01T12:00:00Z')
-    end
+    include_examples 'a builder method',
+                     :time, M3u8::TimeItem,
+                     { time: '2024-06-01T12:00:00Z' },
+                     { time: '2024-06-01T12:00:00Z' }
   end
 
   describe '#bitrate' do
-    it 'adds a BitrateItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        bitrate bitrate: 1500
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::BitrateItem)
-      expect(item.bitrate).to eq(1500)
-    end
+    include_examples 'a builder method',
+                     :bitrate, M3u8::BitrateItem,
+                     { bitrate: 1500 },
+                     { bitrate: 1500 }
   end
 
   describe '#part' do
-    it 'adds a PartItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        part duration: 0.5, uri: 'seg101.0.mp4',
-             independent: true
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::PartItem)
-      expect(item.duration).to eq(0.5)
-      expect(item.uri).to eq('seg101.0.mp4')
-      expect(item.independent).to be true
-    end
+    include_examples 'a builder method',
+                     :part, M3u8::PartItem,
+                     { duration: 0.5, uri: 'seg101.0.mp4',
+                       independent: true },
+                     { duration: 0.5, uri: 'seg101.0.mp4' }
   end
 
   describe '#preload_hint' do
-    it 'adds a PreloadHintItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        preload_hint type: 'PART', uri: 'seg101.1.mp4'
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::PreloadHintItem)
-      expect(item.type).to eq('PART')
-      expect(item.uri).to eq('seg101.1.mp4')
-    end
+    include_examples 'a builder method',
+                     :preload_hint, M3u8::PreloadHintItem,
+                     { type: 'PART', uri: 'seg101.1.mp4' },
+                     { type: 'PART', uri: 'seg101.1.mp4' }
   end
 
   describe '#rendition_report' do
-    it 'adds a RenditionReportItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        rendition_report uri: '../alt/index.m3u8',
-                         last_msn: 101, last_part: 0
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::RenditionReportItem)
-      expect(item.uri).to eq('../alt/index.m3u8')
-      expect(item.last_msn).to eq(101)
-    end
+    include_examples 'a builder method',
+                     :rendition_report,
+                     M3u8::RenditionReportItem,
+                     { uri: '../alt/index.m3u8',
+                       last_msn: 101, last_part: 0 },
+                     { uri: '../alt/index.m3u8',
+                       last_msn: 101 }
   end
 
   describe '#skip' do
-    it 'adds a SkipItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        skip skipped_segments: 10
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::SkipItem)
-      expect(item.skipped_segments).to eq(10)
-    end
+    include_examples 'a builder method',
+                     :skip, M3u8::SkipItem,
+                     { skipped_segments: 10 },
+                     { skipped_segments: 10 }
   end
 
   describe '#define' do
-    it 'adds a DefineItem to the playlist' do
-      pl = M3u8::Playlist.build do
-        define name: 'base', value: 'https://example.com'
-      end
-
-      item = pl.items.first
-      expect(item).to be_a(M3u8::DefineItem)
-      expect(item.name).to eq('base')
-      expect(item.value).to eq('https://example.com')
-    end
+    include_examples 'a builder method',
+                     :define, M3u8::DefineItem,
+                     { name: 'base',
+                       value: 'https://example.com' },
+                     { name: 'base',
+                       value: 'https://example.com' }
   end
 
   describe '#playback_start' do
-    it 'adds a PlaybackStart to the playlist' do
-      pl = M3u8::Playlist.build do
-        playback_start time_offset: 10.0, precise: true
+    include_examples 'a builder method',
+                     :playback_start, M3u8::PlaybackStart,
+                     { time_offset: 10.0, precise: true },
+                     { time_offset: 10.0 }
+  end
+
+  describe 'Playlist.build' do
+    it 'returns a Playlist with options' do
+      playlist = M3u8::Playlist.build(version: 4,
+                                      target: 12) do
+        segment duration: 11.34, segment: 'test.ts'
       end
 
-      item = pl.items.first
-      expect(item).to be_a(M3u8::PlaybackStart)
-      expect(item.time_offset).to eq(10.0)
-      expect(item.precise).to be true
+      expect(playlist).to be_a(M3u8::Playlist)
+      expect(playlist.version).to eq(4)
+      expect(playlist.target).to eq(12)
+    end
+
+    it 'supports yielded builder form' do
+      files = %w[seg1.ts seg2.ts]
+      playlist = M3u8::Playlist.build(version: 4) do |b|
+        files.each do |f|
+          b.segment duration: 10.0, segment: f
+        end
+      end
+
+      expect(playlist.items.size).to eq(2)
+      expect(playlist.items[0].segment).to eq('seg1.ts')
+      expect(playlist.items[1].segment).to eq('seg2.ts')
     end
   end
 
   describe 'integration' do
     it 'builds a complete master playlist' do
-      pl = M3u8::Playlist.build(independent_segments: true) do
+      pl = M3u8::Playlist.build(
+        independent_segments: true
+      ) do
         playlist bandwidth: 5_042_000,
                  codecs: 'avc1.640028,mp4a.40.2',
                  uri: 'hls/1080/1080.m3u8',
@@ -297,10 +221,14 @@ describe M3u8::Builder do
       end
 
       output = pl.to_s
-      expect(output).to include('#EXT-X-INDEPENDENT-SEGMENTS')
+      expect(output).to include(
+        '#EXT-X-INDEPENDENT-SEGMENTS'
+      )
       expect(output).to include('RESOLUTION=1920x1080')
       expect(output).to include('BANDWIDTH=5042000')
-      expect(output).to include('CODECS="avc1.640028,mp4a.40.2"')
+      expect(output).to include(
+        'CODECS="avc1.640028,mp4a.40.2"'
+      )
       expect(output).to include('hls/1080/1080.m3u8')
       expect(output).to include('RESOLUTION=1280x720')
       expect(output).to include('BANDWIDTH=2387000')
@@ -354,12 +282,18 @@ describe M3u8::Builder do
       output = pl.to_s
       expect(output).to include('#EXT-X-SERVER-CONTROL:')
       expect(output).to include('#EXT-X-PART-INF:')
-      expect(output).to include('#EXT-X-MAP:URI="init.mp4"')
+      expect(output).to include(
+        '#EXT-X-MAP:URI="init.mp4"'
+      )
       expect(output).to include('#EXTINF:4.0,')
       expect(output).to include('seg100.mp4')
-      expect(output).to include('#EXT-X-PART:DURATION=0.5')
+      expect(output).to include(
+        '#EXT-X-PART:DURATION=0.5'
+      )
       expect(output).to include('#EXT-X-PRELOAD-HINT:')
-      expect(output).to include('#EXT-X-RENDITION-REPORT:')
+      expect(output).to include(
+        '#EXT-X-RENDITION-REPORT:'
+      )
       expect(output).not_to include('#EXT-X-ENDLIST')
     end
   end
