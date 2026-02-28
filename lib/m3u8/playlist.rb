@@ -14,6 +14,17 @@ module M3u8
       @items = []
     end
 
+    def self.build(options = {}, &block)
+      playlist = new(options)
+      builder = Builder.new(playlist)
+      if block.arity == 1
+        yield builder
+      else
+        builder.instance_eval(&block)
+      end
+      playlist
+    end
+
     def self.codecs(options = {})
       item = PlaylistItem.new(options)
       item.codecs
