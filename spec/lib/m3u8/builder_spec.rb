@@ -202,4 +202,84 @@ describe M3u8::Builder do
       expect(item.bitrate).to eq(1500)
     end
   end
+
+  describe '#part' do
+    it 'adds a PartItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        part duration: 0.5, uri: 'seg101.0.mp4',
+             independent: true
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::PartItem)
+      expect(item.duration).to eq(0.5)
+      expect(item.uri).to eq('seg101.0.mp4')
+      expect(item.independent).to be true
+    end
+  end
+
+  describe '#preload_hint' do
+    it 'adds a PreloadHintItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        preload_hint type: 'PART', uri: 'seg101.1.mp4'
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::PreloadHintItem)
+      expect(item.type).to eq('PART')
+      expect(item.uri).to eq('seg101.1.mp4')
+    end
+  end
+
+  describe '#rendition_report' do
+    it 'adds a RenditionReportItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        rendition_report uri: '../alt/index.m3u8',
+                         last_msn: 101, last_part: 0
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::RenditionReportItem)
+      expect(item.uri).to eq('../alt/index.m3u8')
+      expect(item.last_msn).to eq(101)
+    end
+  end
+
+  describe '#skip' do
+    it 'adds a SkipItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        skip skipped_segments: 10
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::SkipItem)
+      expect(item.skipped_segments).to eq(10)
+    end
+  end
+
+  describe '#define' do
+    it 'adds a DefineItem to the playlist' do
+      pl = M3u8::Playlist.build do
+        define name: 'base', value: 'https://example.com'
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::DefineItem)
+      expect(item.name).to eq('base')
+      expect(item.value).to eq('https://example.com')
+    end
+  end
+
+  describe '#playback_start' do
+    it 'adds a PlaybackStart to the playlist' do
+      pl = M3u8::Playlist.build do
+        playback_start time_offset: 10.0, precise: true
+      end
+
+      item = pl.items.first
+      expect(item).to be_a(M3u8::PlaybackStart)
+      expect(item.time_offset).to eq(10.0)
+      expect(item.precise).to be true
+    end
+  end
 end

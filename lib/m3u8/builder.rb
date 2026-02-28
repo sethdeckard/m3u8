@@ -3,60 +3,45 @@
 module M3u8
   # Builder provides a block-based DSL for constructing playlists
   class Builder
+    ITEMS = {
+      segment: 'SegmentItem',
+      playlist: 'PlaylistItem',
+      media: 'MediaItem',
+      session_data: 'SessionDataItem',
+      session_key: 'SessionKeyItem',
+      content_steering: 'ContentSteeringItem',
+      key: 'KeyItem',
+      map: 'MapItem',
+      date_range: 'DateRangeItem',
+      time: 'TimeItem',
+      bitrate: 'BitrateItem',
+      part: 'PartItem',
+      preload_hint: 'PreloadHintItem',
+      rendition_report: 'RenditionReportItem',
+      skip: 'SkipItem',
+      define: 'DefineItem',
+      playback_start: 'PlaybackStart'
+    }.freeze
+
+    ZERO_ARG_ITEMS = {
+      discontinuity: 'DiscontinuityItem',
+      gap: 'GapItem'
+    }.freeze
+
     def initialize(playlist)
       @playlist = playlist
     end
 
-    def segment(params = {})
-      @playlist.items << SegmentItem.new(params)
+    ITEMS.each do |method_name, class_name|
+      define_method(method_name) do |params = {}|
+        @playlist.items << M3u8.const_get(class_name).new(params)
+      end
     end
 
-    def playlist(params = {})
-      @playlist.items << PlaylistItem.new(params)
-    end
-
-    def media(params = {})
-      @playlist.items << MediaItem.new(params)
-    end
-
-    def session_data(params = {})
-      @playlist.items << SessionDataItem.new(params)
-    end
-
-    def session_key(params = {})
-      @playlist.items << SessionKeyItem.new(params)
-    end
-
-    def content_steering(params = {})
-      @playlist.items << ContentSteeringItem.new(params)
-    end
-
-    def key(params = {})
-      @playlist.items << KeyItem.new(params)
-    end
-
-    def map(params = {})
-      @playlist.items << MapItem.new(params)
-    end
-
-    def date_range(params = {})
-      @playlist.items << DateRangeItem.new(params)
-    end
-
-    def discontinuity
-      @playlist.items << DiscontinuityItem.new
-    end
-
-    def gap
-      @playlist.items << GapItem.new
-    end
-
-    def time(params = {})
-      @playlist.items << TimeItem.new(params)
-    end
-
-    def bitrate(params = {})
-      @playlist.items << BitrateItem.new(params)
+    ZERO_ARG_ITEMS.each do |method_name, class_name|
+      define_method(method_name) do
+        @playlist.items << M3u8.const_get(class_name).new
+      end
     end
   end
 end
