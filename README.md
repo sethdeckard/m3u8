@@ -259,6 +259,37 @@ item = M3u8::DateRangeItem.new(
 playlist.items << item
 ```
 
+#### HLS Interstitials
+
+`DateRangeItem` supports [HLS Interstitials](https://developer.apple.com/documentation/http-live-streaming/providing-an-hls-interstitial) attributes as first-class accessors for ad insertion, pre/post-rolls, and timeline integration:
+
+```ruby
+item = M3u8::DateRangeItem.new(
+  id: 'ad-break-1',
+  class_name: 'com.apple.hls.interstitial',
+  start_date: '2024-06-01T12:00:00Z',
+  asset_uri: 'http://example.com/ad.m3u8',
+  resume_offset: 0.0,
+  playout_limit: 30.0,
+  restrict: 'SKIP,JUMP',
+  snap: 'OUT',
+  content_may_vary: 'YES'
+)
+playlist.items << item
+```
+
+| HLS Attribute        | Accessor            | Type   |
+|----------------------|---------------------|--------|
+| X-ASSET-URI          | `asset_uri`         | String |
+| X-ASSET-LIST         | `asset_list`        | String |
+| X-RESUME-OFFSET      | `resume_offset`     | Float  |
+| X-PLAYOUT-LIMIT      | `playout_limit`     | Float  |
+| X-RESTRICT           | `restrict`          | String |
+| X-SNAP               | `snap`              | String |
+| X-TIMELINE-OCCUPIES  | `timeline_occupies` | String |
+| X-TIMELINE-STYLE     | `timeline_style`    | String |
+| X-CONTENT-MAY-VARY   | `content_may_vary`  | String |
+
 Signal an encoding discontinuity:
 
 ```ruby
