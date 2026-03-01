@@ -1,3 +1,9 @@
+**1.5.0**
+
+* Added `Playlist#freeze` for deep-freezing playlists, items, nested objects, and playlist-level objects. `Playlist.build` and `Playlist.read` now return frozen playlists. `Playlist.new` remains mutable until `freeze` is called explicitly.
+
+***
+
 **1.4.0**
 
 * Added `Playlist#errors` method returning an array of validation error messages. `Playlist#valid?` now delegates to `errors.empty?`. Validates mixed item types, target duration, segment items, playlist items, media items, encryption keys, session keys, session data, and LL-HLS part items.
