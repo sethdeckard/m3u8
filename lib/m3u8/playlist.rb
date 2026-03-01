@@ -66,6 +66,8 @@ module M3u8
         validate_segment_items(errors)
         validate_playlist_items(errors)
         validate_media_items(errors)
+        validate_key_items(errors)
+        validate_session_key_items(errors)
       end
     end
 
@@ -140,6 +142,22 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_key_items(errors)
+      keys.each do |item|
+        next if item.method == 'NONE'
+
+        errors << 'Key item requires a URI when method is not NONE' if item.uri.nil?
+      end
+    end
+
+    def validate_session_key_items(errors)
+      session_keys.each do |item|
+        next if item.method == 'NONE'
+
+        errors << 'Session key item requires a URI when method is not NONE' if item.uri.nil?
+      end
     end
 
     def validate_playlist_items(errors)
