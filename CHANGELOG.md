@@ -1,3 +1,17 @@
+**1.6.0**
+
+* Added SCTE-35 parsing with `M3u8::Scte35` for `splice_info_section`
+  payloads, including `splice_null` (0x00), `splice_insert` (0x05),
+  `time_signal` (0x06), and descriptor loop parsing.
+* Added `DateRangeItem` SCTE-35 convenience methods:
+  `scte35_cmd_info`, `scte35_out_info`, and `scte35_in_info`.
+* Added parsing support for SCTE-35 segmentation descriptors
+  (`segmentation_descriptor`, tag 0x02 with `CUEI` identifier).
+* Added `M3u8::Scte35::ParseError` for malformed SCTE-35 payloads.
+* Documented SCTE-35 usage and parsed fields in README.
+
+***
+
 **1.5.0**
 
 * Added `Playlist#freeze` for deep-freezing playlists, items, nested objects, and playlist-level objects. `Playlist.build` and `Playlist.read` now return frozen playlists. `Playlist.new` remains mutable until `freeze` is called explicitly.
