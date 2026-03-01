@@ -191,6 +191,20 @@ describe M3u8::Builder do
       expect(playlist.target).to eq(12)
     end
 
+    it 'returns a frozen playlist' do
+      playlist = M3u8::Playlist.build do
+        segment duration: 10.0, segment: 'test.ts'
+      end
+      expect(playlist).to be_frozen
+    end
+
+    it 'returns a frozen playlist with yielded form' do
+      playlist = M3u8::Playlist.build do |b|
+        b.segment duration: 10.0, segment: 'test.ts'
+      end
+      expect(playlist).to be_frozen
+    end
+
     it 'supports yielded builder form' do
       files = %w[seg1.ts seg2.ts]
       playlist = M3u8::Playlist.build(version: 4) do |b|

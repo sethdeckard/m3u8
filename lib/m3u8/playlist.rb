@@ -22,7 +22,7 @@ module M3u8
       else
         builder.instance_eval(&block)
       end
-      playlist
+      playlist.freeze
     end
 
     def self.codecs(options = {})
