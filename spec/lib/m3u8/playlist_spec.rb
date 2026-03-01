@@ -419,6 +419,42 @@ describe M3u8::Playlist do
       end
     end
 
+    context 'when key item has method but no URI' do
+      it 'returns missing URI error' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 10.0, segment: 'test.ts'
+        )
+        playlist.items << M3u8::KeyItem.new(method: 'AES-128')
+        expect(playlist.errors).to include(
+          'Key item requires a URI when method is not NONE'
+        )
+      end
+    end
+
+    context 'when key item method is NONE' do
+      it 'returns no errors' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 10.0, segment: 'test.ts'
+        )
+        playlist.items << M3u8::KeyItem.new(method: 'NONE')
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when session key item has method but no URI' do
+      it 'returns missing URI error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SessionKeyItem.new(
+          method: 'AES-128'
+        )
+        expect(playlist.errors).to include(
+          'Session key item requires a URI when method is not NONE'
+        )
+      end
+    end
+
     context 'when playlist has mixed items' do
       it 'returns mixed items error' do
         playlist.items << M3u8::PlaylistItem.new(
