@@ -101,7 +101,7 @@ describe M3u8::Writer do
 
     context 'when playlist is a media playlist' do
       it 'writes playlist to io' do
-        options = { version: 4, cache: false, target: 6.2, sequence: 1,
+        options = { version: 4, cache: false, target: 12, sequence: 1,
                     discontinuity_sequence: 10, type: 'EVENT',
                     iframes_only: true }
         playlist = M3u8::Playlist.new(options)
@@ -116,7 +116,7 @@ describe M3u8::Writer do
                    "#EXT-X-MEDIA-SEQUENCE:1\n" \
                    "#EXT-X-DISCONTINUITY-SEQUENCE:10\n" \
                    "#EXT-X-ALLOW-CACHE:NO\n" \
-                   "#EXT-X-TARGETDURATION:6\n" \
+                   "#EXT-X-TARGETDURATION:12\n" \
                    "#EXTINF:11.344644,\n" \
                    "1080-7mbps00000.ts\n" \
                    "#EXT-X-ENDLIST\n"
@@ -132,7 +132,7 @@ describe M3u8::Writer do
       it 'writes playlist to io' do
         options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
         item =  M3u8::SegmentItem.new(options)
-        playlist = M3u8::Playlist.new(version: 7)
+        playlist = M3u8::Playlist.new(version: 7, target: 12)
         playlist.items << item
 
         options = { method: 'AES-128', uri: 'http://test.key',
@@ -148,7 +148,7 @@ describe M3u8::Writer do
         expected = "#EXTM3U\n" \
                    "#EXT-X-VERSION:7\n" \
                    "#EXT-X-MEDIA-SEQUENCE:0\n" \
-                   "#EXT-X-TARGETDURATION:10\n" \
+                   "#EXT-X-TARGETDURATION:12\n" \
                    "#EXTINF:11.344644,\n" \
                    "1080-7mbps00000.ts\n" +
                    %(#EXT-X-KEY:METHOD=AES-128,URI="http://test.key",) +

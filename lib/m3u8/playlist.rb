@@ -62,6 +62,7 @@ module M3u8
     def errors
       [].tap do |errors|
         validate_mixed_items(errors)
+        validate_target_duration(errors)
       end
     end
 
@@ -136,6 +137,16 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_target_duration(errors)
+      return if master?
+
+      max = segments.filter_map { |s| s.duration&.round }.max
+      return if max.nil? || target >= max
+
+      errors << "Target duration #{target} is less than " \
+                "segment duration of #{max}"
     end
 
     def validate_mixed_items(errors)

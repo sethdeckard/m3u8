@@ -182,6 +182,7 @@ describe M3u8::Playlist do
     end
 
     it 'returns media playlist text' do
+      playlist = described_class.new(target: 12)
       options = { duration: 11.344644, segment: '1080-7mbps00000.ts' }
       item =  M3u8::SegmentItem.new(options)
       playlist.items << item
@@ -192,7 +193,7 @@ describe M3u8::Playlist do
 
       expected = "#EXTM3U\n" \
                  "#EXT-X-MEDIA-SEQUENCE:0\n" \
-                 "#EXT-X-TARGETDURATION:10\n" \
+                 "#EXT-X-TARGETDURATION:12\n" \
                  "#EXTINF:11.344644,\n" \
                  "1080-7mbps00000.ts\n" \
                  "#EXTINF:11.261233,\n" \
@@ -258,6 +259,35 @@ describe M3u8::Playlist do
         playlist.items << M3u8::SegmentItem.new(
           duration: 10.0, segment: 'test.ts'
         )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when segment duration exceeds target duration' do
+      it 'returns target duration error' do
+        playlist = described_class.new(target: 10)
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 12.1, segment: 'test.ts'
+        )
+        expect(playlist.errors).to include(
+          'Target duration 10 is less than segment duration of 12'
+        )
+      end
+    end
+
+    context 'when segment duration rounds to target' do
+      it 'returns no errors' do
+        playlist = described_class.new(target: 11)
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 10.5, segment: 'test.ts'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when playlist is master' do
+      it 'skips target duration check' do
+        playlist = described_class.new(master: true)
         expect(playlist.errors).to be_empty
       end
     end
