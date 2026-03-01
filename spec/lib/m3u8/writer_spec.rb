@@ -204,10 +204,10 @@ describe M3u8::Writer do
       end
     end
 
-    it 'raises error if item types are mixed' do
+    it 'raises error with specific messages if item types are mixed' do
       playlist = M3u8::Playlist.new
-      options = { program_id: 1, width: 1920, height: 1080, codecs: 'avc',
-                  bandwidth: 540, playlist: 'test.url' }
+      options = { program_id: 1, width: 1920, height: 1080,
+                  codecs: 'avc', bandwidth: 540, uri: 'test.url' }
       item = M3u8::PlaylistItem.new(options)
       playlist.items << item
 
@@ -215,7 +215,8 @@ describe M3u8::Writer do
       item = M3u8::SegmentItem.new(options)
       playlist.items << item
 
-      message = 'Playlist is invalid.'
+      message = 'Playlist is invalid: Playlist contains both ' \
+                'master and media items'
       io = StringIO.new
       writer = described_class.new(io)
       expect { writer.write(playlist) }
