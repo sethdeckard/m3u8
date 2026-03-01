@@ -14,7 +14,8 @@ module M3u8
           @stdout.puts 'Valid'
           0
         else
-          @stdout.puts 'Invalid: mixed playlist and segment items'
+          @stdout.puts 'Invalid'
+          @playlist.errors.each { |e| @stdout.puts "  - #{e}" }
           1
         end
       end
