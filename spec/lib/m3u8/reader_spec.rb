@@ -590,6 +590,20 @@ describe M3u8::Reader do
       expect(item.segment).to eq('segment0.ts')
     end
 
+    it 'returns a frozen master playlist' do
+      playlist = reader.read(
+        File.read('spec/fixtures/master.m3u8')
+      )
+      expect(playlist).to be_frozen
+    end
+
+    it 'returns a frozen media playlist' do
+      playlist = reader.read(
+        File.read('spec/fixtures/playlist.m3u8')
+      )
+      expect(playlist).to be_frozen
+    end
+
     context 'when playlist source is invalid' do
       it 'raises error with message' do
         message = 'Playlist must start with a #EXTM3U tag, line read ' \
