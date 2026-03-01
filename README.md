@@ -344,6 +344,27 @@ options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
 item = M3u8::PlaylistItem.new(options)
 ```
 
+## Frozen playlists
+
+Playlists returned by `Playlist.build` and `Playlist.read` are frozen (deeply immutable). Items, nested objects, and the items array are all frozen, preventing accidental mutation after construction:
+
+```ruby
+playlist = M3u8::Playlist.read(File.open('master.m3u8'))
+playlist.frozen?          # => true
+playlist.items.frozen?    # => true
+playlist.items.first.frozen? # => true
+```
+
+Playlists created with `Playlist.new` remain mutable. Call `freeze` explicitly when ready:
+
+```ruby
+playlist = M3u8::Playlist.new
+playlist.items << M3u8::SegmentItem.new(duration: 10.0, segment: 'test.ts')
+playlist.freeze
+```
+
+Frozen playlists still support `to_s` and `write` for output.
+
 ## Validation
 
 Check whether a playlist is valid and inspect specific errors:
