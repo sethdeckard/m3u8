@@ -94,6 +94,12 @@ describe M3u8::PlaylistItem do
       expect(item.supplemental_codecs).to eq('dvh1.05.06/db4g')
       expect(item.req_video_layout).to eq('CH-MONO')
     end
+
+    it 'keeps bandwidth nil when BANDWIDTH is missing' do
+      input = '#EXT-X-STREAM-INF:CODECS="avc",URI="test.url"'
+      item = M3u8::PlaylistItem.parse(input)
+      expect(item.bandwidth).to be_nil
+    end
   end
 
   describe '#to_s' do

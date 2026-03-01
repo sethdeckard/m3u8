@@ -69,7 +69,7 @@ module M3u8
         codecs: attributes['CODECS'],
         width: resolution[:width],
         height: resolution[:height],
-        bandwidth: attributes['BANDWIDTH'].to_i,
+        bandwidth: parse_bandwidth(attributes['BANDWIDTH']),
         average_bandwidth:
           parse_average_bandwidth(attributes['AVERAGE-BANDWIDTH']),
         frame_rate: parse_frame_rate(attributes['FRAME-RATE']),
@@ -88,6 +88,12 @@ module M3u8
 
     def parse_average_bandwidth(value)
       value&.to_i
+    end
+
+    def parse_bandwidth(value)
+      return if value.nil?
+
+      value.to_i
     end
 
     def parse_resolution(resolution)
