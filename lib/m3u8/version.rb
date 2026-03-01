@@ -2,5 +2,5 @@
 
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
-  VERSION = '1.5.0'
+  VERSION = '1.6.0'
 end
