@@ -55,8 +55,16 @@ module M3u8
       case header[:splice_command_type]
       when 0x00 then Scte35SpliceNull.new
       when 0x05 then Scte35SpliceInsert.parse_from(reader, cmd_length)
+      when 0x06 then Scte35TimeSignal.parse_from(reader, cmd_length)
       else reader.read_bytes(cmd_length)
       end
+    end
+
+    def self.parse_splice_time(reader)
+      return nil unless reader.read_flag # time_specified
+
+      reader.skip_bits(6) # reserved
+      reader.read_bits(33)
     end
 
     def self.parse_descriptors(reader, header)

@@ -31,7 +31,7 @@ module M3u8
       reader.skip_bits(4) # reserved
 
       if program_splice
-        attrs[:pts_time] = parse_splice_time(reader) unless immediate
+        attrs[:pts_time] = Scte35.parse_splice_time(reader) unless immediate
       else
         parse_components(reader, immediate)
       end
@@ -42,18 +42,11 @@ module M3u8
       new(**attrs)
     end
 
-    def self.parse_splice_time(reader)
-      return nil unless reader.read_flag # time_specified
-
-      reader.skip_bits(6) # reserved
-      reader.read_bits(33)
-    end
-
     def self.parse_components(reader, immediate)
       component_count = reader.read_bits(8)
       component_count.times do
         reader.read_bits(8) # component_tag
-        parse_splice_time(reader) unless immediate
+        Scte35.parse_splice_time(reader) unless immediate
       end
     end
 
@@ -63,7 +56,7 @@ module M3u8
       attrs[:break_duration] = reader.read_bits(33)
     end
 
-    private_class_method :parse_splice_detail, :parse_splice_time,
-                         :parse_break_duration, :parse_components
+    private_class_method :parse_splice_detail, :parse_break_duration,
+                         :parse_components
   end
 end
