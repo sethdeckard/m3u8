@@ -25,7 +25,7 @@ module M3u8
         parse_line(line)
       end
       playlist.live = !@has_endlist unless master
-      playlist
+      playlist.freeze
     end
 
     private
