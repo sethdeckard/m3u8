@@ -292,6 +292,51 @@ describe M3u8::Playlist do
       end
     end
 
+    context 'when segment has no URI' do
+      it 'returns missing segment error' do
+        playlist.items << M3u8::SegmentItem.new(duration: 10.0)
+        expect(playlist.errors).to include(
+          'Segment item requires a segment URI'
+        )
+      end
+    end
+
+    context 'when segment has negative duration' do
+      it 'returns negative duration error' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: -1.0, segment: 'test.ts'
+        )
+        expect(playlist.errors).to include(
+          'Segment item has negative duration'
+        )
+      end
+    end
+
+    context 'when segment has zero duration' do
+      it 'returns no errors' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 0.0, segment: 'test.ts'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when multiple segments are invalid' do
+      it 'accumulates errors' do
+        playlist.items << M3u8::SegmentItem.new(duration: 10.0)
+        playlist.items << M3u8::SegmentItem.new(
+          duration: -1.0, segment: 'test.ts'
+        )
+        errors = playlist.errors
+        expect(errors).to include(
+          'Segment item requires a segment URI'
+        )
+        expect(errors).to include(
+          'Segment item has negative duration'
+        )
+      end
+    end
+
     context 'when playlist has mixed items' do
       it 'returns mixed items error' do
         playlist.items << M3u8::PlaylistItem.new(

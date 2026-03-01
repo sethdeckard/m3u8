@@ -63,6 +63,7 @@ module M3u8
       [].tap do |errors|
         validate_mixed_items(errors)
         validate_target_duration(errors)
+        validate_segment_items(errors)
       end
     end
 
@@ -137,6 +138,13 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_segment_items(errors)
+      segments.each do |segment|
+        errors << 'Segment item requires a segment URI' if segment.segment.nil?
+        errors << 'Segment item has negative duration' if segment.duration&.negative?
+      end
     end
 
     def validate_target_duration(errors)
