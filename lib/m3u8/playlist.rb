@@ -69,6 +69,7 @@ module M3u8
         validate_key_items(errors)
         validate_session_key_items(errors)
         validate_session_data_items(errors)
+        validate_part_items(errors)
       end
     end
 
@@ -143,6 +144,13 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_part_items(errors)
+      parts.each do |item|
+        errors << 'Part item requires a URI' if item.uri.nil?
+        errors << 'Part item requires a duration' if item.duration.nil?
+      end
     end
 
     def validate_session_data_items(errors)
