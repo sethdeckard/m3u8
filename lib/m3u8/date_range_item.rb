@@ -65,27 +65,19 @@ module M3u8
     end
 
     def class_name_format
-      return if class_name.nil?
-
-      %(CLASS="#{class_name}")
+      quoted_format('CLASS', class_name)
     end
 
     def end_date_format
-      return if end_date.nil?
-
-      %(END-DATE="#{end_date}")
+      quoted_format('END-DATE', end_date)
     end
 
     def duration_format
-      return if duration.nil?
-
-      "DURATION=#{duration}"
+      unquoted_format('DURATION', duration)
     end
 
     def planned_duration_format
-      return if planned_duration.nil?
-
-      "PLANNED-DURATION=#{planned_duration}"
+      unquoted_format('PLANNED-DURATION', planned_duration)
     end
 
     def client_attributes_format
@@ -110,33 +102,33 @@ module M3u8
     end
 
     def scte35_cmd_format
-      return if scte35_cmd.nil?
-
-      "SCTE35-CMD=#{scte35_cmd}"
+      unquoted_format('SCTE35-CMD', scte35_cmd)
     end
 
     def scte35_out_format
-      return if scte35_out.nil?
-
-      "SCTE35-OUT=#{scte35_out}"
+      unquoted_format('SCTE35-OUT', scte35_out)
     end
 
     def scte35_in_format
-      return if scte35_in.nil?
-
-      "SCTE35-IN=#{scte35_in}"
+      unquoted_format('SCTE35-IN', scte35_in)
     end
 
     def cue_format
-      return if cue.nil?
-
-      %(CUE="#{cue}")
+      quoted_format('CUE', cue)
     end
 
     def end_on_next_format
       return unless end_on_next
 
       'END-ON-NEXT=YES'
+    end
+
+    def quoted_format(key, value)
+      %(#{key}="#{value}") unless value.nil?
+    end
+
+    def unquoted_format(key, value)
+      "#{key}=#{value}" unless value.nil?
     end
 
     def parse_client_attributes(attributes)
