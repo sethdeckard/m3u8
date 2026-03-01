@@ -122,4 +122,51 @@ describe M3u8::DateRangeItem do
       expect(item.to_s).to eq(expected)
     end
   end
+
+  describe '#scte35_out_info' do
+    it 'should return parsed Scte35 when scte35_out is set' do
+      hex = '0xFC301100000000000000FFF000000000DEADBEEF'
+      item = described_class.new(scte35_out: hex)
+      result = item.scte35_out_info
+
+      expect(result).to be_a(M3u8::Scte35)
+      expect(result.table_id).to eq(0xFC)
+      expect(result.to_s).to eq(hex)
+    end
+
+    it 'should return nil when scte35_out is nil' do
+      item = described_class.new
+      expect(item.scte35_out_info).to be_nil
+    end
+  end
+
+  describe '#scte35_in_info' do
+    it 'should return parsed Scte35 when scte35_in is set' do
+      hex = '0xFC301100000000000000FFF000000000DEADBEEF'
+      item = described_class.new(scte35_in: hex)
+      result = item.scte35_in_info
+
+      expect(result).to be_a(M3u8::Scte35)
+    end
+
+    it 'should return nil when scte35_in is nil' do
+      item = described_class.new
+      expect(item.scte35_in_info).to be_nil
+    end
+  end
+
+  describe '#scte35_cmd_info' do
+    it 'should return parsed Scte35 when scte35_cmd is set' do
+      hex = '0xFC301100000000000000FFF000000000DEADBEEF'
+      item = described_class.new(scte35_cmd: hex)
+      result = item.scte35_cmd_info
+
+      expect(result).to be_a(M3u8::Scte35)
+    end
+
+    it 'should return nil when scte35_cmd is nil' do
+      item = described_class.new
+      expect(item.scte35_cmd_info).to be_nil
+    end
+  end
 end
