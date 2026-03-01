@@ -11,7 +11,8 @@ describe M3u8::DateRangeItem do
                   planned_duration: 59.993,
                   scte35_out: '0xFC002F0000000000FF0',
                   scte35_in: '0xFC002F0000000000FF1',
-                  scte35_cmd: '0xFC002F0000000000FF2', end_on_next: true,
+                  scte35_cmd: '0xFC002F0000000000FF2',
+                  cue: 'PRE', end_on_next: true,
                   client_attributes: { 'X-CUSTOM' => 45.3 } }
       item = described_class.new(options)
 
@@ -24,6 +25,7 @@ describe M3u8::DateRangeItem do
       expect(item.scte35_out).to eq('0xFC002F0000000000FF0')
       expect(item.scte35_in).to eq('0xFC002F0000000000FF1')
       expect(item.scte35_cmd).to eq('0xFC002F0000000000FF2')
+      expect(item.cue).to eq('PRE')
       expect(item.end_on_next).to be true
       expect(item.client_attributes.empty?).to be false
       expect(item.client_attributes['X-CUSTOM']).to eq(45.3)
@@ -39,6 +41,7 @@ describe M3u8::DateRangeItem do
              'PLANNED-DURATION=59.993,SCTE35-OUT=0xFC002F0000000000FF0,' \
              'SCTE35-IN=0xFC002F0000000000FF1,' \
              'SCTE35-CMD=0xFC002F0000000000FF2,' \
+             'CUE="PRE",' \
              'END-ON-NEXT=YES'
       item.parse(line)
 
@@ -51,6 +54,7 @@ describe M3u8::DateRangeItem do
       expect(item.scte35_out).to eq('0xFC002F0000000000FF0')
       expect(item.scte35_in).to eq('0xFC002F0000000000FF1')
       expect(item.scte35_cmd).to eq('0xFC002F0000000000FF2')
+      expect(item.cue).to eq('PRE')
       expect(item.end_on_next).to be true
       expect(item.client_attributes.empty?).to be true
     end
@@ -93,7 +97,8 @@ describe M3u8::DateRangeItem do
                   planned_duration: 59.993,
                   scte35_out: '0xFC002F0000000000FF0',
                   scte35_in: '0xFC002F0000000000FF1',
-                  scte35_cmd: '0xFC002F0000000000FF2', end_on_next: true,
+                  scte35_cmd: '0xFC002F0000000000FF2',
+                  cue: 'POST,ONCE', end_on_next: true,
                   client_attributes: { 'X-CUSTOM' => 45.3,
                                        'X-CUSTOM-TEXT' => 'test_value' } }
       item = described_class.new(options)
@@ -107,6 +112,7 @@ describe M3u8::DateRangeItem do
                  'SCTE35-CMD=0xFC002F0000000000FF2,' \
                  'SCTE35-OUT=0xFC002F0000000000FF0,' \
                  'SCTE35-IN=0xFC002F0000000000FF1,' \
+                 'CUE="POST,ONCE",' \
                  'END-ON-NEXT=YES'
 
       expect(item.to_s).to eq(expected)

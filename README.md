@@ -253,7 +253,7 @@ Insert a timed metadata date range:
 ```ruby
 item = M3u8::DateRangeItem.new(
   id: 'ad-break-1', start_date: '2024-06-01T12:00:00Z',
-  planned_duration: 30.0,
+  planned_duration: 30.0, cue: 'PRE',
   client_attributes: { 'X-AD-ID' => '"foo"' }
 )
 playlist.items << item

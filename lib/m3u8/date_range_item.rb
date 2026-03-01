@@ -7,7 +7,7 @@ module M3u8
 
     attr_accessor :id, :class_name, :start_date, :end_date, :duration,
                   :planned_duration, :scte35_cmd, :scte35_out, :scte35_in,
-                  :end_on_next, :client_attributes
+                  :cue, :end_on_next, :client_attributes
 
     def initialize(options = {})
       options.each do |key, value|
@@ -26,6 +26,7 @@ module M3u8
       @scte35_cmd = attributes['SCTE35-CMD']
       @scte35_out = attributes['SCTE35-OUT']
       @scte35_in = attributes['SCTE35-IN']
+      @cue = attributes['CUE']
       @end_on_next = attributes.key?('END-ON-NEXT')
       @client_attributes = parse_client_attributes(attributes)
     end
@@ -59,6 +60,7 @@ module M3u8
        scte35_cmd_format,
        scte35_out_format,
        scte35_in_format,
+       cue_format,
        end_on_next_format].compact.join(',')
     end
 
@@ -123,6 +125,12 @@ module M3u8
       return if scte35_in.nil?
 
       "SCTE35-IN=#{scte35_in}"
+    end
+
+    def cue_format
+      return if cue.nil?
+
+      %(CUE="#{cue}")
     end
 
     def end_on_next_format
