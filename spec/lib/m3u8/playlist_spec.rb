@@ -237,6 +237,46 @@ describe M3u8::Playlist do
     end
   end
 
+  describe '#errors' do
+    context 'when playlist is empty' do
+      it 'returns no errors' do
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when playlist has only master items' do
+      it 'returns no errors' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when playlist has only media items' do
+      it 'returns no errors' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 10.0, segment: 'test.ts'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
+    context 'when playlist has mixed items' do
+      it 'returns mixed items error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 10.0, segment: 'test.ts'
+        )
+        expect(playlist.errors).to include(
+          'Playlist contains both master and media items'
+        )
+      end
+    end
+  end
+
   describe '#segments' do
     it 'returns only segment items' do
       playlist = described_class.read(

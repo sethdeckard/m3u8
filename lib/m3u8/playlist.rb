@@ -59,10 +59,14 @@ module M3u8
       output.string
     end
 
-    def valid?
-      return false if playlist_size.positive? && segment_size.positive?
+    def errors
+      [].tap do |errors|
+        validate_mixed_items(errors)
+      end
+    end
 
-      true
+    def valid?
+      errors.empty?
     end
 
     def segments
@@ -132,6 +136,12 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_mixed_items(errors)
+      return unless playlist_size.positive? && segment_size.positive?
+
+      errors << 'Playlist contains both master and media items'
     end
 
     def playlist_size
