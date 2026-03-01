@@ -44,7 +44,8 @@ module M3u8
     def validate(playlist)
       return if playlist.valid?
 
-      raise PlaylistTypeError, 'Playlist is invalid.'
+      raise PlaylistTypeError,
+            "Playlist is invalid: #{playlist.errors.join('; ')}"
     end
 
     def write_cache_tag(cache)

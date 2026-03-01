@@ -680,7 +680,8 @@ describe M3u8::Playlist do
         item = M3u8::SegmentItem.new(options)
         playlist.items << item
 
-        message = 'Playlist is invalid.'
+        message = 'Playlist is invalid: Playlist contains both ' \
+                  'master and media items'
         io = StringIO.new
         expect { playlist.write(io) }
           .to raise_error(M3u8::PlaylistTypeError, message)
