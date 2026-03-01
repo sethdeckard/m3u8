@@ -53,6 +53,14 @@ module M3u8
       playlist_size.positive?
     end
 
+    def freeze
+      items.each { |item| freeze_item(item) }
+      items.freeze
+      part_inf&.freeze
+      server_control&.freeze
+      super
+    end
+
     def to_s
       output = StringIO.open
       write(output)
@@ -118,6 +126,13 @@ module M3u8
     end
 
     private
+
+    def freeze_item(item)
+      item.byterange&.freeze if item.respond_to?(:byterange)
+      item.program_date_time&.freeze if item.respond_to?(:program_date_time)
+      item.client_attributes&.freeze if item.respond_to?(:client_attributes)
+      item.freeze
+    end
 
     def assign_options(options)
       options = defaults.merge(options)

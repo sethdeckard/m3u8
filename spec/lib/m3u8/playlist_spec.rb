@@ -654,6 +654,108 @@ describe M3u8::Playlist do
     end
   end
 
+  describe '#freeze' do
+    it 'freezes the playlist' do
+      playlist.freeze
+      expect(playlist).to be_frozen
+    end
+
+    it 'freezes the items array' do
+      playlist.freeze
+      expect(playlist.items).to be_frozen
+    end
+
+    it 'freezes each item' do
+      item = M3u8::SegmentItem.new(duration: 10.0, segment: 'test.ts')
+      playlist.items << item
+      playlist.freeze
+      expect(item).to be_frozen
+    end
+
+    it 'freezes nested byterange on items' do
+      item = M3u8::SegmentItem.new(
+        duration: 10.0, segment: 'test.ts',
+        byterange: { length: 4500, start: 600 }
+      )
+      playlist.items << item
+      playlist.freeze
+      expect(item.byterange).to be_frozen
+    end
+
+    it 'freezes nested program_date_time on items' do
+      time = M3u8::TimeItem.new(time: '2024-06-01T12:00:00Z')
+      item = M3u8::SegmentItem.new(
+        duration: 10.0, segment: 'test.ts',
+        program_date_time: time
+      )
+      playlist.items << item
+      playlist.freeze
+      expect(item.program_date_time).to be_frozen
+    end
+
+    it 'freezes nested client_attributes on items' do
+      item = M3u8::DateRangeItem.new(
+        id: 'ad-1', start_date: '2024-01-01T00:00:00Z',
+        client_attributes: { 'X-AD-ID' => '"foo"' }
+      )
+      playlist.items << item
+      playlist.freeze
+      expect(item.client_attributes).to be_frozen
+    end
+
+    it 'freezes part_inf' do
+      playlist.part_inf = M3u8::PartInfItem.new(part_target: 0.5)
+      playlist.freeze
+      expect(playlist.part_inf).to be_frozen
+    end
+
+    it 'freezes server_control' do
+      playlist.server_control = M3u8::ServerControlItem.new(
+        can_skip_until: 24.0
+      )
+      playlist.freeze
+      expect(playlist.server_control).to be_frozen
+    end
+
+    it 'raises FrozenError on attribute set' do
+      playlist.freeze
+      expect { playlist.version = 7 }
+        .to raise_error(FrozenError)
+    end
+
+    it 'raises FrozenError on items append' do
+      playlist.freeze
+      item = M3u8::SegmentItem.new(
+        duration: 10.0, segment: 'test.ts'
+      )
+      expect { playlist.items << item }
+        .to raise_error(FrozenError)
+    end
+
+    it 'raises FrozenError on item mutation' do
+      item = M3u8::SegmentItem.new(
+        duration: 10.0, segment: 'test.ts'
+      )
+      playlist.items << item
+      playlist.freeze
+      expect { item.duration = 5.0 }
+        .to raise_error(FrozenError)
+    end
+
+    it 'still supports to_s' do
+      item = M3u8::SegmentItem.new(
+        duration: 10.0, segment: 'test.ts'
+      )
+      playlist.items << item
+      playlist.freeze
+      expect(playlist.to_s).to include('#EXTM3U')
+    end
+
+    it 'returns self' do
+      expect(playlist.freeze).to equal(playlist)
+    end
+  end
+
   describe '#write' do
     context 'when playlist is valid' do
       it 'returns playlist text' do
