@@ -34,6 +34,18 @@ module M3u8
       "#EXT-X-DATERANGE:#{formatted_attributes}"
     end
 
+    def scte35_cmd_info
+      Scte35.parse(scte35_cmd) unless scte35_cmd.nil?
+    end
+
+    def scte35_out_info
+      Scte35.parse(scte35_out) unless scte35_out.nil?
+    end
+
+    def scte35_in_info
+      Scte35.parse(scte35_in) unless scte35_in.nil?
+    end
+
     private
 
     def formatted_attributes
