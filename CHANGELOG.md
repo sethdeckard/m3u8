@@ -1,3 +1,11 @@
+**1.4.0**
+
+* Added `Playlist#errors` method returning an array of validation error messages. `Playlist#valid?` now delegates to `errors.empty?`. Validates mixed item types, target duration, segment items, playlist items, media items, encryption keys, session keys, session data, and LL-HLS part items.
+* Updated CLI `validate` command to display specific error messages.
+* Updated `Writer` to include specific errors in the exception message.
+
+***
+
 **1.3.1**
 
 * Excluded CLAUDE.md and AGENTS.md from gem package.
