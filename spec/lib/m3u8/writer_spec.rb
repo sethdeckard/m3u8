@@ -17,7 +17,7 @@ describe M3u8::Writer do
         item = M3u8::PlaylistItem.new(options)
         playlist.items << item
         options = { data_id: 'com.test.movie.title', value: 'Test',
-                    uri: 'http://test', language: 'en' }
+                    language: 'en' }
         item = M3u8::SessionDataItem.new(options)
         playlist.items << item
 
@@ -28,7 +28,7 @@ describe M3u8::Writer do
                    %(RESOLUTION=1920x1080,CODECS="avc1.640029,mp4a.40.2") +
                    ",BANDWIDTH=50000\nplaylist_url\n" +
                    %(#EXT-X-SESSION-DATA:DATA-ID="com.test.movie.title",) +
-                   %(VALUE="Test",URI="http://test",LANGUAGE="en"\n)
+                   %(VALUE="Test",LANGUAGE="en"\n)
 
         io = StringIO.open
         writer = described_class.new(io)
