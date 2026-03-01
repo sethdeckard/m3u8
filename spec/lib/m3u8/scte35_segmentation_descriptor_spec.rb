@@ -20,10 +20,9 @@ describe M3u8::Scte35SegmentationDescriptor do
   end
 
   def splice_info_header(section_length, cmd_length)
-    bytes1_2 = format('%04X', 0x3000 | section_length)
-    tier_cmd = (0xFFF << 12) | cmd_length
-    bytes10_12 = format('%06X', tier_cmd)
-    "FC#{bytes1_2}00000000000000#{bytes10_12}"
+    section_header = format('%04X', 0x3000 | section_length)
+    tier_cmd = format('%06X', (0xFFF << 12) | cmd_length)
+    "FC#{section_header}00000000000000#{tier_cmd}"
   end
 
   # Builds segmentation_descriptor bytes (tag=0x02, identifier=CUEI)
