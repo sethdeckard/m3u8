@@ -510,6 +510,42 @@ describe M3u8::Playlist do
       end
     end
 
+    context 'when part item has no URI' do
+      it 'returns missing URI error' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 4.0, segment: 'seg.mp4'
+        )
+        playlist.items << M3u8::PartItem.new(duration: 0.5)
+        expect(playlist.errors).to include(
+          'Part item requires a URI'
+        )
+      end
+    end
+
+    context 'when part item has no duration' do
+      it 'returns missing duration error' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 4.0, segment: 'seg.mp4'
+        )
+        playlist.items << M3u8::PartItem.new(uri: 'seg.0.mp4')
+        expect(playlist.errors).to include(
+          'Part item requires a duration'
+        )
+      end
+    end
+
+    context 'when part item is valid' do
+      it 'returns no part errors' do
+        playlist.items << M3u8::SegmentItem.new(
+          duration: 4.0, segment: 'seg.mp4'
+        )
+        playlist.items << M3u8::PartItem.new(
+          duration: 0.5, uri: 'seg.0.mp4'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
     context 'when playlist has mixed items' do
       it 'returns mixed items error' do
         playlist.items << M3u8::PlaylistItem.new(
