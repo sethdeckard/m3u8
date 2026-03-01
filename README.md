@@ -79,7 +79,8 @@ $ m3u8 validate playlist.m3u8
 Valid
 
 $ m3u8 validate bad.m3u8
-Invalid: mixed playlist and segment items
+Invalid
+  - Playlist contains both master and media items
 ```
 
 ## Usage (Builder DSL)
@@ -342,6 +343,41 @@ options = { width: 1920, height: 1080, codecs: 'avc1.66.30,mp4a.40.2',
             bandwidth: 540, uri: 'test.url' }
 item = M3u8::PlaylistItem.new(options)
 ```
+
+## Validation
+
+Check whether a playlist is valid and inspect specific errors:
+
+```ruby
+playlist.valid?
+# => true
+
+playlist.errors
+# => []
+```
+
+When a playlist has issues, `errors` returns descriptive messages:
+
+```ruby
+playlist.valid?
+# => false
+
+playlist.errors
+# => ["Playlist contains both master and media items"]
+```
+
+The following validations are performed:
+
+* Mixed item types (both master and media items in one playlist)
+* Target duration less than any segment's rounded duration
+* Segment items missing a URI or having a negative duration
+* Playlist items missing a URI or valid bandwidth
+* Media items missing type, group ID, or name
+* Key and session key items missing a URI when method is not NONE
+* Session data items missing data ID, or having both/neither value and URI
+* Part items missing a URI or duration
+
+`valid?` delegates to `errors.empty?` and both are recomputed on each call.
 
 ## Usage (parsing playlists)
 
