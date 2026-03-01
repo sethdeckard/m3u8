@@ -53,5 +53,31 @@ describe M3u8::Scte35 do
       expect(result.table_id).to eq(0xFC)
       expect(result.splice_command_type).to eq(0x00)
     end
+
+    it 'should parse descriptors with 0xFFF command length' do
+      # time_signal (type 0x06) with splice_command_length=0xFFF
+      # and a descriptor present
+      # time_signal: time_specified=1, pts=90000 (5 bytes)
+      # descriptor: tag=0xFF, length=6, identifier=CUEI, data=0xAABB
+      hex = '0xFC301E00000000000000FFFFFF06FE00015F900008FF0643554549AABBDEADBEEF'
+      result = described_class.parse(hex)
+
+      expect(result.splice_command_type).to eq(0x06)
+      expect(result.splice_command.pts_time).to eq(90_000)
+      expect(result.descriptors.length).to eq(1)
+      expect(result.descriptors.first).to be_a(String)
+    end
+
+    it 'should consume remaining bytes for unknown type with 0xFFF' do
+      # unknown command type 0xFF with 0xFFF length
+      # command data is everything up to CRC (no descriptors per spec)
+      # section_length = 11(header) + 3(command) + 4(CRC) = 18
+      hex = '0xFC301200000000000000FFFFFFFFAABBCCDEADBEEF'
+      result = described_class.parse(hex)
+
+      expect(result.splice_command_type).to eq(0xFF)
+      expect(result.splice_command).to eq("\xAA\xBB\xCC".b)
+      expect(result.descriptors).to eq([])
+    end
   end
 end
