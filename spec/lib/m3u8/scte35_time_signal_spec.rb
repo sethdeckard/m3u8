@@ -12,13 +12,12 @@ describe M3u8::Scte35TimeSignal do
   end
 
   def splice_info_header(section_length, cmd_length)
-    byte0 = 'FC'
-    bytes1_2 = format('%04X', 0x3000 | section_length)
-    bytes3_8 = '000000000000'
-    byte9 = '00'
-    tier_cmd = (0xFFF << 12) | cmd_length
-    bytes10_12 = format('%06X', tier_cmd)
-    "#{byte0}#{bytes1_2}#{bytes3_8}#{byte9}#{bytes10_12}"
+    table_id = 'FC'
+    section_header = format('%04X', 0x3000 | section_length)
+    proto_and_pts = '000000000000'
+    cw_index = '00'
+    tier_cmd = format('%06X', (0xFFF << 12) | cmd_length)
+    "#{table_id}#{section_header}#{proto_and_pts}#{cw_index}#{tier_cmd}"
   end
 
   describe '.parse_from' do

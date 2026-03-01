@@ -365,6 +365,62 @@ playlist.freeze
 
 Frozen playlists still support `to_s` and `write` for output.
 
+## SCTE-35 parsing
+
+`DateRangeItem` stores SCTE-35 values (`scte35_cmd`, `scte35_out`, `scte35_in`) as raw hex strings. Convenience methods parse them into structured objects:
+
+```ruby
+playlist = M3u8::Playlist.read(file)
+date_range = playlist.date_ranges.first
+
+info = date_range.scte35_out_info
+info.table_id             # => 252 (0xFC)
+info.pts_adjustment        # => 0
+info.tier                  # => 4095
+info.splice_command_type   # => 5
+
+cmd = info.splice_command  # => Scte35SpliceInsert
+cmd.splice_event_id        # => 1
+cmd.out_of_network_indicator # => true
+cmd.pts_time               # => 90000
+cmd.break_duration         # => 2700000
+cmd.break_auto_return      # => true
+```
+
+Parse any SCTE-35 hex string directly:
+
+```ruby
+info = M3u8::Scte35.parse('0xFC301100...')
+info.to_s  # => original hex string
+```
+
+### Command types
+
+| Type | Class | Key attributes |
+|------|-------|----------------|
+| 0x00 | `Scte35SpliceNull` | *(none)* |
+| 0x05 | `Scte35SpliceInsert` | `splice_event_id`, `out_of_network_indicator`, `pts_time`, `break_duration`, `break_auto_return`, `unique_program_id`, `avail_num`, `avails_expected` |
+| 0x06 | `Scte35TimeSignal` | `pts_time` |
+
+Unknown command types store raw bytes in `splice_command`.
+
+### Descriptors
+
+Segmentation descriptors (tag 0x02, identifier `CUEI`) are parsed as `Scte35SegmentationDescriptor`:
+
+```ruby
+desc = info.descriptors.first
+desc.segmentation_event_id    # => 1
+desc.segmentation_type_id     # => 0x30
+desc.segmentation_duration    # => 2700000
+desc.segmentation_upid_type   # => 9
+desc.segmentation_upid        # => "SIGNAL123"
+desc.segment_num              # => 0
+desc.segments_expected         # => 0
+```
+
+Unknown descriptor tags store raw bytes.
+
 ## Validation
 
 Check whether a playlist is valid and inspect specific errors:
