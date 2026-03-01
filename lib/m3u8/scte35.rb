@@ -54,6 +54,7 @@ module M3u8
 
       case header[:splice_command_type]
       when 0x00 then Scte35SpliceNull.new
+      when 0x05 then Scte35SpliceInsert.parse_from(reader, cmd_length)
       else reader.read_bytes(cmd_length)
       end
     end
