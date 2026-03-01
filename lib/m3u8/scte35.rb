@@ -3,6 +3,8 @@
 module M3u8
   # Parses SCTE-35 splice_info_section binary payloads from hex strings
   class Scte35
+    class ParseError < StandardError; end
+
     attr_reader :table_id, :pts_adjustment, :tier,
                 :splice_command_type, :splice_command, :descriptors
 
@@ -24,6 +26,8 @@ module M3u8
       args = header.merge(splice_command: command,
                           descriptors: descriptors, raw: hex_string)
       new(**args)
+    rescue NoMethodError, ArgumentError => e
+      raise ParseError, "invalid SCTE-35 data: #{e.message}"
     end
 
     def to_s

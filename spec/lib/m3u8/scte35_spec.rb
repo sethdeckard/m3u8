@@ -79,5 +79,16 @@ describe M3u8::Scte35 do
       expect(result.splice_command).to eq("\xAA\xBB\xCC".b)
       expect(result.descriptors).to eq([])
     end
+
+    it 'should raise ParseError for truncated data' do
+      hex = '0xFC30'
+      expect { described_class.parse(hex) }
+        .to raise_error(M3u8::Scte35::ParseError, /invalid SCTE-35 data/)
+    end
+
+    it 'should raise ParseError for empty hex string' do
+      expect { described_class.parse('0x') }
+        .to raise_error(M3u8::Scte35::ParseError, /invalid SCTE-35 data/)
+    end
   end
 end
