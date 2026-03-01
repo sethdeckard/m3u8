@@ -64,6 +64,8 @@ module M3u8
         validate_mixed_items(errors)
         validate_target_duration(errors)
         validate_segment_items(errors)
+        validate_playlist_items(errors)
+        validate_media_items(errors)
       end
     end
 
@@ -138,6 +140,21 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_playlist_items(errors)
+      playlists.each do |item|
+        errors << 'Playlist item requires a bandwidth' unless item.bandwidth&.positive?
+        errors << 'Playlist item requires a URI' if item.uri.nil?
+      end
+    end
+
+    def validate_media_items(errors)
+      media_items.each do |item|
+        errors << 'Media item requires a type' if item.type.nil?
+        errors << 'Media item requires a group ID' if item.group_id.nil?
+        errors << 'Media item requires a name' if item.name.nil?
+      end
     end
 
     def validate_segment_items(errors)

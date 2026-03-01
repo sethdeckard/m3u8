@@ -337,6 +337,88 @@ describe M3u8::Playlist do
       end
     end
 
+    context 'when playlist item has no bandwidth' do
+      it 'returns missing bandwidth error' do
+        playlist.items << M3u8::PlaylistItem.new(uri: 'test.url')
+        expect(playlist.errors).to include(
+          'Playlist item requires a bandwidth'
+        )
+      end
+    end
+
+    context 'when playlist item has no URI and is not iframe' do
+      it 'returns missing URI error' do
+        playlist.items << M3u8::PlaylistItem.new(bandwidth: 540)
+        expect(playlist.errors).to include(
+          'Playlist item requires a URI'
+        )
+      end
+    end
+
+    context 'when playlist item has zero bandwidth' do
+      it 'returns missing bandwidth error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 0, uri: 'test.url'
+        )
+        expect(playlist.errors).to include(
+          'Playlist item requires a bandwidth'
+        )
+      end
+    end
+
+    context 'when iframe playlist item has no URI' do
+      it 'returns missing URI error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, iframe: true
+        )
+        expect(playlist.errors).to include(
+          'Playlist item requires a URI'
+        )
+      end
+    end
+
+    context 'when media item is missing type' do
+      it 'returns missing type error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::MediaItem.new(
+          group_id: 'audio', name: 'English'
+        )
+        expect(playlist.errors).to include(
+          'Media item requires a type'
+        )
+      end
+    end
+
+    context 'when media item is missing group_id' do
+      it 'returns missing group_id error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::MediaItem.new(
+          type: 'AUDIO', name: 'English'
+        )
+        expect(playlist.errors).to include(
+          'Media item requires a group ID'
+        )
+      end
+    end
+
+    context 'when media item is missing name' do
+      it 'returns missing name error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::MediaItem.new(
+          type: 'AUDIO', group_id: 'audio'
+        )
+        expect(playlist.errors).to include(
+          'Media item requires a name'
+        )
+      end
+    end
+
     context 'when playlist has mixed items' do
       it 'returns mixed items error' do
         playlist.items << M3u8::PlaylistItem.new(
