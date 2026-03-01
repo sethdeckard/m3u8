@@ -68,6 +68,7 @@ module M3u8
         validate_media_items(errors)
         validate_key_items(errors)
         validate_session_key_items(errors)
+        validate_session_data_items(errors)
       end
     end
 
@@ -142,6 +143,17 @@ module M3u8
         independent_segments: false,
         live: false
       }
+    end
+
+    def validate_session_data_items(errors)
+      session_data.each do |item|
+        errors << 'Session data item requires a data ID' if item.data_id.nil?
+        if !item.value.nil? && !item.uri.nil?
+          errors << 'Session data item cannot have both value and URI'
+        elsif item.value.nil? && item.uri.nil?
+          errors << 'Session data item requires a value or URI'
+        end
+      end
     end
 
     def validate_key_items(errors)

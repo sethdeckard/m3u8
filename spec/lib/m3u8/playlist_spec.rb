@@ -455,6 +455,61 @@ describe M3u8::Playlist do
       end
     end
 
+    context 'when session data item has no data_id' do
+      it 'returns missing data_id error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SessionDataItem.new(
+          value: 'Test'
+        )
+        expect(playlist.errors).to include(
+          'Session data item requires a data ID'
+        )
+      end
+    end
+
+    context 'when session data item has both value and uri' do
+      it 'returns conflict error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SessionDataItem.new(
+          data_id: 'com.test', value: 'Test',
+          uri: 'http://test'
+        )
+        expect(playlist.errors).to include(
+          'Session data item cannot have both value and URI'
+        )
+      end
+    end
+
+    context 'when session data item has neither value nor uri' do
+      it 'returns missing value error' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SessionDataItem.new(
+          data_id: 'com.test'
+        )
+        expect(playlist.errors).to include(
+          'Session data item requires a value or URI'
+        )
+      end
+    end
+
+    context 'when session data item has only value' do
+      it 'returns no session data errors' do
+        playlist.items << M3u8::PlaylistItem.new(
+          bandwidth: 540, uri: 'test.url'
+        )
+        playlist.items << M3u8::SessionDataItem.new(
+          data_id: 'com.test', value: 'Test'
+        )
+        expect(playlist.errors).to be_empty
+      end
+    end
+
     context 'when playlist has mixed items' do
       it 'returns mixed items error' do
         playlist.items << M3u8::PlaylistItem.new(
