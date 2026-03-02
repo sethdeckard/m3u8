@@ -1,3 +1,16 @@
+**1.7.0**
+
+* Added HLS Interstitials first-class `DateRangeItem` accessors:
+  `asset_uri`, `asset_list`, `resume_offset`, `playout_limit`,
+  `restrict`, `snap`, `timeline_occupies`, `timeline_style`, and
+  `content_may_vary`.
+* Promoted supported interstitial `X-` attributes out of
+  `client_attributes` into typed fields during parsing and formatting.
+* Refactored `DateRangeItem` attribute formatting helpers to reduce
+  duplication while preserving output behavior.
+
+***
+
 **1.6.0**
 
 * Added SCTE-35 parsing with `M3u8::Scte35` for `splice_info_section`
