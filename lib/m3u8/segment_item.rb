@@ -6,12 +6,21 @@ module M3u8
   class SegmentItem
     include M3u8
 
+    # @return [Float, nil] segment duration in seconds
+    # @return [String, nil] segment URI
+    # @return [String, nil] human-readable comment after duration
+    # @return [TimeItem, Time, nil] program date-time
+    # @return [ByteRange, nil] byte range
     attr_accessor :duration, :segment, :comment, :program_date_time, :byterange
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       initialize_with_byterange(params)
     end
 
+    # Parse an EXTINF tag line.
+    # @param text [String] raw tag line
+    # @return [SegmentItem]
     def self.parse(text)
       values = text.gsub('#EXTINF:', '')
                    .tr("\n", ',').split(',')
@@ -20,6 +29,8 @@ module M3u8
       SegmentItem.new(options)
     end
 
+    # Render as an m3u8 EXTINF tag with segment URI.
+    # @return [String]
     def to_s
       "#EXTINF:#{duration},#{comment}#{byterange_format}" \
         "\n#{date_format}#{segment}"
