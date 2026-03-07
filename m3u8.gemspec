@@ -13,6 +13,12 @@ Gem::Specification.new do |spec|
   spec.license       = 'MIT'
   spec.required_ruby_version = '>= 3.1'
 
+  spec.metadata = {
+    'source_code_uri' => 'https://github.com/sethdeckard/m3u8',
+    'changelog_uri' => 'https://github.com/sethdeckard/m3u8/blob/master/CHANGELOG.md',
+    'bug_tracker_uri' => 'https://github.com/sethdeckard/m3u8/issues'
+  }
+
   spec.files         = `git ls-files -z`.split("\x0")
                                         .grep_v(/\A(CLAUDE|AGENTS)\.md\z/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
