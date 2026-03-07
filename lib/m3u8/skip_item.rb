@@ -5,6 +5,7 @@ module M3u8
   # Updates for Low-Latency HLS.
   class SkipItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :skipped_segments, :recently_removed_dateranges
 
@@ -31,18 +32,9 @@ module M3u8
     private
 
     def formatted_attributes
-      [skipped_segments_format,
-       recently_removed_dateranges_format].compact.join(',')
-    end
-
-    def skipped_segments_format
-      "SKIPPED-SEGMENTS=#{skipped_segments}"
-    end
-
-    def recently_removed_dateranges_format
-      return if recently_removed_dateranges.nil?
-
-      %(RECENTLY-REMOVED-DATERANGES="#{recently_removed_dateranges}")
+      [unquoted_format('SKIPPED-SEGMENTS', skipped_segments),
+       quoted_format('RECENTLY-REMOVED-DATERANGES',
+                     recently_removed_dateranges)].compact.join(',')
     end
   end
 end
