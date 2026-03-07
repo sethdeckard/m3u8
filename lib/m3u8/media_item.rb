@@ -6,17 +6,36 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [String, nil] media type (AUDIO, VIDEO, etc.)
+    # @return [String, nil] group ID
+    # @return [String, nil] language tag (RFC 5646)
+    # @return [String, nil] associated language tag
+    # @return [String, nil] rendition name
+    # @return [Boolean, nil] AUTOSELECT flag
+    # @return [Boolean, nil] DEFAULT flag
+    # @return [String, nil] rendition URI
+    # @return [Boolean, nil] FORCED flag
+    # @return [String, nil] instream ID for CC
+    # @return [String, nil] media characteristics
+    # @return [String, nil] audio channels
+    # @return [String, nil] stable rendition ID
+    # @return [Integer, nil] audio bit depth
+    # @return [Integer, nil] audio sample rate
     attr_accessor :type, :group_id, :language, :assoc_language, :name,
                   :autoselect, :default, :uri, :forced, :instream_id,
                   :characteristics, :channels, :stable_rendition_id,
                   :bit_depth, :sample_rate
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
+    # Parse an EXT-X-MEDIA tag.
+    # @param text [String] raw tag line
+    # @return [MediaItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       options = { type: attributes['TYPE'],
@@ -38,6 +57,8 @@ module M3u8
       MediaItem.new(options)
     end
 
+    # Render as an m3u8 EXT-X-MEDIA tag.
+    # @return [String]
     def to_s
       "#EXT-X-MEDIA:#{formatted_attributes.join(',')}"
     end
