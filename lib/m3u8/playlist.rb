@@ -183,7 +183,10 @@ module M3u8
       keys.each do |item|
         next if item.method == 'NONE'
 
-        errors << 'Key item requires a URI when method is not NONE' if item.uri.nil?
+        next unless item.uri.nil?
+
+        errors << 'Key item requires a URI ' \
+                  'when method is not NONE'
       end
     end
 
@@ -191,13 +194,18 @@ module M3u8
       session_keys.each do |item|
         next if item.method == 'NONE'
 
-        errors << 'Session key item requires a URI when method is not NONE' if item.uri.nil?
+        next unless item.uri.nil?
+
+        errors << 'Session key item requires a URI ' \
+                  'when method is not NONE'
       end
     end
 
     def validate_playlist_items(errors)
       playlists.each do |item|
-        errors << 'Playlist item requires a bandwidth' unless item.bandwidth&.positive?
+        unless item.bandwidth&.positive?
+          errors << 'Playlist item requires a bandwidth'
+        end
         errors << 'Playlist item requires a URI' if item.uri.nil?
       end
     end
@@ -213,7 +221,9 @@ module M3u8
     def validate_segment_items(errors)
       segments.each do |segment|
         errors << 'Segment item requires a segment URI' if segment.segment.nil?
-        errors << 'Segment item has negative duration' if segment.duration&.negative?
+        if segment.duration&.negative?
+          errors << 'Segment item has negative duration'
+        end
       end
     end
 

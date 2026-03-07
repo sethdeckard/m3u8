@@ -24,7 +24,7 @@ Metrics/CyclomaticComplexity:
 Metrics/PerceivedComplexity:
   Enabled: false
 Layout/LineLength:
-  Max: 120
+  Max: 80
   Exclude:
     - 'spec/**/*'
 Style/StringLiterals:
