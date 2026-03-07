@@ -60,6 +60,7 @@ module M3u8
     def self.video_codec(profile, level)
       return if profile.nil? || level.nil?
 
+      level = level.to_f
       name = profile.downcase
       return BASELINE_CODECS[level] if name == 'baseline'
       return MAIN_CODECS[level] if name == 'main'
