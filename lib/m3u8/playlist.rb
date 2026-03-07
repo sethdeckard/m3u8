@@ -1,19 +1,36 @@
 # frozen_string_literal: true
 
 module M3u8
-  # Playlist represents an m3u8 playlist, it can be a master playlist or a set
-  # of media segments
+  # Playlist represents an m3u8 playlist, it can be a master playlist
+  # or a set of media segments
   class Playlist
+    # @return [Array] list of items in the playlist
+    # @return [Integer, nil] EXT-X-VERSION value
+    # @return [Boolean, nil] EXT-X-ALLOW-CACHE value
+    # @return [Integer] EXT-X-TARGETDURATION value
+    # @return [Integer] EXT-X-MEDIA-SEQUENCE value
+    # @return [Integer, nil] EXT-X-DISCONTINUITY-SEQUENCE value
+    # @return [String, nil] EXT-X-PLAYLIST-TYPE (VOD or EVENT)
+    # @return [Boolean] whether playlist is I-frames only
+    # @return [Boolean] whether segments are independent
+    # @return [Boolean] whether playlist is live
+    # @return [PartInfItem, nil] EXT-X-PART-INF item
+    # @return [ServerControlItem, nil] EXT-X-SERVER-CONTROL item
     attr_accessor :items, :version, :cache, :target, :sequence,
                   :discontinuity_sequence, :type, :iframes_only,
                   :independent_segments, :live, :part_inf,
                   :server_control
 
+    # @param options [Hash] playlist attributes
     def initialize(options = {})
       assign_options(options)
       @items = []
     end
 
+    # Build a playlist using a DSL block.
+    # @param options [Hash] playlist attributes
+    # @yield [Builder] block receives builder instance
+    # @return [Playlist] frozen playlist
     def self.build(options = {}, &block)
       playlist = new(options)
       builder = Builder.new(playlist)
@@ -25,27 +42,40 @@ module M3u8
       playlist.freeze
     end
 
+    # Generate a codecs string from codec options.
+    # @param options [Hash] codec options (:profile, :level, etc.)
+    # @return [String, nil] codecs string
     def self.codecs(options = {})
       item = PlaylistItem.new(options)
       item.codecs
     end
 
+    # Parse an m3u8 playlist from a String or IO.
+    # @param input [String, IO] playlist content
+    # @return [Playlist] frozen playlist
     def self.read(input)
       reader = Reader.new
       reader.read(input)
     end
 
+    # Write the playlist to an IO object.
+    # @param output [IO] writable IO object
+    # @return [void]
     def write(output)
       writer = Writer.new(output)
       writer.write(self)
     end
 
+    # Whether this is a live (non-VOD) media playlist.
+    # @return [Boolean]
     def live?
       return false if master?
 
       @live
     end
 
+    # Whether this is a master (multivariant) playlist.
+    # @return [Boolean]
     def master?
       return @master unless @master.nil?
       return false if playlist_size.zero? && segment_size.zero?
@@ -53,6 +83,8 @@ module M3u8
       playlist_size.positive?
     end
 
+    # Freeze the playlist and all its items.
+    # @return [Playlist]
     def freeze
       items.each { |item| freeze_item(item) }
       items.freeze
@@ -61,12 +93,16 @@ module M3u8
       super
     end
 
+    # Render the playlist as an m3u8 string.
+    # @return [String]
     def to_s
       output = StringIO.open
       write(output)
       output.string
     end
 
+    # Collect validation errors for the playlist.
+    # @return [Array<String>] list of error messages
     def errors
       [].tap do |errors|
         validate_mixed_items(errors)
@@ -81,46 +117,59 @@ module M3u8
       end
     end
 
+    # Whether the playlist passes all validations.
+    # @return [Boolean]
     def valid?
       errors.empty?
     end
 
+    # @return [Array<SegmentItem>]
     def segments
       items.grep(SegmentItem)
     end
 
+    # @return [Array<PlaylistItem>]
     def playlists
       items.grep(PlaylistItem)
     end
 
+    # @return [Array<MediaItem>]
     def media_items
       items.grep(MediaItem)
     end
 
+    # @return [Array<KeyItem>]
     def keys
       items.grep(KeyItem)
     end
 
+    # @return [Array<MapItem>]
     def maps
       items.grep(MapItem)
     end
 
+    # @return [Array<DateRangeItem>]
     def date_ranges
       items.grep(DateRangeItem)
     end
 
+    # @return [Array<PartItem>]
     def parts
       items.grep(PartItem)
     end
 
+    # @return [Array<SessionDataItem>]
     def session_data
       items.grep(SessionDataItem)
     end
 
+    # @return [Array<SessionKeyItem>]
     def session_keys
       items.grep(SessionKeyItem)
     end
 
+    # Total duration of all segments.
+    # @return [Float]
     def duration
       segments.sum(&:duration)
     end
