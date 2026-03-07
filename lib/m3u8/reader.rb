@@ -14,6 +14,9 @@ module M3u8
                universal_tags].inject(:merge)
     end
 
+    # Parse an m3u8 playlist from a String or IO.
+    # @param input [String, IO] playlist content
+    # @return [Playlist] frozen playlist
     def read(input)
       @playlist = Playlist.new
       @has_endlist = false
