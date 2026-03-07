@@ -3,8 +3,6 @@
 module M3u8
   # Reader provides parsing of m3u8 playlists
   class Reader
-    include M3u8
-
     attr_accessor :playlist, :item, :open, :master, :tags
 
     def initialize(*)
@@ -123,7 +121,7 @@ module M3u8
     end
 
     def parse_cache(line)
-      playlist.cache = parse_yes_no(tag_value(line))
+      playlist.cache = tag_value(line) == 'YES'
     end
 
     def parse_target(line)
