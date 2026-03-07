@@ -400,4 +400,15 @@ describe M3u8::PlaylistItem do
     item = M3u8::PlaylistItem.new audio_codec: 'opus'
     expect(item.codecs).to eq 'Opus'
   end
+
+  it 'accepts integer levels for codec lookup' do
+    item = M3u8::PlaylistItem.new(profile: 'main', level: 4)
+    expect(item.codecs).to eq 'avc1.4d0028'
+
+    item = M3u8::PlaylistItem.new(profile: 'baseline', level: 3)
+    expect(item.codecs).to eq 'avc1.66.30'
+
+    item = M3u8::PlaylistItem.new(profile: 'high', level: 4)
+    expect(item.codecs).to eq 'avc1.640028'
+  end
 end
