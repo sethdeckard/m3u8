@@ -50,9 +50,8 @@ describe M3u8::DateRangeItem do
     end
   end
 
-  describe '#parse' do
+  describe '.parse' do
     it 'should parse m3u8 tag into instance' do
-      item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",CLASS="test_class",' \
              'START-DATE="2014-03-05T11:15:00Z",' \
              'END-DATE="2014-03-05T11:16:00Z",DURATION=60.1,' \
@@ -70,7 +69,7 @@ describe M3u8::DateRangeItem do
              'X-CONTENT-MAY-VARY="YES",' \
              'CUE="PRE",' \
              'END-ON-NEXT=YES'
-      item.parse(line)
+      item = described_class.parse(line)
 
       expect(item.id).to eq('splice-6FFFFFF0')
       expect(item.class_name).to eq('test_class')
@@ -96,10 +95,9 @@ describe M3u8::DateRangeItem do
     end
 
     it 'should ignore optional attributes' do
-      item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",' \
              'START-DATE="2014-03-05T11:15:00Z"'
-      item.parse(line)
+      item = described_class.parse(line)
 
       expect(item.id).to eq('splice-6FFFFFF0')
       expect(item.class_name).to be_nil
@@ -115,11 +113,10 @@ describe M3u8::DateRangeItem do
     end
 
     it 'should parse client-defined attributes' do
-      item = described_class.new
       line = '#EXT-X-DATERANGE:ID="splice-6FFFFFF0",' \
              'START-DATE="2014-03-05T11:15:00Z",' \
              'X-CUSTOM-VALUE="test_value",'
-      item.parse(line)
+      item = described_class.parse(line)
 
       expect(item.client_attributes['X-CUSTOM-VALUE']).to eq('test_value')
     end
