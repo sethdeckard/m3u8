@@ -9,7 +9,7 @@ module M3u8
     attr_accessor :duration, :segment, :comment, :program_date_time, :byterange
 
     def initialize(params = {})
-      intialize_with_byterange(params)
+      initialize_with_byterange(params)
     end
 
     def to_s

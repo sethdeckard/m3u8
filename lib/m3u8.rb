@@ -6,7 +6,7 @@ Dir["#{File.dirname(__FILE__)}/m3u8/*.rb"].each { |file| require file }
 
 # M3u8 provides parsing, generation, and validation of m3u8 playlists
 module M3u8
-  def intialize_with_byterange(params = {})
+  def initialize_with_byterange(params = {})
     params.each do |key, value|
       value = ByteRange.new(value) if value.is_a?(Hash)
       instance_variable_set("@#{key}", value)
