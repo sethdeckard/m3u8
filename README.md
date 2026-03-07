@@ -12,7 +12,7 @@ m3u8 provides easy generation and parsing of m3u8 playlists defined in [RFC 8216
 
 ## Requirements
 
-Ruby 3.0+
+Ruby 3.1+
 
 ## Installation
 

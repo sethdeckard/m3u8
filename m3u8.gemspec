@@ -1,5 +1,4 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'm3u8/version'
 
@@ -8,11 +7,11 @@ Gem::Specification.new do |spec|
   spec.version       = M3u8::VERSION
   spec.authors       = ['Seth Deckard']
   spec.email         = ['seth@deckard.me']
-  spec.summary       = %q{Generate and parse m3u8 playlists for HTTP Live Streaming (HLS).}
-  spec.description   = %q{Generate and parse m3u8 playlists for HTTP Live Streaming (HLS).}
+  spec.summary       = 'Generate and parse m3u8 playlists for HTTP Live Streaming (HLS).'
+  spec.description   = 'Generate and parse m3u8 playlists for HTTP Live Streaming (HLS).'
   spec.homepage      = 'https://github.com/sethdeckard/m3u8'
   spec.license       = 'MIT'
-  spec.required_ruby_version = '>= 3.0'
+  spec.required_ruby_version = '>= 3.1'
 
   spec.files         = `git ls-files -z`.split("\x0")
                                         .grep_v(/\A(CLAUDE|AGENTS)\.md\z/)

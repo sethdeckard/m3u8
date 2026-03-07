@@ -2,5 +2,5 @@
 /coverage
 /pkg
 /tmp
-.Gemfile.lock
+Gemfile.lock
 .ruby-version
