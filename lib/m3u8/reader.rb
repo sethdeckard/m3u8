@@ -57,14 +57,14 @@ module M3u8
         end,
         '#EXT-X-ALLOW-CACHE' => ->(line) { parse_cache(line) },
         '#EXT-X-TARGETDURATION' => ->(line) { parse_target(line) },
-        '#EXT-X-I-FRAMES-ONLY' => proc { playlist.iframes_only = true },
+        '#EXT-X-I-FRAMES-ONLY' => ->(_line) { playlist.iframes_only = true },
         '#EXT-X-PLAYLIST-TYPE' => ->(line) { parse_playlist_type(line) },
         '#EXT-X-PART-INF' => ->(line) { parse_part_inf(line) },
         '#EXT-X-SERVER-CONTROL' => ->(line) { parse_server_control(line) },
         '#EXT-X-SKIP' => ->(line) { parse_skip(line) },
         '#EXT-X-PRELOAD-HINT' => ->(line) { parse_preload_hint(line) },
         '#EXT-X-RENDITION-REPORT' => ->(line) { parse_rendition_report(line) },
-        '#EXT-X-ENDLIST' => proc { @has_endlist = true }
+        '#EXT-X-ENDLIST' => ->(_line) { @has_endlist = true }
       }
     end
 
@@ -82,7 +82,7 @@ module M3u8
     def universal_tags
       {
         '#EXT-X-START' => ->(line) { parse_start(line) },
-        '#EXT-X-INDEPENDENT-SEGMENTS' => proc do
+        '#EXT-X-INDEPENDENT-SEGMENTS' => lambda do |_line|
           playlist.independent_segments = true
         end,
         '#EXT-X-DEFINE' => ->(line) { parse_define(line) }
