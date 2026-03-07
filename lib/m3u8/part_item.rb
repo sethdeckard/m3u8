@@ -6,6 +6,7 @@ module M3u8
   class PartItem
     extend M3u8
     include M3u8
+    include AttributeFormatter
 
     attr_accessor :uri, :duration, :independent, :byterange, :gap
 
@@ -33,31 +34,17 @@ module M3u8
     private
 
     def formatted_attributes
-      [duration_format,
-       uri_format,
+      [unquoted_format('DURATION', duration),
+       quoted_format('URI', uri),
        independent_format,
-       byterange_format,
+       quoted_format('BYTERANGE', byterange),
        gap_format].compact.join(',')
-    end
-
-    def duration_format
-      "DURATION=#{duration}"
-    end
-
-    def uri_format
-      %(URI="#{uri}")
     end
 
     def independent_format
       return unless independent
 
       'INDEPENDENT=YES'
-    end
-
-    def byterange_format
-      return if byterange.nil?
-
-      %(BYTERANGE="#{byterange}")
     end
 
     def gap_format
