@@ -6,6 +6,7 @@ module M3u8
   class MapItem
     extend M3u8
     include M3u8
+    include AttributeFormatter
 
     attr_accessor :uri, :byterange
 
@@ -22,15 +23,14 @@ module M3u8
     end
 
     def to_s
-      %(#EXT-X-MAP:URI="#{uri}"#{byterange_format})
+      "#EXT-X-MAP:#{formatted_attributes.compact.join(',')}"
     end
 
     private
 
-    def byterange_format
-      return if byterange.nil?
-
-      %(,BYTERANGE="#{byterange}")
+    def formatted_attributes
+      [%(URI="#{uri}"),
+       quoted_format('BYTERANGE', byterange)]
     end
   end
 end
