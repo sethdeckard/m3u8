@@ -1,3 +1,21 @@
+**1.8.0**
+
+* Standardized all item classes to use class-level `self.parse` methods,
+  converting `PlaybackStart`, `DateRangeItem`, `PlaylistItem`, and
+  `SegmentItem` from instance-level parse.
+* Applied `AttributeFormatter` to `MapItem` and `PartItem`, replacing
+  manual format helpers with `quoted_format` and `unquoted_format`.
+* Extracted `tag_value` helper in `Reader`, replacing repeated `gsub`
+  tag-prefix patterns.
+* Normalized `Reader` lambda syntax, converting `proc` blocks to
+  lambdas.
+* Removed `include M3u8` from `Reader` since all parsing now uses
+  class-level methods.
+* Added YARD `@param`/`@return` documentation to all public methods
+  and attributes across the entire codebase.
+
+***
+
 **1.7.0**
 
 * Added HLS Interstitials first-class `DateRangeItem` accessors:
