@@ -5,6 +5,7 @@ module M3u8
   # carries information about associated renditions in LL-HLS.
   class RenditionReportItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :uri, :last_msn, :last_part
 
@@ -30,25 +31,9 @@ module M3u8
     private
 
     def formatted_attributes
-      [uri_format,
-       last_msn_format,
-       last_part_format].compact.join(',')
-    end
-
-    def uri_format
-      %(URI="#{uri}")
-    end
-
-    def last_msn_format
-      return if last_msn.nil?
-
-      "LAST-MSN=#{last_msn}"
-    end
-
-    def last_part_format
-      return if last_part.nil?
-
-      "LAST-PART=#{last_part}"
+      [quoted_format('URI', uri),
+       unquoted_format('LAST-MSN', last_msn),
+       unquoted_format('LAST-PART', last_part)].compact.join(',')
     end
   end
 end
