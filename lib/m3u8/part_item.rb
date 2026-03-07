@@ -8,12 +8,21 @@ module M3u8
     include M3u8
     include AttributeFormatter
 
+    # @return [String, nil] partial segment URI
+    # @return [Float, nil] partial segment duration
+    # @return [Boolean, nil] whether segment is independent
+    # @return [ByteRange, nil] byte range
+    # @return [Boolean, nil] whether segment is a gap
     attr_accessor :uri, :duration, :independent, :byterange, :gap
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       initialize_with_byterange(params)
     end
 
+    # Parse an EXT-X-PART tag.
+    # @param text [String] raw tag line
+    # @return [PartItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       range_value = attributes['BYTERANGE']
@@ -27,6 +36,8 @@ module M3u8
       )
     end
 
+    # Render as an m3u8 EXT-X-PART tag.
+    # @return [String]
     def to_s
       "#EXT-X-PART:#{formatted_attributes}"
     end

@@ -7,14 +7,21 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [String, nil] rendition URI
+    # @return [Integer, nil] last media sequence number
+    # @return [Integer, nil] last partial segment index
     attr_accessor :uri, :last_msn, :last_part
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
+    # Parse an EXT-X-RENDITION-REPORT tag.
+    # @param text [String] raw tag line
+    # @return [RenditionReportItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       RenditionReportItem.new(
@@ -24,6 +31,8 @@ module M3u8
       )
     end
 
+    # Render as an m3u8 EXT-X-RENDITION-REPORT tag.
+    # @return [String]
     def to_s
       "#EXT-X-RENDITION-REPORT:#{formatted_attributes}"
     end

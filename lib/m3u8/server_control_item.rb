@@ -7,15 +7,24 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [Float, nil] skip threshold in seconds
+    # @return [Boolean, nil] whether dateranges can be skipped
+    # @return [Float, nil] hold-back duration in seconds
+    # @return [Float, nil] part hold-back duration in seconds
+    # @return [Boolean, nil] whether blocking reload is supported
     attr_accessor :can_skip_until, :can_skip_dateranges, :hold_back,
                   :part_hold_back, :can_block_reload
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
+    # Parse an EXT-X-SERVER-CONTROL tag.
+    # @param text [String] raw tag line
+    # @return [ServerControlItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       ServerControlItem.new(
@@ -29,6 +38,8 @@ module M3u8
       )
     end
 
+    # Render as an m3u8 EXT-X-SERVER-CONTROL tag.
+    # @return [String]
     def to_s
       "#EXT-X-SERVER-CONTROL:#{formatted_attributes}"
     end
