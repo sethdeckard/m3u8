@@ -5,6 +5,7 @@ module M3u8
   # provides directives for Low-Latency HLS delivery.
   class ServerControlItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :can_skip_until, :can_skip_dateranges, :hold_back,
                   :part_hold_back, :can_block_reload
@@ -35,35 +36,17 @@ module M3u8
     private
 
     def formatted_attributes
-      [can_skip_until_format,
+      [unquoted_format('CAN-SKIP-UNTIL', can_skip_until),
        can_skip_dateranges_format,
-       hold_back_format,
-       part_hold_back_format,
+       unquoted_format('HOLD-BACK', hold_back),
+       unquoted_format('PART-HOLD-BACK', part_hold_back),
        can_block_reload_format].compact.join(',')
-    end
-
-    def can_skip_until_format
-      return if can_skip_until.nil?
-
-      "CAN-SKIP-UNTIL=#{can_skip_until}"
     end
 
     def can_skip_dateranges_format
       return unless can_skip_dateranges
 
       'CAN-SKIP-DATERANGES=YES'
-    end
-
-    def hold_back_format
-      return if hold_back.nil?
-
-      "HOLD-BACK=#{hold_back}"
-    end
-
-    def part_hold_back_format
-      return if part_hold_back.nil?
-
-      "PART-HOLD-BACK=#{part_hold_back}"
     end
 
     def can_block_reload_format
