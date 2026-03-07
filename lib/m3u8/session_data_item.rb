@@ -4,6 +4,7 @@ module M3u8
   # SessionDataItem represents a set of EXT-X-SESSION-DATA attributes
   class SessionDataItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :data_id, :value, :uri, :language
 
@@ -21,35 +22,11 @@ module M3u8
     end
 
     def to_s
-      attributes = [data_id_format,
-                    value_format,
-                    uri_format,
-                    language_format].compact.join(',')
+      attributes = [quoted_format('DATA-ID', data_id),
+                    quoted_format('VALUE', value),
+                    quoted_format('URI', uri),
+                    quoted_format('LANGUAGE', language)].compact.join(',')
       "#EXT-X-SESSION-DATA:#{attributes}"
-    end
-
-    private
-
-    def data_id_format
-      %(DATA-ID="#{data_id}")
-    end
-
-    def value_format
-      return if value.nil?
-
-      %(VALUE="#{value}")
-    end
-
-    def uri_format
-      return if uri.nil?
-
-      %(URI="#{uri}")
-    end
-
-    def language_format
-      return if language.nil?
-
-      %(LANGUAGE="#{language}")
     end
   end
 end
