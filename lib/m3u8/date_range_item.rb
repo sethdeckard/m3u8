@@ -6,6 +6,27 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [String, nil] unique date range identifier
+    # @return [String, nil] CLASS attribute
+    # @return [String, nil] start date (ISO 8601)
+    # @return [String, nil] end date (ISO 8601)
+    # @return [Float, nil] duration in seconds
+    # @return [Float, nil] planned duration in seconds
+    # @return [String, nil] SCTE-35 command hex string
+    # @return [String, nil] SCTE-35 out hex string
+    # @return [String, nil] SCTE-35 in hex string
+    # @return [String, nil] CUE attribute
+    # @return [Boolean, nil] END-ON-NEXT flag
+    # @return [Hash, nil] client-defined X- attributes
+    # @return [String, nil] interstitial asset URI
+    # @return [String, nil] interstitial asset list URI
+    # @return [Float, nil] interstitial resume offset
+    # @return [Float, nil] interstitial playout limit
+    # @return [String, nil] interstitial restrict value
+    # @return [String, nil] interstitial snap value
+    # @return [String, nil] interstitial timeline occupies
+    # @return [String, nil] interstitial timeline style
+    # @return [String, nil] content may vary flag
     attr_accessor :id, :class_name, :start_date, :end_date, :duration,
                   :planned_duration, :scte35_cmd, :scte35_out, :scte35_in,
                   :cue, :end_on_next, :client_attributes,
@@ -20,12 +41,16 @@ module M3u8
       X-CONTENT-MAY-VARY
     ].freeze
 
+    # @param options [Hash] attribute key-value pairs
     def initialize(options = {})
       options.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
+    # Parse an EXT-X-DATERANGE tag.
+    # @param text [String] raw tag line
+    # @return [DateRangeItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       options = parse_base_attributes(attributes)
@@ -68,18 +93,26 @@ module M3u8
     end
     private_class_method :parse_interstitials
 
+    # Render as an m3u8 EXT-X-DATERANGE tag.
+    # @return [String]
     def to_s
       "#EXT-X-DATERANGE:#{formatted_attributes}"
     end
 
+    # Parse SCTE-35 command data.
+    # @return [Scte35, nil]
     def scte35_cmd_info
       Scte35.parse(scte35_cmd) unless scte35_cmd.nil?
     end
 
+    # Parse SCTE-35 out data.
+    # @return [Scte35, nil]
     def scte35_out_info
       Scte35.parse(scte35_out) unless scte35_out.nil?
     end
 
+    # Parse SCTE-35 in data.
+    # @return [Scte35, nil]
     def scte35_in_info
       Scte35.parse(scte35_in) unless scte35_in.nil?
     end
