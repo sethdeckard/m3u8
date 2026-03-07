@@ -4,7 +4,7 @@ module M3u8
   # PlaylistItem represents a set of EXT-X-STREAM-INF or
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
-    include M3u8
+    extend M3u8
     include AttributeFormatter
 
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
@@ -22,15 +22,9 @@ module M3u8
     end
 
     def self.parse(text)
-      item = PlaylistItem.new
-      item.parse(text)
-      item
-    end
-
-    def parse(text)
       attributes = parse_attributes(text)
       options = options_from_attributes(attributes)
-      initialize(options)
+      PlaylistItem.new(options)
     end
 
     def resolution
@@ -60,42 +54,63 @@ module M3u8
       m3u8_format
     end
 
-    private
+    def self.options_from_attributes(attributes)
+      parse_stream_attrs(attributes)
+        .merge(parse_media_attrs(attributes))
+    end
+    private_class_method :options_from_attributes
 
-    def options_from_attributes(attributes)
+    def self.parse_stream_attrs(attributes)
       resolution = parse_resolution(attributes['RESOLUTION'])
       { program_id: attributes['PROGRAM-ID'],
         codecs: attributes['CODECS'],
         width: resolution[:width],
         height: resolution[:height],
-        bandwidth: parse_bandwidth(attributes['BANDWIDTH']),
+        bandwidth:
+          parse_bandwidth(attributes['BANDWIDTH']),
         average_bandwidth:
-          parse_average_bandwidth(attributes['AVERAGE-BANDWIDTH']),
-        frame_rate: parse_frame_rate(attributes['FRAME-RATE']),
-        video: attributes['VIDEO'], audio: attributes['AUDIO'],
-        uri: attributes['URI'], subtitles: attributes['SUBTITLES'],
-        closed_captions: attributes['CLOSED-CAPTIONS'],
-        name: attributes['NAME'], hdcp_level: attributes['HDCP-LEVEL'],
-        stable_variant_id: attributes['STABLE-VARIANT-ID'],
+          parse_average_bandwidth(
+            attributes['AVERAGE-BANDWIDTH']
+          ),
+        frame_rate:
+          parse_frame_rate(attributes['FRAME-RATE']),
+        hdcp_level: attributes['HDCP-LEVEL'],
         video_range: attributes['VIDEO-RANGE'],
-        allowed_cpc: attributes['ALLOWED-CPC'],
-        pathway_id: attributes['PATHWAY-ID'],
-        req_video_layout: attributes['REQ-VIDEO-LAYOUT'],
-        supplemental_codecs: attributes['SUPPLEMENTAL-CODECS'],
+        supplemental_codecs:
+          attributes['SUPPLEMENTAL-CODECS'],
         score: parse_float(attributes['SCORE']) }
     end
+    private_class_method :parse_stream_attrs
 
-    def parse_average_bandwidth(value)
+    def self.parse_media_attrs(attributes)
+      { video: attributes['VIDEO'],
+        audio: attributes['AUDIO'],
+        uri: attributes['URI'],
+        subtitles: attributes['SUBTITLES'],
+        closed_captions: attributes['CLOSED-CAPTIONS'],
+        name: attributes['NAME'],
+        stable_variant_id:
+          attributes['STABLE-VARIANT-ID'],
+        allowed_cpc: attributes['ALLOWED-CPC'],
+        pathway_id: attributes['PATHWAY-ID'],
+        req_video_layout:
+          attributes['REQ-VIDEO-LAYOUT'] }
+    end
+    private_class_method :parse_media_attrs
+
+    def self.parse_average_bandwidth(value)
       value&.to_i
     end
+    private_class_method :parse_average_bandwidth
 
-    def parse_bandwidth(value)
+    def self.parse_bandwidth(value)
       return if value.nil?
 
       value.to_i
     end
+    private_class_method :parse_bandwidth
 
-    def parse_resolution(resolution)
+    def self.parse_resolution(resolution)
       return { width: nil, height: nil } if resolution.nil?
 
       values = resolution.split('x')
@@ -103,13 +118,17 @@ module M3u8
       height = values[1].to_i
       { width: width, height: height }
     end
+    private_class_method :parse_resolution
 
-    def parse_frame_rate(frame_rate)
+    def self.parse_frame_rate(frame_rate)
       return if frame_rate.nil?
 
       value = BigDecimal(frame_rate)
       value if value.positive?
     end
+    private_class_method :parse_frame_rate
+
+    private
 
     def m3u8_format
       return %(#EXT-X-I-FRAME-STREAM-INF:#{attributes},URI="#{uri}") if iframe
