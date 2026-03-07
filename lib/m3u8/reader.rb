@@ -106,25 +106,28 @@ module M3u8
       true
     end
 
+    def tag_value(line)
+      line.split(':', 2).last.strip
+    end
+
     def parse_playlist_type(line)
-      playlist.type = line.gsub('#EXT-X-PLAYLIST-TYPE:', '').strip
+      playlist.type = tag_value(line)
     end
 
     def parse_version(line)
-      playlist.version = line.gsub('#EXT-X-VERSION:', '').to_i
+      playlist.version = tag_value(line).to_i
     end
 
     def parse_sequence(line)
-      playlist.sequence = line.gsub('#EXT-X-MEDIA-SEQUENCE:', '').to_i
+      playlist.sequence = tag_value(line).to_i
     end
 
     def parse_cache(line)
-      line = line.gsub('#EXT-X-ALLOW-CACHE:', '')
-      playlist.cache = parse_yes_no(line)
+      playlist.cache = parse_yes_no(tag_value(line))
     end
 
     def parse_target(line)
-      playlist.target = line.gsub('#EXT-X-TARGETDURATION:', '').to_i
+      playlist.target = tag_value(line).to_i
     end
 
     def parse_stream(line)
@@ -152,8 +155,7 @@ module M3u8
     end
 
     def parse_discontinuity_sequence(line)
-      value = line.gsub('#EXT-X-DISCONTINUITY-SEQUENCE:', '').strip
-      playlist.discontinuity_sequence = Integer(value)
+      playlist.discontinuity_sequence = Integer(tag_value(line))
     end
 
     def parse_key(line)
