@@ -10,7 +10,7 @@ module M3u8
     attr_accessor :uri, :byterange
 
     def initialize(params = {})
-      intialize_with_byterange(params)
+      initialize_with_byterange(params)
     end
 
     def self.parse(text)
