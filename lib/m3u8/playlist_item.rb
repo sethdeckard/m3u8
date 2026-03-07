@@ -42,20 +42,18 @@ module M3u8
     def codecs
       return @codecs unless @codecs.nil?
 
-      video_codec_string = video_codec(profile, level)
+      video = Codecs.video_codec(profile, level)
 
-      # profile and/or level were specified but not recognized,
-      # do not specify any codecs
-      return nil if !(profile.nil? && level.nil?) && video_codec_string.nil?
+      # profile and/or level were specified but not recognized
+      return nil if !(profile.nil? && level.nil?) && video.nil?
 
-      audio_codec_string = audio_codec_code
+      audio = Codecs.audio_codec(@audio_codec)
 
-      # audio codec was specified but not recognized,
-      # do not specify any codecs
-      return nil if !@audio_codec.nil? && audio_codec_string.nil?
+      # audio codec was specified but not recognized
+      return nil if !@audio_codec.nil? && audio.nil?
 
-      codec_strings = [video_codec_string, audio_codec_string].compact
-      codec_strings.empty? ? nil : codec_strings.join(',')
+      strings = [video, audio].compact
+      strings.empty? ? nil : strings.join(',')
     end
 
     def to_s
@@ -163,78 +161,6 @@ module M3u8
       else
         %(CLOSED-CAPTIONS="#{closed_captions}")
       end
-    end
-
-    def audio_codec_code
-      return if @audio_codec.nil?
-      return 'mp4a.40.2' if @audio_codec.casecmp('aac-lc').zero?
-      return 'mp4a.40.5' if @audio_codec.casecmp('he-aac').zero?
-      return 'mp4a.40.34' if @audio_codec.casecmp('mp3').zero?
-      return 'ac-3' if @audio_codec.casecmp('ac-3').zero?
-      if %w[ec-3 e-ac-3].any? { |c| @audio_codec.casecmp(c).zero? }
-        return 'ec-3'
-      end
-      return 'fLaC' if @audio_codec.casecmp('flac').zero?
-
-      'Opus' if @audio_codec.casecmp('opus').zero?
-    end
-
-    def video_codec(profile, level)
-      return if profile.nil? || level.nil?
-
-      return baseline_codec_string(level) if profile.casecmp('baseline').zero?
-      return main_codec_string(level) if profile.casecmp('main').zero?
-      return high_codec_string(level) if profile.casecmp('high').zero?
-      return hevc_codec_string(level) if profile.start_with?('hevc-')
-
-      av1_codec_string(level) if profile.start_with?('av1-')
-    end
-
-    def baseline_codec_string(level)
-      return 'avc1.66.30' if level == 3.0
-
-      'avc1.42001f' if level == 3.1
-    end
-
-    def main_codec_string(level)
-      return 'avc1.77.30' if level == 3.0
-      return 'avc1.4d001f' if level == 3.1
-      return 'avc1.4d0028' if level == 4.0
-
-      'avc1.4d0029' if level == 4.1
-    end
-
-    def high_codec_string(level)
-      levels = [3.0, 3.1, 3.2, 4.0, 4.1, 4.2,
-                5.0, 5.1, 5.2]
-      return nil unless levels.include?(level)
-
-      level_hex_string = level.to_s.sub('.', '').to_i.to_s(16)
-      "avc1.6400#{level_hex_string}"
-    end
-
-    def hevc_codec_string(level)
-      return 'hvc1.1.6.L93.B0' if profile == 'hevc-main' && level == 3.1
-      return 'hvc1.1.6.L120.B0' if profile == 'hevc-main' && level == 4.0
-      return 'hvc1.1.6.L150.B0' if profile == 'hevc-main' && level == 5.0
-      return 'hvc1.1.6.L153.B0' if profile == 'hevc-main' && level == 5.1
-      return 'hvc1.2.4.L93.B0' if profile == 'hevc-main-10' && level == 3.1
-      return 'hvc1.2.4.L120.B0' if profile == 'hevc-main-10' && level == 4.0
-      return 'hvc1.2.4.L150.B0' if profile == 'hevc-main-10' && level == 5.0
-
-      'hvc1.2.4.L153.B0' if profile == 'hevc-main-10' && level == 5.1
-    end
-
-    def av1_codec_string(level)
-      return 'av01.0.04M.08' if profile == 'av1-main' && level == 3.1
-      return 'av01.0.08M.08' if profile == 'av1-main' && level == 4.0
-      return 'av01.0.12M.08' if profile == 'av1-main' && level == 5.0
-      return 'av01.0.13M.08' if profile == 'av1-main' && level == 5.1
-      return 'av01.1.04H.10' if profile == 'av1-high' && level == 3.1
-      return 'av01.1.08H.10' if profile == 'av1-high' && level == 4.0
-      return 'av01.1.12H.10' if profile == 'av1-high' && level == 5.0
-
-      'av01.1.13H.10' if profile == 'av1-high' && level == 5.1
     end
   end
 end
