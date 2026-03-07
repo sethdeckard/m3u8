@@ -12,6 +12,14 @@ module M3u8
       initialize_with_byterange(params)
     end
 
+    def self.parse(text)
+      values = text.gsub('#EXTINF:', '')
+                   .tr("\n", ',').split(',')
+      options = { duration: values[0].to_f }
+      options[:comment] = values[1] unless values[1].nil?
+      SegmentItem.new(options)
+    end
+
     def to_s
       "#EXTINF:#{duration},#{comment}#{byterange_format}" \
         "\n#{date_format}#{segment}"
