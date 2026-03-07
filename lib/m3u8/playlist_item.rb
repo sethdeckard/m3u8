@@ -262,7 +262,9 @@ module M3u8
       return 'mp4a.40.5' if @audio_codec.casecmp('he-aac').zero?
       return 'mp4a.40.34' if @audio_codec.casecmp('mp3').zero?
       return 'ac-3' if @audio_codec.casecmp('ac-3').zero?
-      return 'ec-3' if %w[ec-3 e-ac-3].any? { |c| @audio_codec.casecmp(c).zero? }
+      if %w[ec-3 e-ac-3].any? { |c| @audio_codec.casecmp(c).zero? }
+        return 'ec-3'
+      end
       return 'fLaC' if @audio_codec.casecmp('flac').zero?
 
       'Opus' if @audio_codec.casecmp('opus').zero?
@@ -294,7 +296,9 @@ module M3u8
     end
 
     def high_codec_string(level)
-      return nil unless [3.0, 3.1, 3.2, 4.0, 4.1, 4.2, 5.0, 5.1, 5.2].include?(level)
+      levels = [3.0, 3.1, 3.2, 4.0, 4.1, 4.2,
+                5.0, 5.1, 5.2]
+      return nil unless levels.include?(level)
 
       level_hex_string = level.to_s.sub('.', '').to_i.to_s(16)
       "avc1.6400#{level_hex_string}"

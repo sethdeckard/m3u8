@@ -110,7 +110,8 @@ module M3u8
     end
 
     def self.command_data_length(reader, header)
-      return header[:splice_command_length] unless header[:splice_command_length] == 0xFFF
+      length = header[:splice_command_length]
+      return length unless length == 0xFFF
 
       if unknown_command_with_unspecified_length?(header)
         # Unknown command: consume everything up to CRC

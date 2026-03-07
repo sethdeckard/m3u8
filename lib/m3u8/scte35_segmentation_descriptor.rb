@@ -44,7 +44,9 @@ module M3u8
       upid_length = reader.read_bits(8)
       return if upid_length.zero?
 
-      attrs[:segmentation_upid] = reader.read_bytes(upid_length).force_encoding('UTF-8')
+      attrs[:segmentation_upid] =
+        reader.read_bytes(upid_length)
+              .force_encoding('UTF-8')
     end
 
     private_class_method :parse_segmentation_detail, :parse_upid
