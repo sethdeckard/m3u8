@@ -3,7 +3,7 @@
 module M3u8
   # DateRangeItem represents a #EXT-X-DATERANGE tag
   class DateRangeItem
-    include M3u8
+    extend M3u8
     include AttributeFormatter
 
     attr_accessor :id, :class_name, :start_date, :end_date, :duration,
@@ -26,22 +26,47 @@ module M3u8
       end
     end
 
-    def parse(text)
+    def self.parse(text)
       attributes = parse_attributes(text)
-      @id = attributes['ID']
-      @class_name = attributes['CLASS']
-      @start_date = attributes['START-DATE']
-      @end_date = attributes['END-DATE']
-      @duration = parse_float(attributes['DURATION'])
-      @planned_duration = parse_float(attributes['PLANNED-DURATION'])
-      @scte35_cmd = attributes['SCTE35-CMD']
-      @scte35_out = attributes['SCTE35-OUT']
-      @scte35_in = attributes['SCTE35-IN']
-      @cue = attributes['CUE']
-      @end_on_next = attributes.key?('END-ON-NEXT')
-      parse_interstitials(attributes)
-      @client_attributes = parse_client_attributes(attributes)
+      options = parse_base_attributes(attributes)
+                .merge(parse_interstitials(attributes))
+                .merge(client_attributes:
+                         parse_client_attributes(attributes))
+      DateRangeItem.new(options)
     end
+
+    def self.parse_base_attributes(attributes)
+      { id: attributes['ID'],
+        class_name: attributes['CLASS'],
+        start_date: attributes['START-DATE'],
+        end_date: attributes['END-DATE'],
+        duration: parse_float(attributes['DURATION']),
+        planned_duration:
+          parse_float(attributes['PLANNED-DURATION']),
+        scte35_cmd: attributes['SCTE35-CMD'],
+        scte35_out: attributes['SCTE35-OUT'],
+        scte35_in: attributes['SCTE35-IN'],
+        cue: attributes['CUE'],
+        end_on_next: attributes.key?('END-ON-NEXT') }
+    end
+    private_class_method :parse_base_attributes
+
+    def self.parse_interstitials(attributes)
+      { asset_uri: attributes['X-ASSET-URI'],
+        asset_list: attributes['X-ASSET-LIST'],
+        resume_offset:
+          parse_float(attributes['X-RESUME-OFFSET']),
+        playout_limit:
+          parse_float(attributes['X-PLAYOUT-LIMIT']),
+        restrict: attributes['X-RESTRICT'],
+        snap: attributes['X-SNAP'],
+        timeline_occupies:
+          attributes['X-TIMELINE-OCCUPIES'],
+        timeline_style: attributes['X-TIMELINE-STYLE'],
+        content_may_vary:
+          attributes['X-CONTENT-MAY-VARY'] }
+    end
+    private_class_method :parse_interstitials
 
     def to_s
       "#EXT-X-DATERANGE:#{formatted_attributes}"
@@ -58,6 +83,13 @@ module M3u8
     def scte35_in_info
       Scte35.parse(scte35_in) unless scte35_in.nil?
     end
+
+    def self.parse_client_attributes(attributes)
+      attributes.select do |key|
+        key.start_with?('X-') && !INTERSTITIAL_KEYS.include?(key)
+      end
+    end
+    private_class_method :parse_client_attributes
 
     private
 
@@ -98,18 +130,6 @@ module M3u8
       end
     end
 
-    def parse_interstitials(attributes)
-      @asset_uri = attributes['X-ASSET-URI']
-      @asset_list = attributes['X-ASSET-LIST']
-      @resume_offset = parse_float(attributes['X-RESUME-OFFSET'])
-      @playout_limit = parse_float(attributes['X-PLAYOUT-LIMIT'])
-      @restrict = attributes['X-RESTRICT']
-      @snap = attributes['X-SNAP']
-      @timeline_occupies = attributes['X-TIMELINE-OCCUPIES']
-      @timeline_style = attributes['X-TIMELINE-STYLE']
-      @content_may_vary = attributes['X-CONTENT-MAY-VARY']
-    end
-
     def interstitial_formats
       [quoted_format('X-ASSET-URI', asset_uri),
        quoted_format('X-ASSET-LIST', asset_list),
@@ -126,12 +146,6 @@ module M3u8
       return unless end_on_next
 
       'END-ON-NEXT=YES'
-    end
-
-    def parse_client_attributes(attributes)
-      attributes.select do |key|
-        key.start_with?('X-') && !INTERSTITIAL_KEYS.include?(key)
-      end
     end
   end
 end

@@ -211,9 +211,7 @@ module M3u8
     end
 
     def parse_date_range(line)
-      item = M3u8::DateRangeItem.new
-      item.parse(line)
-      playlist.items << item
+      playlist.items << M3u8::DateRangeItem.parse(line)
     end
 
     def parse_define(line)
