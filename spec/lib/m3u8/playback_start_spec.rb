@@ -11,20 +11,18 @@ describe M3u8::PlaybackStart do
     end
   end
 
-  describe '#parse' do
+  describe '.parse' do
     it 'parses tag with all attributes' do
-      start = described_class.new
       tag = '#EXT-X-START:TIME-OFFSET=20.0,PRECISE=YES'
-      start.parse(tag)
+      start = described_class.parse(tag)
 
       expect(start.time_offset).to eq(20.0)
       expect(start.precise).to be true
     end
 
     it 'parses tag without optional attributes' do
-      start = described_class.new
       tag = '#EXT-X-START:TIME-OFFSET=-12.9'
-      start.parse(tag)
+      start = described_class.parse(tag)
 
       expect(start.time_offset).to eq(-12.9)
       expect(start.precise).to be_nil
