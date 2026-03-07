@@ -5,6 +5,7 @@ module M3u8
   # a server to indicate a resource that will be needed soon.
   class PreloadHintItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :type, :uri, :byterange_start, :byterange_length
 
@@ -33,30 +34,11 @@ module M3u8
     private
 
     def formatted_attributes
-      [type_format,
-       uri_format,
-       byterange_start_format,
-       byterange_length_format].compact.join(',')
-    end
-
-    def type_format
-      "TYPE=#{type}"
-    end
-
-    def uri_format
-      %(URI="#{uri}")
-    end
-
-    def byterange_start_format
-      return if byterange_start.nil?
-
-      "BYTERANGE-START=#{byterange_start}"
-    end
-
-    def byterange_length_format
-      return if byterange_length.nil?
-
-      "BYTERANGE-LENGTH=#{byterange_length}"
+      [unquoted_format('TYPE', type),
+       quoted_format('URI', uri),
+       unquoted_format('BYTERANGE-START', byterange_start),
+       unquoted_format('BYTERANGE-LENGTH',
+                       byterange_length)].compact.join(',')
     end
   end
 end
