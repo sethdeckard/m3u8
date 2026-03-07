@@ -167,11 +167,7 @@ module M3u8
     end
 
     def parse_segment(line)
-      self.item = M3u8::SegmentItem.new
-      values = line.gsub('#EXTINF:', '').tr("\n", ',').split(',')
-      item.duration = values[0].to_f
-      item.comment = values[1] unless values[1].nil?
-
+      self.item = M3u8::SegmentItem.parse(line)
       self.master = false
       self.open = true
     end

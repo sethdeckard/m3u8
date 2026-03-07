@@ -22,6 +22,29 @@ describe M3u8::SegmentItem do
     expect(item.comment).to eq 'anything'
   end
 
+  describe '.parse' do
+    it 'parses tag with duration and comment' do
+      tag = '#EXTINF:10.991,anything'
+      item = described_class.parse(tag)
+      expect(item.duration).to eq(10.991)
+      expect(item.comment).to eq('anything')
+    end
+
+    it 'parses tag with duration only' do
+      tag = '#EXTINF:10.991,'
+      item = described_class.parse(tag)
+      expect(item.duration).to eq(10.991)
+      expect(item.comment).to be_nil
+    end
+
+    it 'parses tag without trailing comma' do
+      tag = '#EXTINF:10.991'
+      item = described_class.parse(tag)
+      expect(item.duration).to eq(10.991)
+      expect(item.comment).to be_nil
+    end
+  end
+
   it 'should provide m3u8 format representation' do
     time_hash = { time: '2010-02-19T14:54:23.031' }
     time_item = M3u8::TimeItem.new(time_hash)
