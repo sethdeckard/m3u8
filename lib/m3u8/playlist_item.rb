@@ -7,6 +7,31 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [String, nil] program ID
+    # @return [Integer, nil] horizontal resolution in pixels
+    # @return [Integer, nil] vertical resolution in pixels
+    # @return [String, nil] codec string or computed codecs
+    # @return [Integer, nil] peak bandwidth in bits/s
+    # @return [String, nil] audio codec hint for codecs generation
+    # @return [String, Integer, Float, nil] H.264/HEVC/AV1 level
+    # @return [String, nil] H.264/HEVC/AV1 profile name
+    # @return [String, nil] VIDEO rendition group ID
+    # @return [String, nil] AUDIO rendition group ID
+    # @return [String, nil] stream URI
+    # @return [Integer, nil] average bandwidth in bits/s
+    # @return [String, nil] SUBTITLES rendition group ID
+    # @return [String, nil] CLOSED-CAPTIONS value or 'NONE'
+    # @return [Boolean] whether this is an I-frame stream
+    # @return [BigDecimal, nil] frame rate
+    # @return [String, nil] stream name
+    # @return [String, nil] HDCP level (TYPE-0, TYPE-1, NONE)
+    # @return [String, nil] stable variant ID
+    # @return [String, nil] video range (SDR, HLG, PQ)
+    # @return [String, nil] allowed CPC value
+    # @return [String, nil] content steering pathway ID
+    # @return [String, nil] required video layout
+    # @return [String, nil] supplemental codecs string
+    # @return [Float, nil] stream score
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
                   :average_bandwidth, :subtitles, :closed_captions, :iframe,
@@ -14,6 +39,7 @@ module M3u8
                   :video_range, :allowed_cpc, :pathway_id,
                   :req_video_layout, :supplemental_codecs, :score
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       self.iframe = false
       params.each do |key, value|
@@ -21,18 +47,25 @@ module M3u8
       end
     end
 
+    # Parse an EXT-X-STREAM-INF or EXT-X-I-FRAME-STREAM-INF tag.
+    # @param text [String] raw tag line
+    # @return [PlaylistItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       options = options_from_attributes(attributes)
       PlaylistItem.new(options)
     end
 
+    # Format the resolution as a WIDTHxHEIGHT string.
+    # @return [String, nil]
     def resolution
       return if width.nil?
 
       "#{width}x#{height}"
     end
 
+    # Return or compute the codecs string.
+    # @return [String, nil]
     def codecs
       return @codecs unless @codecs.nil?
 
@@ -50,6 +83,8 @@ module M3u8
       strings.empty? ? nil : strings.join(',')
     end
 
+    # Render as an m3u8 tag string.
+    # @return [String]
     def to_s
       m3u8_format
     end
