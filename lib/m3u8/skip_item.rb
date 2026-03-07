@@ -7,14 +7,20 @@ module M3u8
     extend M3u8
     include AttributeFormatter
 
+    # @return [Integer, nil] number of skipped segments
+    # @return [String, nil] recently removed dateranges
     attr_accessor :skipped_segments, :recently_removed_dateranges
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       params.each do |key, value|
         instance_variable_set("@#{key}", value)
       end
     end
 
+    # Parse an EXT-X-SKIP tag.
+    # @param text [String] raw tag line
+    # @return [SkipItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       SkipItem.new(
@@ -25,6 +31,8 @@ module M3u8
       )
     end
 
+    # Render as an m3u8 EXT-X-SKIP tag.
+    # @return [String]
     def to_s
       "#EXT-X-SKIP:#{formatted_attributes}"
     end
