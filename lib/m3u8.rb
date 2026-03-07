@@ -22,6 +22,10 @@ module M3u8
     value&.to_f
   end
 
+  def parse_int(value)
+    value&.to_i
+  end
+
   def parse_yes_no(value)
     value == 'YES'
   end

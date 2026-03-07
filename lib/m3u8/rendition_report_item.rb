@@ -23,10 +23,6 @@ module M3u8
       )
     end
 
-    def self.parse_int(value)
-      value&.to_i
-    end
-
     def to_s
       "#EXT-X-RENDITION-REPORT:#{formatted_attributes}"
     end

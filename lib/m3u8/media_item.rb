@@ -35,10 +35,6 @@ module M3u8
       MediaItem.new(options)
     end
 
-    def self.parse_int(value)
-      value&.to_i
-    end
-
     def to_s
       "#EXT-X-MEDIA:#{formatted_attributes.join(',')}"
     end
