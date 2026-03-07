@@ -198,9 +198,7 @@ module M3u8
     end
 
     def parse_start(line)
-      item = M3u8::PlaybackStart.new
-      item.parse(line)
-      playlist.items << item
+      playlist.items << M3u8::PlaybackStart.parse(line)
     end
 
     def parse_time(line)
