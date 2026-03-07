@@ -5,6 +5,7 @@ module M3u8
   # EXT-X-I-FRAME-STREAM-INF attributes
   class PlaylistItem
     include M3u8
+    include AttributeFormatter
 
     attr_accessor :program_id, :width, :height, :codecs, :bandwidth,
                   :audio_codec, :level, :profile, :video, :audio, :uri,
@@ -119,37 +120,33 @@ module M3u8
     end
 
     def attributes
-      [program_id_format,
-       resolution_format,
-       codecs_format,
-       supplemental_codecs_format,
-       bandwidth_format,
-       average_bandwidth_format,
-       score_format,
+      (stream_attributes + media_attributes).compact.join(',')
+    end
+
+    def stream_attributes
+      [unquoted_format('PROGRAM-ID', program_id),
+       unquoted_format('RESOLUTION', resolution),
+       quoted_format('CODECS', codecs),
+       quoted_format('SUPPLEMENTAL-CODECS', supplemental_codecs),
+       "BANDWIDTH=#{bandwidth}",
+       unquoted_format('AVERAGE-BANDWIDTH', average_bandwidth),
+       unquoted_format('SCORE', score),
        frame_rate_format,
-       hdcp_level_format,
-       video_range_format,
-       allowed_cpc_format,
-       audio_format,
-       video_format,
-       subtitles_format,
+       unquoted_format('HDCP-LEVEL', hdcp_level),
+       unquoted_format('VIDEO-RANGE', video_range)]
+    end
+
+    def media_attributes
+      [quoted_format('ALLOWED-CPC', allowed_cpc),
+       quoted_format('AUDIO', audio),
+       quoted_format('VIDEO', video),
+       quoted_format('SUBTITLES', subtitles),
        closed_captions_format,
-       name_format,
-       stable_variant_id_format,
-       pathway_id_format,
-       req_video_layout_format].compact.join(',')
-    end
-
-    def program_id_format
-      return if program_id.nil?
-
-      "PROGRAM-ID=#{program_id}"
-    end
-
-    def resolution_format
-      return if resolution.nil?
-
-      "RESOLUTION=#{resolution}"
+       quoted_format('NAME', name),
+       quoted_format('STABLE-VARIANT-ID', stable_variant_id),
+       quoted_format('PATHWAY-ID', pathway_id),
+       quoted_format('REQ-VIDEO-LAYOUT',
+                     req_video_layout)]
     end
 
     def frame_rate_format
@@ -158,102 +155,14 @@ module M3u8
       "FRAME-RATE=#{format('%.3f', frame_rate)}"
     end
 
-    def hdcp_level_format
-      return if hdcp_level.nil?
-
-      "HDCP-LEVEL=#{hdcp_level}"
-    end
-
-    def codecs_format
-      return if codecs.nil?
-
-      %(CODECS="#{codecs}")
-    end
-
-    def bandwidth_format
-      "BANDWIDTH=#{bandwidth}"
-    end
-
-    def average_bandwidth_format
-      return if average_bandwidth.nil?
-
-      "AVERAGE-BANDWIDTH=#{average_bandwidth}"
-    end
-
-    def audio_format
-      return if audio.nil?
-
-      %(AUDIO="#{audio}")
-    end
-
-    def video_format
-      return if video.nil?
-
-      %(VIDEO="#{video}")
-    end
-
-    def subtitles_format
-      return if subtitles.nil?
-
-      %(SUBTITLES="#{subtitles}")
-    end
-
     def closed_captions_format
       return if closed_captions.nil?
 
       if closed_captions == 'NONE'
-        %(CLOSED-CAPTIONS=NONE)
+        'CLOSED-CAPTIONS=NONE'
       else
         %(CLOSED-CAPTIONS="#{closed_captions}")
       end
-    end
-
-    def name_format
-      return if name.nil?
-
-      %(NAME="#{name}")
-    end
-
-    def stable_variant_id_format
-      return if stable_variant_id.nil?
-
-      %(STABLE-VARIANT-ID="#{stable_variant_id}")
-    end
-
-    def video_range_format
-      return if video_range.nil?
-
-      "VIDEO-RANGE=#{video_range}"
-    end
-
-    def allowed_cpc_format
-      return if allowed_cpc.nil?
-
-      %(ALLOWED-CPC="#{allowed_cpc}")
-    end
-
-    def pathway_id_format
-      return if pathway_id.nil?
-
-      %(PATHWAY-ID="#{pathway_id}")
-    end
-
-    def req_video_layout_format
-      return if req_video_layout.nil?
-
-      %(REQ-VIDEO-LAYOUT="#{req_video_layout}")
-    end
-
-    def supplemental_codecs_format
-      return if supplemental_codecs.nil?
-
-      %(SUPPLEMENTAL-CODECS="#{supplemental_codecs}")
-    end
-
-    def score_format
-      return if score.nil?
-
-      "SCORE=#{score}"
     end
 
     def audio_codec_code
