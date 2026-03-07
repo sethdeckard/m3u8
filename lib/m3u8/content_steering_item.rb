@@ -5,6 +5,7 @@ module M3u8
   # indicates a Content Steering Manifest for dynamic pathway selection.
   class ContentSteeringItem
     extend M3u8
+    include AttributeFormatter
 
     attr_accessor :server_uri, :pathway_id
 
@@ -29,18 +30,8 @@ module M3u8
     private
 
     def formatted_attributes
-      [server_uri_format,
-       pathway_id_format].compact.join(',')
-    end
-
-    def server_uri_format
-      %(SERVER-URI="#{server_uri}")
-    end
-
-    def pathway_id_format
-      return if pathway_id.nil?
-
-      %(PATHWAY-ID="#{pathway_id}")
+      [quoted_format('SERVER-URI', server_uri),
+       quoted_format('PATHWAY-ID', pathway_id)].compact.join(',')
     end
   end
 end
