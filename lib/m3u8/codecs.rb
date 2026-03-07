@@ -51,12 +51,19 @@ module M3u8
       ['av1-high', 5.1] => 'av01.1.13H.10'
     }.freeze
 
+    # Look up the codec string for an audio codec name.
+    # @param codec [String, nil] audio codec name
+    # @return [String, nil] codec string
     def self.audio_codec(codec)
       return if codec.nil?
 
       AUDIO_CODECS[codec.downcase]
     end
 
+    # Look up the codec string for a video profile and level.
+    # @param profile [String, nil] video profile name
+    # @param level [Float, Integer, nil] video level
+    # @return [String, nil] codec string
     def self.video_codec(profile, level)
       return if profile.nil? || level.nil?
 

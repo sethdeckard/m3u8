@@ -7,14 +7,22 @@ module M3u8
   class DefineItem
     extend M3u8
 
+    # @return [String, nil] variable name
+    # @return [String, nil] variable value
+    # @return [String, nil] imported variable name
+    # @return [String, nil] query parameter name
     attr_accessor :name, :value, :import, :queryparam
 
+    # @param params [Hash] attribute key-value pairs
     def initialize(params = {})
       params.each do |key, val|
         instance_variable_set("@#{key}", val)
       end
     end
 
+    # Parse an EXT-X-DEFINE tag.
+    # @param text [String] raw tag line
+    # @return [DefineItem]
     def self.parse(text)
       attributes = parse_attributes(text)
       DefineItem.new(
@@ -25,6 +33,8 @@ module M3u8
       )
     end
 
+    # Render as an m3u8 EXT-X-DEFINE tag.
+    # @return [String]
     def to_s
       "#EXT-X-DEFINE:#{formatted_attributes}"
     end

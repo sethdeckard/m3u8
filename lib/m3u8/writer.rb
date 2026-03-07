@@ -3,12 +3,17 @@
 module M3u8
   # Writer provides generation of text output of playlists in m3u8 format
   class Writer
+    # @return [IO] output stream
     attr_accessor :io
 
+    # @param io [IO] writable IO object
     def initialize(io)
       @io = io
     end
 
+    # Write a playlist to the output stream.
+    # @param playlist [Playlist] playlist to write
+    # @return [void]
     def write(playlist)
       validate(playlist)
       write_header(playlist)

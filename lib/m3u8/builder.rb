@@ -28,6 +28,7 @@ module M3u8
       gap: 'GapItem'
     }.freeze
 
+    # @param playlist [Playlist] playlist to build into
     def initialize(playlist)
       @playlist = playlist
     end
