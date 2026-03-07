@@ -54,15 +54,6 @@ describe M3u8::PlaylistItem do
   end
 
   describe '.parse' do
-    it 'returns new instance from parsed tag' do
-      tag = '#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",NAME="1080p",HDCP-LEVEL=TYPE-0'
-      expect_any_instance_of(described_class).to receive(:parse).with(tag)
-      item = described_class.parse(tag)
-      expect(item).to be_a(described_class)
-    end
-  end
-
-  describe '#parse' do
     it 'assigns values from parsed tag' do
       input = '#EXT-X-STREAM-INF:CODECS="avc",BANDWIDTH=540,PROGRAM-ID=1,RESOLUTION=1920x1080,FRAME-RATE=23.976,AVERAGE-BANDWIDTH=550,AUDIO="test",VIDEO="test2",SUBTITLES="subs",CLOSED-CAPTIONS="caps",URI="test.url",NAME="1080p",HDCP-LEVEL=TYPE-0'
       item = M3u8::PlaylistItem.parse(input)
