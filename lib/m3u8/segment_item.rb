@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+
 module M3u8
   # SegmentItem represents EXTINF attributes with the URI that follows,
   # optionally allowing an EXT-X-BYTERANGE tag to be set.
@@ -32,8 +34,17 @@ module M3u8
     # Render as an m3u8 EXTINF tag with segment URI.
     # @return [String]
     def to_s
-      "#EXTINF:#{duration},#{comment}#{byterange_format}" \
+      "#EXTINF:#{float_format(duration)},#{comment}#{byterange_format}" \
         "\n#{date_format}#{segment}"
+    end
+
+    def float_format(number)
+      case duration
+      when Float
+        BigDecimal(number).to_s('F')
+      else
+        number.to_s
+      end
     end
 
     def date_format

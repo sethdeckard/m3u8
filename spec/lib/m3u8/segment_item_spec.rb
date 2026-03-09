@@ -89,4 +89,15 @@ describe M3u8::SegmentItem do
                'segment.aac'
     expect(output).to eq expected
   end
+
+  it 'converts very small durations to floating point' do
+    time = Time.iso8601('2020-11-25T20:27:00Z')
+    hash = { duration: 0.000001, segment: 'test.ts', program_date_time: time }
+    item = M3u8::SegmentItem.new(hash)
+    output = item.to_s
+    expected = "#EXTINF:0.000001,\n" \
+               "#EXT-X-PROGRAM-DATE-TIME:2020-11-25T20:27:00Z\n" \
+               'test.ts'
+    expect(output).to eq expected
+  end
 end

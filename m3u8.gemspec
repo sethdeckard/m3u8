@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0")
                                         .grep_v(/\A(CLAUDE|AGENTS)\.md\z/)
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
+  spec.dependencies    = ['bigdecimal']
   spec.require_paths = ['lib']
 
 end
