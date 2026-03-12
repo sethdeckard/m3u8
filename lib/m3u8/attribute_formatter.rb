@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'bigdecimal'
+
 module M3u8
   # Shared helpers for formatting HLS tag attributes
   module AttributeFormatter
@@ -25,6 +27,21 @@ module M3u8
     # @return [String, nil] formatted string or nil when value is nil
     def boolean_format(key, value)
       "#{key}=#{value == true ? 'YES' : 'NO'}" unless value.nil?
+    end
+
+    # Format a decimal attribute, ensuring it formatted as a floating-point
+    # number or integer
+    # @param number [Float, Integer, nil] the number to format
+    # @return [String, nil] formatted string or nil when value is nil
+    def decimal_format(number)
+      case number
+      when nil
+        nil
+      when Float
+        BigDecimal(number).to_s('F')
+      else
+        number.to_s
+      end
     end
   end
 end

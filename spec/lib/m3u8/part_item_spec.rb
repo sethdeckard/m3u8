@@ -56,5 +56,12 @@ describe M3u8::PartItem do
       expected = '#EXT-X-PART:DURATION=1.5,URI="part1.ts"'
       expect(item.to_s).to eq(expected)
     end
+
+    it 'should render small float values as floating-point number instead of scientific notation' do
+      options = { duration: 0.00001, uri: 'part1.ts' }
+      item = described_class.new(options)
+      expected = '#EXT-X-PART:DURATION=0.00001,URI="part1.ts"'
+      expect(item.to_s).to eq(expected)
+    end
   end
 end

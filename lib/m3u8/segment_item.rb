@@ -5,6 +5,7 @@ module M3u8
   # optionally allowing an EXT-X-BYTERANGE tag to be set.
   class SegmentItem
     include M3u8
+    include AttributeFormatter
 
     # @return [Float, nil] segment duration in seconds
     # @return [String, nil] segment URI
@@ -32,7 +33,7 @@ module M3u8
     # Render as an m3u8 EXTINF tag with segment URI.
     # @return [String]
     def to_s
-      "#EXTINF:#{duration},#{comment}#{byterange_format}" \
+      "#EXTINF:#{decimal_format(duration)},#{comment}#{byterange_format}" \
         "\n#{date_format}#{segment}"
     end
 

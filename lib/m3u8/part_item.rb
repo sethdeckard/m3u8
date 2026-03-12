@@ -45,7 +45,7 @@ module M3u8
     private
 
     def formatted_attributes
-      [unquoted_format('DURATION', duration),
+      [unquoted_format('DURATION', decimal_format(duration)),
        quoted_format('URI', uri),
        independent_format,
        quoted_format('BYTERANGE', byterange),
