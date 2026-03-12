@@ -29,11 +29,11 @@ module M3u8
       "#{key}=#{value == true ? 'YES' : 'NO'}" unless value.nil?
     end
 
-    # Format a float attribute, ensuring it formatted as a floating-point number
-    # or integer
-    # @param number [Float, Integer] the number to format
-    # @return [String] formatted number as a string
-    def float_format(number)
+    # Format a decimal attribute, ensuring it formatted as a floating-point
+    # number or integer
+    # @param number [Float, Integer, nil] the number to format
+    # @return [String, nil] formatted string or nil when value is nil
+    def decimal_format(number)
       case number
       when nil
         nil

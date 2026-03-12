@@ -33,7 +33,7 @@ module M3u8
     # Render as an m3u8 EXTINF tag with segment URI.
     # @return [String]
     def to_s
-      "#EXTINF:#{float_format(duration)},#{comment}#{byterange_format}" \
+      "#EXTINF:#{decimal_format(duration)},#{comment}#{byterange_format}" \
         "\n#{date_format}#{segment}"
     end
 
