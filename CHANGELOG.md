@@ -1,3 +1,10 @@
+**1.8.1**
+
+* Merged pull request #59 from [marocchino](https://github.com/marocchino).
+  Fixes floating-point formatting issue (#58).
+
+***
+
 **1.8.0**
 
 * Standardized all item classes to use class-level `self.parse` methods,
