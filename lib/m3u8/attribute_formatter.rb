@@ -35,6 +35,8 @@ module M3u8
     # @return [String] formatted number as a string
     def float_format(number)
       case number
+      when nil
+        nil
       when Float
         BigDecimal(number).to_s('F')
       else

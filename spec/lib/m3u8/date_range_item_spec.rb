@@ -172,6 +172,26 @@ describe M3u8::DateRangeItem do
       expect(item.to_s).to eq(expected)
     end
 
+    it 'should render small float values as floating-point number instead of scientific notation' do
+      options = { id: 'test_id', start_date: '2014-03-05T11:15:00Z',
+                  duration: 0.00001,
+                  planned_duration: 0.00002,
+                  resume_offset: 0.00003,
+                  playout_limit: 0.00004,
+                  client_attributes: { 'X-CUSTOM' => 0.00005 } }
+      item = described_class.new(options)
+
+      expected = '#EXT-X-DATERANGE:ID="test_id",' \
+                 'START-DATE="2014-03-05T11:15:00Z",' \
+                 'DURATION=0.00001,' \
+                 'PLANNED-DURATION=0.00002,' \
+                 'X-CUSTOM=0.00005,' \
+                 'X-RESUME-OFFSET=0.00003,' \
+                 'X-PLAYOUT-LIMIT=0.00004'
+
+      expect(item.to_s).to eq(expected)
+    end
+
     it 'should ignore optional attributes' do
       options = { id: 'test_id', start_date: '2014-03-05T11:15:00Z' }
       item = described_class.new(options)

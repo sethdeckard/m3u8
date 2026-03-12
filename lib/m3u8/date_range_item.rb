@@ -131,8 +131,8 @@ module M3u8
        quoted_format('CLASS', class_name),
        %(START-DATE="#{start_date}"),
        quoted_format('END-DATE', end_date),
-       unquoted_format('DURATION', duration),
-       unquoted_format('PLANNED-DURATION', planned_duration),
+       unquoted_format('DURATION', float_format(duration)),
+       unquoted_format('PLANNED-DURATION', float_format(planned_duration)),
        client_attributes_format,
        interstitial_formats,
        unquoted_format('SCTE35-CMD', scte35_cmd),
@@ -147,7 +147,7 @@ module M3u8
 
       client_attributes.map do |attribute|
         value = attribute.last
-        fmt = decimal?(value) ? value : %("#{value}")
+        fmt = decimal?(value) ? float_format(value) : %("#{value}")
         "#{attribute.first}=#{fmt}"
       end
     end
@@ -166,8 +166,8 @@ module M3u8
     def interstitial_formats
       [quoted_format('X-ASSET-URI', asset_uri),
        quoted_format('X-ASSET-LIST', asset_list),
-       unquoted_format('X-RESUME-OFFSET', resume_offset),
-       unquoted_format('X-PLAYOUT-LIMIT', playout_limit),
+       unquoted_format('X-RESUME-OFFSET', float_format(resume_offset)),
+       unquoted_format('X-PLAYOUT-LIMIT', float_format(playout_limit)),
        quoted_format('X-RESTRICT', restrict),
        quoted_format('X-SNAP', snap),
        quoted_format('X-TIMELINE-OCCUPIES', timeline_occupies),
